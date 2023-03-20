@@ -232,9 +232,12 @@ input[type='file']::-webkit-file-upload-button:hover{
     body{
         margin-left: 2rem;
     }
-    .file-choose,.link,.footer{
+    .file-choose,.link,.{
         width: 82%;
     }
+    .footer{
+      width: 78%;
+     }
     .player{
         width: 92%;
     }
