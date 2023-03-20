@@ -15,6 +15,7 @@ const backward = document.getElementById('backward')
 const btn = document.getElementById('btn')
 const link = document.getElementById('link').value
 const img = document.getElementById('img')
+var extract = `"${link}"`
 //const mins = parseFloat((audio.duration)/60).toFixed(2)
 //const sec = parseFloat((audio.duration)%60).toFixed(2)
 var update = setInterval(function(){
@@ -70,7 +71,7 @@ file.onchange = function() {
 btn.onclick = function(){
     //var files = this.urls;
     //audio.src = URL.createObjectURL(files[0]);
-    audio.src = '`${link}`';
+    audio.src = extract';
     play.style.display = 'none';
     pause.style.display = 'inline-block';
     audio.load();
