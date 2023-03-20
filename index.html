@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000">
+    <meta name="ms-application-theme-color" content="#000">
+    <title>Horizon Custom Html 5 Audio Player</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/fontawesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon"/>
+</head>
+<body onload="bufferContent()">
+    <div class="player">
+        <audio id="audio" controls src=""></audio>
+        <div class="banner">
+            <img src="./img/beautiful-shot-waterfall-forest (1).jpg"alt="banner" id="img" class="banner" />
+        <p id="intro">
+            Horizon Audio Player
+        </p>
+        </div>
+        <div class="controls">
+            <div class="length">
+                <p id="current-time">0:00</p>
+                <input type="range" id="audio-length" />
+                <p id="end-time">0:00</p>
+            </div>
+            <div class="control-btns">
+                <button class="media-btns1" id="backward">
+                    <i class="fa fa-step-backward"></i>
+                </button>
+                <button id="play" class="media-btns">
+                    <i class="fa fa-play-circle"></i>
+                </button>
+                <button id="pause" class="media-btns" >
+                    <i class="fa fa-pause-circle"></i>
+                </button>
+                <button class="media-btns1" id="forward">
+                    <i class="fa fa-step-forward"></i>
+                </button>
+            </div>
+            <div class="volume-controls">
+                <button id="vol-up" class="volume-down">
+                    <i class="fa fa-volume-off"></i>
+                </button>
+                
+                <input type="range" id="volume" min="0" max="100" />
+                
+                <button id="vol-down" class="volume-up">
+                    <i class="fa fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="file-choose">
+        <input type="file" id="thefile" accept="audio/*" required/>
+        <i class="fa fa-upload"></i>
+    </div>
+    <div class="link">
+        <div class="input">
+            <input type="url" id="link" class="field" placeholder="Enter link to the audio file here..." accept="audio/*" required/>
+            <button id="btn" class="linker">
+                Play It
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="footer">
+        <footer>
+            <div class="help">
+                <h4>
+                    Some useful links - 
+                </h4>
+                <br>
+                <ul class="li">
+                    <li>
+                        <a href="https://blaizinginfernodragon123.github.io/#contact" class="li">Have an issue? Contact us here</a>
+                    </li>
+                    <li>
+                        <a href="mailto:blazinginfernodragon123@gmail.com" class="li">Mail us here</a>
+                    </li>
+                </ul>
+            </div>
+            <br>
+            <div class="border">
+            <h3>
+                Copyright &copy;2023-24 
+                <a href="https://github.com/blaizinginfernodragon123">
+                    <i class="fa fa-github"></i>
+                    BlaizingInfernoDragon123
+                </a>
+            </h3>
+            </div>
+        </footer>
+    </div>
+    <script src="./js/script.js"></script>
+    <script src="./js/all.js"></script>
+</body>
+</html>
