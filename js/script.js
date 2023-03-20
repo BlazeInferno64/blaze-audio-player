@@ -70,7 +70,7 @@ file.onchange = function() {
 btn.onclick = function(){
     //var files = this.urls;
     //audio.src = URL.createObjectURL(files[0]);
-    audio.setAttribute('src',link)
+    audio.src = link;
     play.style.display = 'none';
     pause.style.display = 'inline-block';
     audio.load();
