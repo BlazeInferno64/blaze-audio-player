@@ -1,22 +1,46 @@
-const audio = document.getElementById('audio')
-const play = document.getElementById('play')
-const pause = document.getElementById('pause')
-const file = document.getElementById('thefile')
-const volume = document.getElementById('volume')
-const volup = document.getElementById('vol-up')
-const voldown = document.getElementById('vol-down')
+const playBtn = document.querySelector(".play-btn");
+const pauseBtn = document.querySelector(".pause-btn");
+const forwardBtn = document.querySelector(".forawrd-btn");
+const backwardBtn = document.querySelector(".backward-btn");
+const audio = document.getElementById('audio');
+const forward = document.getElementById('forward');
+const backward = document.getElementById('backward');
+const audioName = document.getElementById("name");
+const uploadBox = document.querySelector(".upload-box");
+const file = document.getElementById("thefile");
 const audiolength = document.getElementById('audio-length')
-const timer = document.getElementById('current-time')
 const endtime = document.getElementById('end-time')
-var minutes = Math.floor(audio.duration / 60);
-var seconds = Math.floor(audio.duration % 60);
-const forward = document.getElementById('forward')
-const backward = document.getElementById('backward')
-const btn = document.getElementById('btn')
-const field = document.getElementById('field')
-const img = document.getElementById('img')
-//const mins = parseFloat((audio.duration)/60).toFixed(2)
-//const sec = parseFloat((audio.duration)%60).toFixed(2)
+const timer = document.getElementById('current-time')
+const volumeUP = document.getElementById("volume-high");
+const volumeDOWN = document.getElementById("volume-low");
+const volumeBAR = document.getElementById("volume-bar");
+const field = document.querySelector(".field");
+const play = document.querySelector(".linker");
+
+uploadBox.addEventListener('click',(e)=>{
+    file.click();
+});
+
+play.onclick = function(){
+    audio.src = `${field.value}`;
+    playBtn.style.display = 'none';
+    pauseBtn.style.display = 'block';
+    audio.load();
+    audio.play();
+    var end = setInterval(function(){
+        var min = Math.floor(audio.duration / 60);
+        var sec = Math.floor(audio.duration % 60);
+        if (sec < 10) {
+            sec = '0' + String(sec);
+        }
+        if(min==NaN){
+            endtime.innerHTML = '0';
+        }
+        endtime.isNaN = function(){}
+        endtime.innerHTML = min + ':' + sec;
+    },10);
+}
+
 var update = setInterval(function(){
     var mins = Math.floor(audio.currentTime / 60);
     var secs = Math.floor(audio.currentTime % 60);
@@ -24,26 +48,51 @@ var update = setInterval(function(){
         secs = '0' + String(secs);
     }
     timer.innerHTML = mins + ':' + secs;
-    audiolength.value = Math.floor(audio.currentTime);
+    const duration = audio.duration;
+    const currentTime = audio.currentTime;
+    const percent = (currentTime / duration)*100;
+    audiolength.style.width = `${percent}%`;
 },10);
 
-play.onclick = function(){
-    audio.play();
-    play.style.display = 'none';
-    pause.style.display = 'inline-block';
+forward.onclick = function(){
+    audio.currentTime +=5;
 }
-pause.onclick = function(){
+
+backward.onclick = function(){
+    audio.currentTime -=5;
+}
+
+volumeUP.onclick = function(){
+    audio.volume = 100;
+}
+volumeDOWN.onclick = function(){
+    audio.mute;
+}
+
+volumeBAR.addEventListener("input",(e) =>{
+    audio.volume = e.currentTarget.value/100;
+})
+
+
+playBtn.onclick = function(){
+    audio.play();
+    playBtn.style.display = 'none';
+    pauseBtn.style.display = 'block';
+}
+pauseBtn.onclick = function(){
     audio.pause();
-    play.style.display = 'initial';
-    pause.style.display = 'none';
+    pauseBtn.style.display = 'none';
+    playBtn.style.display = 'block';
 }
 file.onchange = function() {
     var files = this.files;
     audio.src = URL.createObjectURL(files[0]);
-    play.style.display = 'none';
-    pause.style.display = 'inline-block';
+    playBtn.style.display = 'none';
+    pauseBtn.style.display = 'block';
     audio.load();
     audio.play();
+    var filename = file.files[0].name;
+    audioName.innerHTML = "<Marquee>" + filename + "</Marquee>";
     var end = setInterval(function(){
         var min = Math.floor(audio.duration / 60);
         var sec = Math.floor(audio.duration % 60);
@@ -56,52 +105,29 @@ file.onchange = function() {
         endtime.isNaN = function(){}
         endtime.innerHTML = min + ':' + sec;
     },10);
-}
-//setTimeout(swipe,20000);
+};
 
-//function swipe(){
-  //  img.setAttribute('src','../img/hand-drawn-flat-design-mountain-landscape_23-2149158786.avif');
-    //setTimeout(fun,10000);
-    //function fun(){
-      //  img.setAttribute('src','../img/beautiful-gradient-spring-landscape_23-2148448598.avif');
-    //}
-//}
+const toggle = document.getElementById("toggle");
+const container = document.querySelector(".container");
+const heading = document.getElementById("player-namer");
 
-btn.onclick = function(){
-    //var files = this.urls;
-    //audio.src = URL.createObjectURL(files[0]);
-    audio.src = `${field.value}`;
-    //alert(`"${field.value}"`);
-    play.style.display = 'none';
-    pause.style.display = 'inline-block';
-    audio.load();
-    audio.play();
-    var end = setInterval(function(){
-        var min = Math.floor(audio.duration / 60);
-        var sec = Math.floor(audio.duration % 60);
-        if (sec < 10) {
-            sec = '0' + String(sec);
-        }
-        if(min==NaN){
-            endtime.innerHTML = '0';
-        }
-        endtime.isNaN = function(){}
-        endtime.innerHTML = min + ':' + sec;
-    },10);
-}
-
-volume.addEventListener("input",(e) =>{
-    audio.volume = e.currentTarget.value/100;
-})
-volup.onclick = function(){
-    audio.volume = 100.0;
-}
-voldown.onclick = function(){
-    audio.mute;
-}
-forward.onclick = function(){
-    audio.currentTime +=5
-}
-backward.onclick = function(){
-    audio.currentTime -=5
-}
+toggle.addEventListener('input',(e) =>{
+    const isChecked = e.target.checked;
+    if (isChecked){
+        container.classList.add('dark-theme');
+        volumeUP.classList.add('dark-theme');
+        volumeDOWN.classList.add('dark-theme');
+        forwardBtn.classList.add('dark-theme');
+        backwardBtn.classList.add('dark-theme');
+        uploadBox.classList.add('dark-theme');
+        field.classList.add('dark-theme');
+    }else{
+        container.classList.remove('dark-theme');
+        volumeUP.classList.remove('dark-theme');
+        volumeDOWN.classList.remove('dark-theme');
+        forwardBtn.classList.remove('dark-theme');
+        backwardBtn.classList.remove('dark-theme');
+        uploadBox.classList.remove('dark-theme');
+        field.classList.remove('dark-theme');
+    }
+});

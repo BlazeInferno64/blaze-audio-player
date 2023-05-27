@@ -4,102 +4,95 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000">
-    <meta name="ms-application-theme-color" content="#000">
-    <title>Horizon Custom Html 5 Audio Player</title>
+    <meta name="theme-color" content="black">
+    <title>Horizon Custom Html5 Free Audio PLayer</title>
     <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/fontawesome.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./css/fontawesome-free-6.4.0-web/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="./css/fontawesome-free-6.4.0-web/css/all.min.css" />
     <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon"/>
+    <script src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2604597246009301"
+    crossorigin="anonymous"></script>
 </head>
-<body onload="bufferContent()">
-    <div class="player">
-        <audio id="audio" controls src="" crossorigin="anonymous"></audio>
-        <div class="banner">
-            <img src="./img/beautiful-shot-waterfall-forest (1).jpg"alt="banner" id="img" class="banner" />
-        <p id="intro">
+<body>
+   <!-- <i class="fas fa-face-angry"></i>-->
+   <div class="toggle">
+        <input type="checkbox" name="Modes" class="modes" id="toggle" />
+        <label for="toggle"></span>
+    </div>
+   <br>
+   <div class="container">
+    <audio id="audio" controls src="" hidden crossorigin="anonymous"></audio>
+    <div class="player-head">
+        <h3 id="player-namer">
             Horizon Audio Player
-        </p>
-        </div>
-        <div class="controls">
-            <div class="length">
-                <p id="current-time">0:00</p>
-                <input type="range" id="audio-length" />
-                <p id="end-time">0:00</p>
-            </div>
-            <div class="control-btns">
-                <button class="media-btns1" id="backward">
-                    <i class="fa fa-step-backward"></i>
-                </button>
-                <button id="play" class="media-btns">
-                    <i class="fa fa-play-circle"></i>
-                </button>
-                <button id="pause" class="media-btns" >
-                    <i class="fa fa-pause-circle"></i>
-                </button>
-                <button class="media-btns1" id="forward">
-                    <i class="fa fa-step-forward"></i>
-                </button>
-            </div>
-            <div class="volume-controls">
-                <button id="vol-up" class="volume-down">
-                    <i class="fa fa-volume-off"></i>
-                </button>
-                
-                <input type="range" id="volume" min="0" max="100" />
-                
-                <button id="vol-down" class="volume-up">
-                    <i class="fa fa-volume-up"></i>
-                </button>
-            </div>
+        </h3>
+        <br>
+        <div class="banner">
+            <img src="./img/banner.jpg" alt="" class="banner-avatar">
         </div>
     </div>
-    <div class="file-choose">
-        <input type="file" id="thefile" accept="audio/*" required/>
-        <i class="fa fa-upload"></i>
+    <div class="basic-info">
+        <h4 id="name">Select an Audio Track First</h4>
     </div>
-    <div class="link">
-        <div class="input">
-            <input type="url" id="field" class="field" placeholder="Enter link to the audio file here..." required/>
-            <button id="btn" class="linker">
-                Play It
-            </button>
+    <div class="progress">
+        <div class="bg">
+        <div class="progress-bar" id="audio-length"></div>
+        </div>
+        <div class="timers">
+        <p id="current-time">0:00</p>
+        <p id="end-time">0:00</p>
         </div>
     </div>
+    <div class="controls-section">
+        <button id="backward" class="backward-btn">
+            <i class="fa fa-step-backward"></i>
+        </button>
+        <button class="play-btn">
+            <i class="fa fa-play"></i>
+        </button>
+        <button class="pause-btn">
+            <i class="fa fa-pause"></i>
+        </button>
+        <button id="forward" class="forawrd-btn">
+            <i class="fa fa-step-forward"></i>
+        </button>
+    </div>
+    <div class="volume">
+        <button class="volume-btns" id="volume-low">
+            <i class="fa fa-volume-mute"></i>
+        </button>
+        <div class="volume-bar">
+            <input type="range" id="volume-bar" min="0" max="100"/>
+        </div>
+        <button class="volume-btns" id="volume-high">
+            <i class="fa fa-volume-high"></i>
+        </button>
+    </div>
+   </div>
+   <div class="upload-box">
+    <input type="file" accept="audio/*" id="thefile"/>
+    <img src="./img/upload-icon.svg" id="upload-btn" alt="upload-btn.svg" />
     <br>
-    <div class="footer">
-        <footer>
-            <div class="help">
-                <h4>
-                    Some useful links - 
-                </h4>
-                <br>
-                <ul class="li">
-                    <li>
-                        <a href="https://blaizinginfernodragon123.github.io/#contact" target="_blank" class="li">Facing a problem? Contact me here</a>
-                    </li>
-                     <li>
-                         <a href="https://github.com/blaizinginfernodragon123/horizon-audio-player/issues/new/choose" target="_blank" class="li">File an Issue here</a>
-                     </li>
-                    <li>
-                        <a href="mailto:blazinginfernodragon123@gmail.com" class="li" target="_blank">Mail me here</a>
-                    </li>
-                </ul>
-            </div>
-            <br>
-            <div class="border">
-            <h3>
-                Copyright &copy;2023-24 
-                <a target="_blank" href="https://github.com/blaizinginfernodragon123">
-                    <i class="fa fa-github"></i>
-                    BlaizingInfernoDragon123
-                </a>
-            </h3>
-            </div>
-        </footer>
+    <p>
+      Click here to browse
+      <br>
+       audio files to play 
+    </p>
+  </div>
+  <br>
+  <br>
+  <div class="link">
+    <div class="input">
+        <input type="url" id="field" class="field" placeholder="Enter link to the audio file here" required/>
+        <button id="btn" class="linker">
+            <i class="fa fa-play"></i>
+            Play It
+        </button>
     </div>
+</div>
+<br>
+<br>
     <script src="./js/script.js"></script>
-    <script src="./js/all.js"></script>
-    <script src="./jquery-3.3.1.min.js"></script>
 </body>
 </html>
