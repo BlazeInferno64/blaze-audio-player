@@ -27,7 +27,7 @@ play.onclick = function(){
     audio.src = `${field.value}`;
     if (field.value === ''| field.value == null){
         audioName.innerText = 'Select an Audio Track first';
-        endtime.innerText = "0:00";
+        endtime.innerText = '0:00';
     }else{
        // audioName.innerText = `${field.value}`;
           audioName.innerHTML = "<Marquee>" + fieldItem + "</Marquee>";
