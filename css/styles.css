@@ -69,27 +69,29 @@ button,input{
     background: transparent;
     border: 3px solid rgb(5, 146, 116);
     color: rgb(5, 146, 116);
-    transition: all .5s;
+    transition: background-color 600ms;
 }
 .play-btn:hover,.pause-btn:hover{
     background: rgb(5, 146, 116);
-    transition: all .5s;
+    transition: background-color 600ms;
     border: 3px solid transparent;
     color: #fff;
 }
 .forawrd-btn,.backward-btn{
     padding: 5px 10px;
-    transition: all .5s;
+
     border: 2px solid #000;
     font-size: 2rem;
     transform: scale(0.7);
     width: auto;
+    transition: background-color 600ms;
 }
 .forawrd-btn:hover,.backward-btn:hover{
     color: #2a2d2e;
     border: 2px solid #2a2d2e;
     background: #2a2d2e;
     color: #fff;
+    transition: background-color 600ms;
 }
 .volume{
     display: grid;
