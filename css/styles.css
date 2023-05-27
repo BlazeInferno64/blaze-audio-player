@@ -193,7 +193,7 @@ input[type="file"]{
     width: 1px;
     height: 10px;
     padding: 0;
-    border-radius: .3rem;
+    border-radius: .2rem;
     transition: width .1s linear;
 }
 .bg{
