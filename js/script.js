@@ -23,6 +23,11 @@ uploadBox.addEventListener('click',(e)=>{
 
 play.onclick = function(){
     audio.src = `${field.value}`;
+    if (field.value === ''| field.value == null){
+        audioName.innerText = 'Select an Audio Track first';
+    }else{
+        audioName.innerText = `${field.value}`;
+    }
     playBtn.style.display = 'none';
     pauseBtn.style.display = 'block';
     audio.load();
