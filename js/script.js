@@ -22,12 +22,15 @@ uploadBox.addEventListener('click',(e)=>{
 });
 
 play.onclick = function(){
+    const fieldItem = field.value.substring(field.value.lastIndexOf("/") + 1);
+ 
     audio.src = `${field.value}`;
     if (field.value === ''| field.value == null){
         audioName.innerText = 'Select an Audio Track first';
     }else{
        // audioName.innerText = `${field.value}`;
           audioName.innerHTML = "<Marquee>" + field.value + "</Marquee>";
+          alert(fieldItem);
     }
     playBtn.style.display = 'none';
     pauseBtn.style.display = 'block';
