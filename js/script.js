@@ -26,7 +26,8 @@ play.onclick = function(){
     if (field.value === ''| field.value == null){
         audioName.innerText = 'Select an Audio Track first';
     }else{
-        audioName.innerText = `${field.value}`;
+       // audioName.innerText = `${field.value}`;
+          audioName.innerHTML = "<Marquee>" + `${field.value}` + "</Marquee>";
     }
     playBtn.style.display = 'none';
     pauseBtn.style.display = 'block';
