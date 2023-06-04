@@ -62,6 +62,10 @@ var update = setInterval(function(){
     const currentTime = audio.currentTime;
     const percent = (currentTime / duration)*100;
     audiolength.style.width = `${percent}%`;
+    if (audio.currentTime == audio.duration){
+        playBtn.style.display = "block";
+        pauseBtn.style.display = "none";
+        }
 },10);
 
 forward.onclick = function(){
