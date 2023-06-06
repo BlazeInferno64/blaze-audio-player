@@ -3,10 +3,10 @@ Horizon Responsive Audio Player is a web app which is designed to make music pla
 |--------------|
 # View it here-
 
-<a href="https://blaizinginfernodragon123.github.io/horizon-audio-player/">
+<a href="https://blazeinferno64.github.io/horizon-audio-player/">
 
 ```
-https://blaizinginfernodragon123.github.io/https://blaizinginfernodragon123.github.io/horizon-audio-player/
+https://blazeinferno64.github.io/horizon-audio-player/
 ```
 </a>
 
