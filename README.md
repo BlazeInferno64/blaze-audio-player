@@ -1,5 +1,6 @@
 # Horizon-Audio-Player
-Horizon Responsive Audio Player is a web app which is designed to make music player easily accessible to anyone - anywhere while browsing, Please don't misuse this repository for HARASSING/SPAMMING/ABUSING other people, if any of these occurs then I m not responsible for anything at all
+About
+Listen to free and unlimited audios using Blaze Audio Player
 |--------------|
 # View it here-
 
