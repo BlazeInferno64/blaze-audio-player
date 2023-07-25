@@ -1,4 +1,4 @@
-# Horizon-Audio-Player
+# Blaze-Audio-Player
 About
 Listen to free and unlimited audios using Blaze Audio Player
 |--------------|
