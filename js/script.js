@@ -1,113 +1,232 @@
+const audio = document.querySelector("#audio");
+
 const playBtn = document.querySelector(".play-btn");
 const pauseBtn = document.querySelector(".pause-btn");
-const forwardBtn = document.querySelector(".forawrd-btn");
-const backwardBtn = document.querySelector(".backward-btn");
-const audio = document.getElementById('audio');
-const forward = document.getElementById('forward');
-const backward = document.getElementById('backward');
-const audioName = document.getElementById("name");
-const uploadBox = document.querySelector(".upload-box");
-const file = document.getElementById("thefile");
-const audiolength = document.getElementById('audio-length')
-const endtime = document.getElementById('end-time')
-const timer = document.getElementById('current-time')
-const volumeUP = document.getElementById("volume-high");
-const volumeDOWN = document.getElementById("volume-low");
-const volumeBAR = document.getElementById("volume-bar");
-const field = document.querySelector(".field");
-const play = document.querySelector(".linker");
 
-uploadBox.addEventListener('click',(e)=>{
-    file.click();
-});
+const forwardBtn = document.querySelector("#forward");
+const backwardBtn = document.querySelector("#backward");
 
-play.onclick = function(){
-    const fieldItem = field.value.substring(field.value.lastIndexOf("/") + 1);
- 
-    audio.src = `${field.value}`;
-    if (field.value === ''| field.value == null){
-        audioName.innerText = 'Select an Audio Track first';
-        endtime.innerText = '0:00';
-    }else{
-       // audioName.innerText = `${field.value}`;
-          audioName.innerHTML = "<Marquee>" + fieldItem + "</Marquee>";
-         // alert(fieldItem);
+const volumeRange = document.querySelector(".volume-bar");
+const volumeInfo = document.querySelector(".vol-info");
+const volumeInfoParent = document.querySelector(".volume-info");
+
+const progressArea = document.querySelector(".progress-area");
+const progressBar = document.querySelector(".progress-bar");
+
+const audioFile = document.querySelector("#file");
+//const uploadBox = document.querySelector(".upload-box");
+
+const time = document.querySelector("#cuurent-time");
+const maxTime = document.querySelector("#max-time");
+
+const filename = document.querySelector("#name");
+
+const uploadBtn = document.querySelector("#btn");
+
+const navList1 = document.querySelector(".list");
+
+const crossLinkPlayBtn = document.querySelector(".submit");
+const crossLinkAudioInput = document.querySelector(".field");
+const forms = document.querySelector("#form");
+
+const container = document.querySelector(".container");
+
+const inputAudioLinkBackground1 = document.querySelector(".input-link");
+
+
+
+document.addEventListener("keydown",(e) => {
+    if(e.keyCode === 13){
+        if(audioFile.value === ''|audioFile.value == null){
+            alert("Please select an Audio Track First");
+            audioFile.click();
+        }
+        else{
+            if(playBtn.style.display == 'flex'){
+                if(e.keyCode === 13){
+                    audio.play();
+                    pauseBtn.style.display = 'flex';
+                    playBtn.style.display = 'none';
+                }
+            }
+            else{
+                if(playBtn.style.display == 'none'){
+                    if(e.keyCode === 13){
+                        audio.pause();
+                        pauseBtn.style.display = 'none';
+                        playBtn.style.display = 'flex';
+                    }
+                }
+            }
+        }
     }
-    playBtn.style.display = 'none';
-    pauseBtn.style.display = 'block';
-    audio.load();
-    audio.play();
-    var end = setInterval(function(){
-        var min = Math.floor(audio.duration / 60);
-        var sec = Math.floor(audio.duration % 60);
-        if (sec < 10) {
-            sec = '0' + String(sec);
-        }
-        if(min==NaN){
-            endtime.innerHTML = '0';
-        }
-        endtime.isNaN = function(){}
-        endtime.innerHTML = min + ':' + sec;
-    },10);
-}
+    else{
+        console.log(e);
+    }
+})
 
-var update = setInterval(function(){
+container.addEventListener("contextmenu",(e) => {
+    e.preventDefault();
+    if(audioFile.value === ''|audioFile.value == null){
+        alert("Please select an Audio Track First");
+        audioFile.click();
+    }
+    else{
+        console.log(e)
+        /*if(playBtn.style.display == 'flex'){
+            if(e.keyCode === 13){
+                audio.play();
+                pauseBtn.style.display = 'flex';
+                playBtn.style.display = 'none';
+            }
+        }
+        else{
+            if(playBtn.style.display == 'none'){
+                if(e.keyCode === 13){
+                    audio.pause();
+                    pauseBtn.style.display = 'none';
+                    playBtn.style.display = 'flex';
+                }
+            }
+        }*/
+    }
+})
+
+
+forms.addEventListener("submit",(e) => {
+    e.preventDefault();
+    const fieldItem = crossLinkAudioInput.value.substring(crossLinkAudioInput.value.lastIndexOf("/") + 1);
+    
+    if (crossLinkAudioInput.value === ''| crossLinkAudioInput.value == null){
+        filename.innerText = "Select a Track First";
+        maxTime.innerText = '0:00';
+        alert("Please enter a proper url");
+    }
+    else{
+        audio.src = `${crossLinkAudioInput.value}`;
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'flex';
+        audio.load();
+        audio.play();
+        filename.innerHTML = "<Marquee>" + fieldItem + "</Marquee>";
+        setInterval(function(){
+            var min = Math.floor(audio.duration / 60);
+            var sec = Math.floor(audio.duration % 60);
+            if (sec < 10) {
+                sec = '0' + String(sec);
+            }
+            if(min==NaN){
+                endtime.innerHTML = '0';
+            }
+            maxTime.isNaN = function(){}
+            maxTime.innerHTML = min + ':' + sec;
+        },10);
+    }
+})
+
+crossLinkPlayBtn.addEventListener("click",function(e){
+    e.preventDefault();
+    const fieldItem = crossLinkAudioInput.value.substring(crossLinkAudioInput.value.lastIndexOf("/") + 1);
+    
+    if (crossLinkAudioInput.value === ''| crossLinkAudioInput.value == null){
+        filename.innerText = "Select a Track First";
+        maxTime.innerText = '0:00';
+        alert("Please enter a proper url")
+    }
+    else{
+        audio.src = `${crossLinkAudioInput.value}`;
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'flex';
+        audio.load();
+        audio.play();
+        filename.innerHTML = "<Marquee>" + fieldItem + "</Marquee>";
+        setInterval(function(){
+            var min = Math.floor(audio.duration / 60);
+            var sec = Math.floor(audio.duration % 60);
+            if (sec < 10) {
+                sec = '0' + String(sec);
+            }
+            if(min==NaN){
+                endtime.innerHTML = '0';
+            }
+            maxTime.isNaN = function(){}
+            maxTime.innerHTML = min + ':' + sec;
+        },10);
+    }
+})
+
+progressArea.addEventListener("click",(e) => {
+    let progressWidth = progressArea.clientWidth;
+
+    let OffsetX = e.offsetX;
+    audio.currentTime = (OffsetX / progressWidth) * audio.duration;
+    playBtn.style.display = 'none';
+    pauseBtn.style.display = 'flex';
+    audio.play();
+})
+
+uploadBtn.addEventListener("click",(e) => {
+    audioFile.click();
+})
+
+/*uploadBox.addEventListener("click",(e) => {
+    audioFile.click();
+})
+*/
+playBtn.addEventListener("click",(e) => {
+    if(audioFile.value === ''|audioFile.value == null){
+        alert("Please Select an Audio file first!");
+        audioFile.click();
+    }
+    else{
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'flex';
+        audio.play();
+    }
+})
+
+setInterval(function(){
     var mins = Math.floor(audio.currentTime / 60);
     var secs = Math.floor(audio.currentTime % 60);
     if (secs < 10) {
         secs = '0' + String(secs);
     }
-    timer.innerHTML = mins + ':' + secs;
+    time.innerHTML = mins + ':' + secs;
     const duration = audio.duration;
     const currentTime = audio.currentTime;
     const percent = (currentTime / duration)*100;
-    audiolength.style.width = `${percent}%`;
-    if (audio.currentTime == audio.duration){
-        playBtn.style.display = "block";
-        pauseBtn.style.display = "none";
-        }
+    progressBar.style.width = `${percent}%`;
+    if(audio.currentTime == audio.duration){
+        playBtn.style.display = 'flex';
+        pauseBtn.style.display = 'none';
+    }
 },10);
 
-forward.onclick = function(){
+forwardBtn.onclick = function(e){
     audio.currentTime +=5;
 }
 
-backward.onclick = function(){
+backwardBtn.onclick = function(){
     audio.currentTime -=5;
 }
 
-volumeUP.onclick = function(){
-    audio.volume = 100;
-}
-volumeDOWN.onclick = function(){
-    audio.mute;
-}
-
-volumeBAR.addEventListener("input",(e) =>{
-    audio.volume = e.currentTarget.value/100;
+pauseBtn.addEventListener("click",(e) => {
+    pauseBtn.style.display = 'none';
+    playBtn.style.display = 'flex';
+    audio.pause();
 })
 
-
-playBtn.onclick = function(){
-    audio.play();
-    playBtn.style.display = 'none';
-    pauseBtn.style.display = 'block';
-}
-pauseBtn.onclick = function(){
-    audio.pause();
-    pauseBtn.style.display = 'none';
-    playBtn.style.display = 'block';
-}
-file.onchange = function() {
+audioFile.onchange = function(e) {
     var files = this.files;
     audio.src = URL.createObjectURL(files[0]);
     playBtn.style.display = 'none';
-    pauseBtn.style.display = 'block';
+    pauseBtn.style.display = 'flex';
     audio.load();
     audio.play();
-    var filename = file.files[0].name;
-    audioName.innerHTML = "<Marquee>" + filename + "</Marquee>";
-    var end = setInterval(function(){
+    navList1.style.right = '-100%';
+    var name = this.files[0].name;
+    filename.innerHTML = "<Marquee>" + name + "</Marquee>";
+    setInterval(function(){
         var min = Math.floor(audio.duration / 60);
         var sec = Math.floor(audio.duration % 60);
         if (sec < 10) {
@@ -116,32 +235,28 @@ file.onchange = function() {
         if(min==NaN){
             endtime.innerHTML = '0';
         }
-        endtime.isNaN = function(){}
-        endtime.innerHTML = min + ':' + sec;
+        maxTime.isNaN = function(){}
+        maxTime.innerHTML = min + ':' + sec;
     },10);
-};
+}
 
-const toggle = document.getElementById("toggle");
-const container = document.querySelector(".container");
-const heading = document.getElementById("player-namer");
 
-toggle.addEventListener('input',(e) =>{
-    const isChecked = e.target.checked;
-    if (isChecked){
-        container.classList.add('dark-theme');
-        volumeUP.classList.add('dark-theme');
-        volumeDOWN.classList.add('dark-theme');
-        forwardBtn.classList.add('dark-theme');
-        backwardBtn.classList.add('dark-theme');
-        uploadBox.classList.add('dark-theme');
-        field.classList.add('dark-theme');
-    }else{
-        container.classList.remove('dark-theme');
-        volumeUP.classList.remove('dark-theme');
-        volumeDOWN.classList.remove('dark-theme');
-        forwardBtn.classList.remove('dark-theme');
-        backwardBtn.classList.remove('dark-theme');
-        uploadBox.classList.remove('dark-theme');
-        field.classList.remove('dark-theme');
-    }
-});
+volumeRange.addEventListener("input",(e) => {
+    audio.volume = e.currentTarget.value/100;
+})
+
+volumeRange.addEventListener("mouseover",(e) => {
+    volumeInfoParent.classList.remove("hidden");
+})
+
+volumeRange.addEventListener("mouseout",(e) => {
+    volumeInfoParent.classList.add("hidden");
+})
+
+volumeRange.addEventListener("input",(e) => {
+    volumeInfo.innerText = `${volumeRange.value}%`;
+})
+
+volumeRange.onchange = function(e){
+    volumeInfo.innerText = `${volumeRange.value}%`;
+}

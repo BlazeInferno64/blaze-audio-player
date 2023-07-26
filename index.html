@@ -2,97 +2,156 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="black">
-    <title>Horizon Custom Html5 Free Audio PLayer</title>
+    <title>Blaze-Audio-Player | Stream Audio Tracks for free!</title>
     <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/fontawesome-free-6.4.0-web/css/fontawesome.min.css" />
-    <link rel="stylesheet" href="./css/fontawesome-free-6.4.0-web/css/all.min.css" />
     <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon"/>
     <script src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2604597246009301"
     crossorigin="anonymous"></script>
 </head>
 <body>
-   <!-- <i class="fas fa-face-angry"></i>-->
-   <div class="toggle">
-        <input type="checkbox" name="Modes" class="modes" id="toggle" />
-        <label for="toggle"></span>
+    <input type="file" name="file" accept="audio/*" id="file" class="file" hidden/>
+    <div class="input-link hidden">
+        <form id="form">
+            <p id="p">
+                Enter the link of the audio file below
+            </p>
+            <p>
+                Please note that 
+            </p>
+            <p id="note">
+                As of now it is only supporting link which ends with extensions like - .mp3,.ogg,etc
+            </p>
+            <input type="url" class="field" placeholder="Type the link of Audio file here..." required>
+            <div class="btns-sections">
+                <button type="button" class="close-bg"><i class="fa fa-times"></i>  Close</button>
+                <button type="submit" class="submit"><i class="fa fa-play"></i>  Play It</button>
+            </div>
+        </form>
     </div>
-   <br>
-   <div class="container">
-    <audio id="audio" controls src="" hidden crossorigin="anonymous"></audio>
-    <div class="player-head">
-        <h3 id="player-namer">
-            Horizon Audio Player
-        </h3>
-        <br>
+    <div class="informer hidden">
+        <div class="info"><i class="fa fa-bars"></i>  Menu</div>
+        <i id="menu" class="fa fa-play"></i>
+    </div>
+    <div class="container">
+        <audio src="#" id="audio" hidden></audio>
+        <div class="top-header">
+            <p>
+                Blaze Audio Player
+            </p>
+            <div class="menu">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+            </div>
+        </div>
+        <div class="list">
+            <div class="top">
+                <p>
+                    Blaze Audio Player
+                </p>
+                <span class="close">
+                    &times;
+                </span>
+            </div>
+            <div class="next">
+                <div class="effect1"></div>
+        </div>
+            <ul>
+                <li>
+                    <button class="btn" id="btn"><i class="fa fa-upload"></i>  Upload Audio File</button>
+                </li>
+                <li>
+                    <button class="btn" id="type"><i class="fa fa-play"></i>  Play Audio File With Link</button>
+                </li>
+            </ul>
+            <ul class="options">
+                <a href="https://github.com/blazeinferno64/blaze-audio-player">
+                    <li class="a-link">
+                        <i class="fa fa-question"></i> About
+                    </li>
+                </a>
+                <a href="https://google.com/search?q=javascript+audio+player+in+html/">
+                    <li class="a-link">
+                        <i class="fa fa-send"></i> Learn More
+                    </li>
+                </a>
+                <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">
+                    <li class="a-link">
+                        <i class="fa fa-warning"></i> Report Bug
+                    </li>
+                </a>
+                <a href="https://blazeinferno64.github.io/#contact">
+                    <li class="a-link">
+                        <i class="fa fa-contact-book"></i> Contact
+                    </li>
+                </a>
+            </ul>
+            <br>
+            <div class="end">
+                <div class="effect"></div>
+        </div>
+            <br>
+            <div class="foot-bottom">
+                <div class="redirect">
+                    <a href="https://blazeinferno64.github.io/">
+                        <i class="fa fa-github"></i>  BlazeInferno64
+                    </a>
+                </div>
+            </div>
+        </div>
         <div class="banner">
-            <img src="https://avatars.githubusercontent.com/u/96913755?v=4" alt="" class="banner-avatar">
+            <img src="#" alt="" class="img-banner">
+           <!--- <img src="./img/background.png" alt="" class="img">-->
         </div>
-    </div>
-    <div class="basic-info">
-        <h4 id="name">Select an Audio Track First</h4>
-    </div>
-    <div class="progress">
-        <div class="bg">
-        <div class="progress-bar" id="audio-length"></div>
+        <div class="name">
+            <p id="name"><marquee>Select a Track First</marquee></p>
         </div>
-        <div class="timers">
-        <p id="current-time">0:00</p>
-        <p id="end-time">0:00</p>
+        <div class="progress-area">
+            <div class="progress-bar">
+            </div>
         </div>
-    </div>
-    <div class="controls-section">
-        <button id="backward" class="backward-btn">
-            <i class="fa fa-step-backward"></i>
-        </button>
-        <button class="play-btn">
-            <i class="fa fa-play"></i>
-        </button>
-        <button class="pause-btn">
-            <i class="fa fa-pause"></i>
-        </button>
-        <button id="forward" class="forawrd-btn">
-            <i class="fa fa-step-forward"></i>
-        </button>
-    </div>
-    <div class="volume">
-        <button class="volume-btns" id="volume-low">
+        <div class="timer">
+            <p id="cuurent-time">0:00</p>
+            <p id="max-time">0:00</p>
+        </div>
+        <div class="controls">
+            <div class="mov-btns" id="backward">
+                <i class="fa fa-step-backward"></i>
+            </div>
+            <div class="play-btn">
+                <i class="fa fa-play"></i>
+            </div>
+            <div class="pause-btn">
+                <i class="fa fa-pause"></i>
+            </div>
+            <div class="mov-btns" id="forward">
+                <i class="fa fa-step-forward"></i>
+            </div>
+        </div>
+        <div class="volume-info hidden">
+            <div class="vol-info">50%</div>
+            <i id="play" class="fa fa-play"></i>
+        </div>
+        <div class="volume">
             <i class="fa fa-volume-mute"></i>
-        </button>
-        <div class="volume-bar">
-            <input type="range" id="volume-bar" min="0" max="100"/>
-        </div>
-        <button class="volume-btns" id="volume-high">
+            <div class="range">
+                <input type="range" class="volume-bar" name="Volume" id="volume" max="100" min="0" value="50" />
+            </div>
             <i class="fa fa-volume-high"></i>
-        </button>
+        </div>
     </div>
-   </div>
-   <div class="upload-box">
-    <input type="file" accept="audio/*" id="thefile"/>
-    <img src="./img/upload-icon.svg" id="upload-btn" alt="upload-btn.svg" />
     <br>
-    <p>
-      Click here to browse
-      <br>
-       audio files to play 
-    </p>
-  </div>
-  <br>
-  <br>
-  <div class="link">
-    <div class="input">
-        <input type="url" id="field" class="field" placeholder="Enter link to the audio file here" required/>
-        <button id="btn" class="linker">
-            <i class="fa fa-play"></i>
-            Play It
-        </button>
-    </div>
-</div>
-<br>
-<br>
+    <!--<div class="upload-box">
+        <img src="./img/upload-icon.svg" class="img"/>
+        <br>
+        <p>
+            Click here to upload audio files to play
+        </p>
+    </div>-->
     <script src="./js/script.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/images.js"></script>
 </body>
 </html>
