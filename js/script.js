@@ -37,7 +37,7 @@ const inputAudioLinkBackground1 = document.querySelector(".input-link");
 
 document.addEventListener("keydown",(e) => {
     if(e.keyCode === 13){
-        if(audioFile.files.length == 0){
+        if(audioFile.value.length == 0){
             alert("Please select an Audio Track First");
             audioFile.click();
         }
@@ -67,7 +67,7 @@ document.addEventListener("keydown",(e) => {
 
 container.addEventListener("contextmenu",(e) => {
     e.preventDefault();
-    if(audioFile.files.length == 0){
+    if(audioFile.value.length == 0){
         alert("Please select an Audio Track First");
         audioFile.click();
     }
@@ -174,7 +174,7 @@ uploadBtn.addEventListener("click",(e) => {
 })
 */
 playBtn.addEventListener("click",(e) => {
-    if(audioFile.files.length == 0l){
+    if(audioFile.value.length == 0l){
         alert("Please Select an Audio file first!");
         audioFile.click();
     }
