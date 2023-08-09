@@ -37,7 +37,7 @@ const inputAudioLinkBackground1 = document.querySelector(".input-link");
 
 document.addEventListener("keydown",(e) => {
     if(e.keyCode === 13){
-        if(audioFile.value.length == 0){
+        if(audioFile.value === ""|audioFile. value == null){
             alert("Please select an Audio Track First");
             audioFile.click();
         }
@@ -67,7 +67,7 @@ document.addEventListener("keydown",(e) => {
 
 container.addEventListener("contextmenu",(e) => {
     e.preventDefault();
-    if(audioFile.value.length == 0){
+    if(audioFile.value === ""|audioFile. value == null){
         alert("Please select an Audio Track First");
         audioFile.click();
     }
