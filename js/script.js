@@ -1,158 +1,85 @@
-const audio = document.querySelector("#audio");
+const playBtn = document.querySelector(".play");
+const pauseBtn = document.querySelector(".pause");
 
-const playBtn = document.querySelector(".play-btn");
-const pauseBtn = document.querySelector(".pause-btn");
+const forwardBtn = document.querySelector(".forward");
+const backwardBtn = document.querySelector(".backward");
 
-const forwardBtn = document.querySelector("#forward");
-const backwardBtn = document.querySelector("#backward");
+const progressBar = document.querySelector(".fluid");
+const progressArea = document.querySelector(".progress-bar");
 
-const volumeRange = document.querySelector(".volume-bar");
-const volumeInfo = document.querySelector(".vol-info");
-const volumeInfoParent = document.querySelector(".volume-info");
+const currentTiming = document.querySelector("#current");
+const endTiming = document.querySelector("#end");
 
-const progressArea = document.querySelector(".progress-area");
-const progressBar = document.querySelector(".progress-bar");
+const audio = document.querySelector(".audio");
 
-const audioFile = document.querySelector("#file");
-//const uploadBox = document.querySelector(".upload-box");
+const audioName = document.querySelector("#file-name");
 
-const time = document.querySelector("#cuurent-time");
-const maxTime = document.querySelector("#max-time");
+const audioFileInput = document.querySelector("#thefile");
 
-const filename = document.querySelector("#name");
+const welcomeBg = document.querySelector(".welcome-bg");
 
-const uploadBtn = document.querySelector("#btn");
+const changeTrackBtn = document.querySelector(".change");
 
-const navList1 = document.querySelector(".list");
+const uploadAnotherTrackBtn = document.querySelector(".up");
 
-const crossLinkPlayBtn = document.querySelector(".submit");
-const crossLinkAudioInput = document.querySelector(".field");
-const forms = document.querySelector("#form");
+const volumeInput = document.querySelector("#volume");
+const volumeLevel = document.querySelector("#lvl");
 
-const container = document.querySelector(".container");
+const audioLinkerButton = document.getElementById("linker-btn");
+const audioLinkerInput = document.getElementById("url-linker");
+const audioLinkerBg1 = document.querySelector("#aud-bg");
 
-const inputAudioLinkBackground1 = document.querySelector(".input-link");
+const fetchReqUrlInput = document.querySelector("#req-url");
+const fetchReqSendBtn = document.querySelector("#req-btn");
+const reqStatus = document.querySelector(".status");
 
+const uploadBtn = document.querySelector(".upload-btn");
 
+audioLinkerButton.addEventListener("click",(e) => {
+    const fieldItem = audioLinkerInput.value.substring(audioLinkerInput.value.lastIndexOf("/") + 1);
 
-document.addEventListener("keydown",(e) => {
-    if(e.keyCode === 13){
-        if(audioFile.value === ""|audioFile. value == null){
-            alert("Please select an Audio Track First");
-            audioFile.click();
-        }
-        else{
-            if(playBtn.style.display == 'flex'){
-                if(e.keyCode === 13){
-                    audio.play();
-                    pauseBtn.style.display = 'flex';
-                    playBtn.style.display = 'none';
-                }
-            }
-            else{
-                if(playBtn.style.display == 'none'){
-                    if(e.keyCode === 13){
-                        audio.pause();
-                        pauseBtn.style.display = 'none';
-                        playBtn.style.display = 'flex';
-                    }
-                }
-            }
-        }
+    if(document.getElementById("url-linker").value.length < 4){
+        alert("Please enter a valid url")
     }
     else{
-        console.log(e);
-    }
-})
-
-container.addEventListener("contextmenu",(e) => {
-    e.preventDefault();
-    if(audioFile.value === ""|audioFile. value == null){
-        alert("Please select an Audio Track First");
-        audioFile.click();
-    }
-    else{
-        console.log(e)
-        /*if(playBtn.style.display == 'flex'){
-            if(e.keyCode === 13){
-                audio.play();
-                pauseBtn.style.display = 'flex';
-                playBtn.style.display = 'none';
-            }
-        }
-        else{
-            if(playBtn.style.display == 'none'){
-                if(e.keyCode === 13){
-                    audio.pause();
-                    pauseBtn.style.display = 'none';
-                    playBtn.style.display = 'flex';
-                }
-            }
-        }*/
-    }
-})
-
-
-forms.addEventListener("submit",(e) => {
-    e.preventDefault();
-    const fieldItem = crossLinkAudioInput.value.substring(crossLinkAudioInput.value.lastIndexOf("/") + 1);
-    
-    if (crossLinkAudioInput.value === ''| crossLinkAudioInput.value == null){
-        filename.innerText = "Select a Track First";
-        maxTime.innerText = '0:00';
-        alert("Please enter a proper url");
-    }
-    else{
-        audio.src = `${crossLinkAudioInput.value}`;
-        playBtn.style.display = 'none';
-        pauseBtn.style.display = 'flex';
+        audio.src = `${audioLinkerInput.value}`;
+        audioLinkerBg1.classList.add("hide");
+        audioName.innerText = fieldItem;
         audio.load();
         audio.play();
-        filename.innerHTML = "<Marquee>" + fieldItem + "</Marquee>";
-        setInterval(function(){
-            var min = Math.floor(audio.duration / 60);
-            var sec = Math.floor(audio.duration % 60);
-            if (sec < 10) {
-                sec = '0' + String(sec);
-            }
-            if(min==NaN){
-                endtime.innerHTML = '0';
-            }
-            maxTime.isNaN = function(){}
-            maxTime.innerHTML = min + ':' + sec;
-        },10);
     }
 })
 
-crossLinkPlayBtn.addEventListener("click",function(e){
-    e.preventDefault();
-    const fieldItem = crossLinkAudioInput.value.substring(crossLinkAudioInput.value.lastIndexOf("/") + 1);
-    
-    if (crossLinkAudioInput.value === ''| crossLinkAudioInput.value == null){
-        filename.innerText = "Select a Track First";
-        maxTime.innerText = '0:00';
-        alert("Please enter a proper url")
+
+uploadBtn.addEventListener("click",(e) => {
+    audioFileInput.click();
+    welcomeBg.classList.add("hide");
+})
+
+uploadAnotherTrackBtn.addEventListener("click",(e) => {
+    audioFileInput.click();
+})
+
+changeTrackBtn.addEventListener("click",(e) => {
+    audioFileInput.click();
+})
+
+playBtn.addEventListener("click",(e) => {
+    if(audioFileInput.files.length == 0){
+        alert("Please select an audio file to play!");
+        welcomeBg.classList.remove("hide");
     }
     else{
-        audio.src = `${crossLinkAudioInput.value}`;
         playBtn.style.display = 'none';
         pauseBtn.style.display = 'flex';
-        audio.load();
         audio.play();
-        filename.innerHTML = "<Marquee>" + fieldItem + "</Marquee>";
-        setInterval(function(){
-            var min = Math.floor(audio.duration / 60);
-            var sec = Math.floor(audio.duration % 60);
-            if (sec < 10) {
-                sec = '0' + String(sec);
-            }
-            if(min==NaN){
-                endtime.innerHTML = '0';
-            }
-            maxTime.isNaN = function(){}
-            maxTime.innerHTML = min + ':' + sec;
-        },10);
     }
+})
+
+pauseBtn.addEventListener("click",(e) => {
+    playBtn.style.display = 'flex';
+    pauseBtn.style.display = 'none';
+    audio.pause();
 })
 
 progressArea.addEventListener("click",(e) => {
@@ -165,25 +92,33 @@ progressArea.addEventListener("click",(e) => {
     audio.play();
 })
 
-uploadBtn.addEventListener("click",(e) => {
-    audioFile.click();
-})
 
-/*uploadBox.addEventListener("click",(e) => {
-    audioFile.click();
-})
-*/
-playBtn.addEventListener("click",(e) => {
-    if(audioFile.value.length == 0l){
-        alert("Please Select an Audio file first!");
-        audioFile.click();
-    }
-    else{
-        playBtn.style.display = 'none';
-        pauseBtn.style.display = 'flex';
-        audio.play();
-    }
-})
+
+audioFileInput.onchange = function(){
+    var files = this.files;
+    audio.src = URL.createObjectURL(files[0]);
+    audio.load();
+    audio.play();
+    playBtn.style.display = 'none';
+    pauseBtn.style.display = 'flex';
+    var name = this.files[0].name;
+    audioName.innerText = name;
+
+    setInterval(() => {
+        var min = Math.floor(audio.duration / 60);
+        var sec = Math.floor(audio.duration % 60);
+
+        if (sec < 10) {
+            sec = '0' + String(sec);
+        }
+        if(min==NaN){
+            endTiming.innerHTML = '0';
+        }
+        endTiming.isNaN = function(){}
+        endTiming.innerHTML = min + ':' + sec;
+    }, 10);
+}
+
 
 setInterval(function(){
     var mins = Math.floor(audio.currentTime / 60);
@@ -191,7 +126,7 @@ setInterval(function(){
     if (secs < 10) {
         secs = '0' + String(secs);
     }
-    time.innerHTML = mins + ':' + secs;
+    currentTiming.innerHTML = mins + ':' + secs;
     const duration = audio.duration;
     const currentTime = audio.currentTime;
     const percent = (currentTime / duration)*100;
@@ -202,61 +137,73 @@ setInterval(function(){
     }
 },10);
 
-forwardBtn.onclick = function(e){
-    audio.currentTime +=5;
-}
-
-backwardBtn.onclick = function(){
-    audio.currentTime -=5;
-}
-
-pauseBtn.addEventListener("click",(e) => {
-    pauseBtn.style.display = 'none';
-    playBtn.style.display = 'flex';
-    audio.pause();
-})
-
-audioFile.onchange = function(e) {
-    var files = this.files;
-    audio.src = URL.createObjectURL(files[0]);
-    playBtn.style.display = 'none';
-    pauseBtn.style.display = 'flex';
-    audio.load();
-    audio.play();
-    navList1.style.right = '-100%';
-    var name = this.files[0].name;
-    filename.innerHTML = "<Marquee>" + name + "</Marquee>";
-    setInterval(function(){
-        var min = Math.floor(audio.duration / 60);
-        var sec = Math.floor(audio.duration % 60);
-        if (sec < 10) {
-            sec = '0' + String(sec);
-        }
-        if(min==NaN){
-            endtime.innerHTML = '0';
-        }
-        maxTime.isNaN = function(){}
-        maxTime.innerHTML = min + ':' + sec;
-    },10);
-}
-
-
-volumeRange.addEventListener("input",(e) => {
+volumeInput.addEventListener("input",(e) => {
+    volumeLevel.innerText = `${volumeInput.value}%`;
     audio.volume = e.currentTarget.value/100;
 })
 
-volumeRange.addEventListener("mouseover",(e) => {
-    volumeInfoParent.classList.remove("hidden");
+forwardBtn.onclick = function(){
+    if(audioFileInput.files.length == 0){
+        alert("Please choose an audio file first!");
+        audioFileInput.click();
+    }
+    else{
+        audio.currentTime +=5; 
+    }
+}
+
+backwardBtn.onclick = function(){
+    if(audioFileInput.files.length == 0){
+        alert("Please choose an audio file first!");
+        audioFileInput.click();
+    }
+    else{
+        audio.currentTime -=5;
+    }
+}
+
+
+fetchReqSendBtn.addEventListener("click",(e) => {
+    if(fetchReqUrlInput.value.length <= 4){
+        alert("Please enter a valid url!");
+    }
+    else{
+        reqStatus.classList.remove("green");
+        reqStatus.classList.remove("red");
+        reqStatus.classList.add("white");
+        reqStatus.innerText = 'Sending...';
+        setTimeout(() => {
+            fetchFile(fetchReqUrlInput.value);
+        }, 1500);
+    }
 })
 
-volumeRange.addEventListener("mouseout",(e) => {
-    volumeInfoParent.classList.add("hidden");
-})
-
-volumeRange.addEventListener("input",(e) => {
-    volumeInfo.innerText = `${volumeRange.value}%`;
-})
-
-volumeRange.onchange = function(e){
-    volumeInfo.innerText = `${volumeRange.value}%`;
+function fetchFile(url){
+    fetch(url)
+    .then(res => res.blob())
+    .then(file => {
+        var audioFile = URL.createObjectURL(file);
+        audio.src = `${audioFile}`;
+        audio.load();
+        audio.play();
+        const aTag = document.createElement("a");
+        aTag.href = audioFile;
+        aTag.download = url.replace(/^.*[\\\/]/, '');
+        document.body.appendChild(aTag);
+        aTag.click();
+        aTag.remove();
+        setTimeout(() => {
+            reqStatus.classList.add("green");
+            reqStatus.classList.remove("red");
+            reqStatus.classList.remove("white");
+            reqStatus.innerText = 'Request was successfull!'
+        }, 3000);
+    })
+    .catch((err) => {
+        console.error(err);
+        reqStatus.classList.remove("green");
+        reqStatus.classList.add("red");
+        reqStatus.classList.remove("white");
+        reqStatus.innerText = err;
+    })
 }

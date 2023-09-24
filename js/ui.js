@@ -1,86 +1,123 @@
-const hamburgerMenu = document.querySelector(".menu");
-const navList = document.querySelector(".list");
+const menuDot = document.querySelector(".menu-btn");
+const parentSettings = document.querySelector("#parent-bg")
+const settings = document.querySelector("#settings");
 const closeBtn = document.querySelector(".close");
+const listOpenerBtn = document.querySelector(".sel");
+const volumeBg = document.querySelector(".volume-control");
+const volumeBtn = document.querySelector(".volume");
+const volumeCard = document.querySelector(".volume-card");
+const doneBtn = document.querySelector(".custom-btn");
 
-const link = document.querySelector(".foot-bottom");
-const allLinks = document.querySelectorAll(".a-link");
-const underlineEffect = document.querySelector(".effect");
-const underlineEffect2 = document.querySelector(".effect1");
+const backDefault = document.querySelector("#back");
+const closeLinkerBtn = document.querySelector("#close-linker");
+const sendGetRequestBtn = document.querySelector("#fetch");
+const audioLinker = document.querySelector("#aud");
+const audioLinkerBg = document.querySelector("#aud-bg");
+const audioLinkerOpenerBtn = document.querySelector(".link");
+const defaultLinker = document.querySelector(".default");
+const opt = document.querySelector(".opt");
+const fetchTab = document.querySelector(".fetch");
+const statusBox = document.querySelector(".status");
 
-const typeAudioLinkBtn = document.querySelector("#type");
-const inputAudioLinkBackground = document.querySelector(".input-link");
-
-const closeBgBtn = document.querySelector(".close-bg");
-
-const bar1 = document.querySelector(".bar1");
-const bar2 = document.querySelector(".bar2");
-const bar3 = document.querySelector(".bar3");
-
-const informer = document.querySelector(".informer");
-
-const formsInput = document.querySelector(".field");
-const subBtn = document.querySelector(".submit");
-const crossOriginForms = document.querySelector("#form");
-
-formsInput.addEventListener("input",(e) => {
-    if(formsInput.value.length <= 5){
-        subBtn.style.opacity = '.55';
-        subBtn.style.pointerEvents = 'none';
-    }
-    else{
-        subBtn.style.pointerEvents = 'auto';
-        subBtn.style.opacity = '1';
-    }
+audioLinkerOpenerBtn.addEventListener("click",(e) => {
+    audioLinkerBg.classList.remove("hide");
+    settings.classList.add("bottom");
+    setTimeout(() => {
+        parentSettings.classList.add("hide");
+        audioLinker.classList.remove("top");
+        audioLinker.classList.remove("hide");
+    }, 500);
 })
 
-
-hamburgerMenu.addEventListener("mouseover",(e) => {
-    bar1.style.color = 'hsl(0, 0%, 80%)';
-    bar2.style.color = 'hsl(0, 0%, 80%)';
-    bar3.style.color = 'hsl(0, 0%, 80%)';
-    informer.classList.remove("hidden");
+closeLinkerBtn.addEventListener("click",(e) => {
+    audioLinker.classList.add("top");
+    audioLinker.classList.add("hide");
+    setTimeout(() => {
+        audioLinkerBg.classList.add("hide");
+    }, 500);
 })
 
-hamburgerMenu.addEventListener("mouseout",(e) => {
-    bar1.style.color = 'hsl(0, 0%, 100%)';
-    bar2.style.color = 'hsl(0, 0%, 100%)';
-    bar3.style.color = 'hsl(0, 0%, 100%)';
-    informer.classList.add("hidden");
+sendGetRequestBtn.addEventListener("click",(e) => {
+    defaultLinker.classList.add("left");
+    opt.classList.add("left");
+    closeLinkerBtn.style.display = 'none';
+    backDefault.style.display = 'block';
+    defaultLinker.classList.add("absolute");
+    sendGetRequestBtn.classList.add("left");
+    sendGetRequestBtn.classList.add("absolute");
+
+    fetchTab.classList.remove("left");
+    fetchTab.classList.remove("absolute");
+    statusBox.classList.remove("left");
+    statusBox.classList.remove("absolute");
+    setTimeout(() => {
+        defaultLinker.classList.add("hide");
+        opt.classList.add("hide");
+        sendGetRequestBtn.classList.add("hide");
+        opt.classList.add("absolute");
+        fetchTab.classList.remove("hide");
+        statusBox.classList.remove("hide");
+    }, 10);
 })
 
-closeBgBtn.addEventListener("click",(e) => {
-    inputAudioLinkBackground.classList.add("hidden");
+backDefault.addEventListener("click",(e) => {
+    defaultLinker.classList.remove("hide");
+    opt.classList.remove("hide");
+    sendGetRequestBtn.classList.remove("hide");
+    closeLinkerBtn.style.display = 'block';
+    backDefault.style.display = 'none';
+
+    
+    fetchTab.classList.add("hide");
+    statusBox.classList.add("hide");
+    setTimeout(() => {
+        defaultLinker.classList.remove("left");
+        opt.classList.remove("left");
+        sendGetRequestBtn.classList.remove("left");
+        sendGetRequestBtn.classList.remove("absolute");
+        opt.classList.remove("absolute");
+        defaultLinker.classList.remove("absolute");
+
+        fetchTab.classList.add("left");
+        fetchTab.classList.add("absolute");
+        statusBox.classList.add("left");
+        statusBox.classList.add("absolute");
+    }, 10);
 })
 
-typeAudioLinkBtn.addEventListener("click",(e) => {
-    e.preventDefault();
-    navList.style.right = '-100%';
-    inputAudioLinkBackground.classList.remove("hidden");
+volumeBtn.addEventListener("click",(e) => {
+    volumeBg.classList.remove("hide");
+    setTimeout(() => {
+        volumeCard.classList.remove("hide");
+        volumeCard.classList.remove("top");
+    }, 500);
 })
 
-
-allLinks.forEach(a => {
-    a.addEventListener("mouseover",(e) => {
-        underlineEffect2.style.width = '100%';
-    });
-    a.addEventListener("mouseout",(e) => {
-        underlineEffect2.style.width = '0';
-    })
+doneBtn.addEventListener("click",(e) => {
+    volumeCard.classList.add("top");
+    volumeCard.classList.add("hide");
+    setTimeout(() => {
+        volumeBg.classList.add("hide");
+    }, 500);
 })
 
-
-link.addEventListener("mouseover",(e) => {
-    underlineEffect.style.width = '100%';
+menuDot.addEventListener("click",(e) => {
+    parentSettings.classList.remove("hide");
+    setTimeout(() => {
+        settings.classList.remove("bottom");
+    }, 500);
 })
 
-link.addEventListener("mouseout",(e) => {
-    underlineEffect.style.width = '0';
-})
-
-hamburgerMenu.addEventListener("click",(e) => {
-    navList.style.right = '0';
+listOpenerBtn.addEventListener("click",(e) => {
+    parentSettings.classList.remove("hide");
+    setTimeout(() => {
+        settings.classList.remove("bottom");
+    }, 500);
 })
 
 closeBtn.addEventListener("click",(e) => {
-    navList.style.right = '-100%';
+    settings.classList.add("bottom");
+    setTimeout(() => {
+        parentSettings.classList.add("hide");
+    }, 500);
 })
