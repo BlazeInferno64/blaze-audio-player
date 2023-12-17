@@ -3,195 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blaze Audio Player | Stream & Listen to unlimited audios for free</title>
     <meta name="theme-color" content="black">
-    <link rel="stylesheet" href="./css/styles.css" />
+    <title>Blaze Audio Player</title>
+    <link rel="stylesheet" href="/css/style.css"/>
     <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon"/>
     <script src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2604597246009301"
     crossorigin="anonymous"></script>
 </head>
 <body>
-    <input type="file" hidden accept="audio/*" name="Audio File" id="thefile" class="fiel"/>
-    <div class="welcome-bg">
-        <div class="startup-guide">
-            <div class="startup-head">
-                <p>
-                  Welcome!
-                </p>
-            </div>
-            <div class="startup-content">
-                <p>
-                    You can play thousands of unlimited audios for free just click on the button below and choose your favourite audio track!
-                </p>
-                <button class="upload-btn">
-                    <i class="fa fa-cloud-upload"></i>  Select an audio file
-                </button>
+    <input type="file" accept="audio/*" name="file" id="file" class="file" hidden/>
+    <div class="player">
+        <div class="set-bg hide">
+            <div class="set-card hide down">
+                <div class="hd">
+                    <p>
+                        Settings
+                    </p>
+                    <span class="close">
+                        &times;
+                    </span>
+                </div>
+                <div class="act">
+                    <button id="pl">
+                        <i class="fa fa-link"></i>  Play Audio With Link
+                    </button>
+                    <button id="cq">
+                        <i class="fa fa-cloud-upload-alt"></i>  Change Audio Track
+                    </button>
+                    <button id="re">
+                        <i class="fa fa-warning"></i>  Report issues/bugs
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="app-card">
-        <div class="content">
-            <div class="app-header">
-                <div class="app-header-top">
-                    <div class="dots">
-                        <div class="dot1"></div>
-                        <div class="dot2"></div>
-                        <div class="dot3"></div>
-                    </div>
-                    <div class="menu-btn">
-                        <div class="btns"></div>
-                        <div class="btns"></div>
-                        <div class="btns"></div>
-                    </div>
-                </div>
+        <div class="header">
+            <p>
+                Blaze Audio Player
+            </p>
+        </div>
+        <div class="banner">
+            <img src="/img/bg.png" alt="" class="img">
+        </div>
+        <div class="info">
+            <div class="des">
+                <div class="bar"></div>
             </div>
-            <div class="title">
-                <p>
-                    Blaze Audio Player
-                </p>
-            </div>
-            <div class="banner">
-                <div class="outer">
-                    <i class="fa fa-music"></i>
-                </div>
-            </div>
-            <div class="track-name">
+            <div class="name">
                 <marquee>
-                    <p id="file-name">Select a track first</p>
+                    <p id="nm">
+                        No Audio Tracks Selected!
+                    </p>
                 </marquee>
             </div>
-            <div class="main">
-                <div class="progress-bar">
-                    <div class="fluid"></div>
-                    <audio controls hidden class="hide audio" src=""></audio>
-                </div>
-                <div class="timers">
-                    <p id="current">0:00</p>
-                    <p id="end">0:00</p>
-                </div>
-            </div>
-            <div class="controllers">
-                <button class="backward">
-                    <i class="fa fa-backward"></i>
-                </button>
-                <button class="play">
-                    <i class="fa fa-play"></i>
-                </button>
-                <button class="pause">
-                    <i class="fa fa-pause"></i>
-                </button>
-                <button class="forward">
-                    <i class="fa fa-forward"></i>
-                </button>
-            </div>
-            <div class="options">
-                <button class="sel">
-                    <i class="fa fa-list"></i>
-                </button>
-                <button class="up">
-                    <i class="fa fa-cloud-upload"></i>
-                </button>
-                <button class="volume">
-                    <i class="fa fa-volume-high"></i>
-                </button>
-            </div>
         </div>
-        <div class="bg hide" id="parent-bg">
-            <div class="parent">
-                <div class="actions-list bottom" id="settings">
-                    <ul>
-                        <div class="info">
-                            <p>
-                              <i class="fa fa-gear"></i>  Settings
-                            </p>
-                            <span class="close">
-                                &times;
-                            </span>
-                        </div>
-                        <hr class="next">
-                        <li class="change">
-                            <i class="fa fa-cloud-upload"></i>
-                            Change Audio Track
-                        </li>
-                        <li class="link">
-                            <i class="fa fa-play"></i>
-                            Play Audio With Link
-                        </li>
-                        <li class="report">
-                            <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">
-                            <i class="fa fa-warning"></i>    Report Issues</a>
-                        </li>
-                    </ul>
+        <div class="prog">
+            <audio src="#" class="audio" id="audio" hidden></audio>
+            <div class="prog-bar" id="pr">
+                <div class="fluid">
                 </div>
             </div>
         </div>
-    </div>
-    <div class="volume-control hide">
-        <div class="volume-card hide top">
-            <span>
-                Volume Settings
-            </span>
-            <div class="mains">
-                <i class="fa fa-volume-mute"></i>
-                <input type="range" max="100" min="0" class="volume" id="volume" />
+        <div class="timers">
+            <p class="ct">0:00</p>
+            <p class="et">0:00</p>
+        </div>
+        <div class="controls">
+            <button class="br"><i class="fa fa-backward-fast"></i></button>
+            <button class="play"><i class="fa fa-play"></i></button>
+            <button class="pause"><i class="fa fa-pause"></i></button>
+            <button class="fr"><i class="fa fa-forward-fast"></i></button>
+        </div>
+        <div class="foot">
+            <button id="chn">
+                <i class="fa fa-cloud-upload"></i>
+            </button>
+            <button id="vol-btn">
                 <i class="fa fa-volume-high"></i>
-            </div>
-            <div class="done">
-                <p id="lvl">50%</p>
-                <button class="custom-btn">Done!</button>
-            </div>
+            </button>
+            <button id="set">
+                <i class="fa fa-gear"></i>
+            </button>
         </div>
     </div>
-    <div class="audio-linker-bg hide" id="aud-bg">
-        <div class="audio-linker-card"  id="aud">
-            <div class="audio-linker-head">
+    <div class="wel-bg hide">
+        <div class="wel-card hide down">
+            <div class="head">
                 <p>
-                    Audio File Linker
+                    Welcome!
                 </p>
             </div>
-            <div class="audio-linker-content">
-                <p id="back"> <i class="fa fa-arrow-left"></i>  back</p>
-                <p id="close-linker"> <i class="fa fa-arrow-left"></i>  back</p>
-                <div class="default">
-                    <label for="url-input" class="label">
-                        Type Your Url below 
-                    </label>
-                    <div class="input-part">
-                        <input type="text" class="url-input" id="url-linker" placeholder="Type audio url here..." />
-                        <button class="submit-btn" id="linker-btn">
-                          <i class="fa fa-play"></i>   Play Audio
-                        </button>
-                    </div>
-                </div>
-                <div class="opt">
-                    <hr>
-                    <span class="or">Or</span>
-                    <hr>
-                </div>
-                <span class="fetch-opener" id="fetch">
-                    Make a get request instead  <i class="fa fa-arrow-right-long"></i>
-                </span>
-                <div class="fetch  hide absolute left">
-                    <label for="url-input" class="label">
-                        URL for GET request
-                    </label>
-                    <div class="input-part">
-                        <input type="text" class="url-input" id="req-url" placeholder="Type url here..." />
-                        <button class="submit-btn" id="req-btn">
-                          <i class="fa fa-send"></i>   Send Request
-                        </button>
-                    </div>
-                    <div class="status  hide absolute left">
-                        <p>
-                            Haven't send yet!
-                        </p>
-                    </div>
-                </div>
+            <div class="wel">
+                <p>
+                    Hello there! select an audio file to get started 👇
+                </p>
+                <button class="choose">
+                    <i class="fa fa-cloud-upload-alt"></i>  Browse Audio Files
+                </button>
             </div>
         </div>
     </div>
-    <script defer src="./js/script.js"></script>
-    <script defer src="./js/ui.js"></script>
+    <div class="vol-bg hide">
+        <div class="vol-card hide down">
+            <div class="head">
+                <p>
+                    Volume Settings!
+                </p>
+            </div>
+            <div class="vol">
+                <div class="bg">
+                    <i class="fa fa-volume-mute"></i>
+                    <input type="range" name="Volume" id="vol" class="vol-input" />
+                    <i class="fa fa-volume-high"></i>
+                </div>
+                <span id="lbl">
+                </span>
+                <button class="done">
+                   <i class="fa fa-check"></i> Done
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="li-bg hide">
+        <div class="li-card hide down">
+            <div class="li-hd">
+                <p>
+                    Audio Player
+                </p>
+                <close class="cl">
+                    &times;
+                </close>
+            </div>
+            <div class="li-input">
+                <p>
+                    Enter the link of the audio file below to play it
+                </p>
+                <input type="text" class="in" placeholder="Enter your URL here..."/>
+                <button class="cn none">
+                    <i class="fa fa-play-circle"></i>  Play it
+                </button>
+            </div>
+        </div>
+    </div>
+    <script defer src="js/player.js"></script>
 </body>
 </html>
