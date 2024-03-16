@@ -1,6 +1,6 @@
 # Blaze-Audio-Player
 About
-Listen to free and unlimited audios using Blaze Audio Player
+A free open source web audio player with advanced features directly accessible from your browser!
 |--------------|
 # View it here-
 
