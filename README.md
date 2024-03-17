@@ -4,10 +4,10 @@ A free open source web audio player with advanced features directly accessible f
 |--------------|
 # View it here-
 
-<a href="https://blazeinferno64.github.io/blaze-audio-player/">
+<a href="https://blaze-audio-player.onrender.com/">
 
 ```
-https://blazeinferno64.github.io/blaze-audio-player/
+https://blaze-audio-player.onrender.com/
 ```
 </a>
 
