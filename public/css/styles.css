@@ -459,7 +459,7 @@ input[type="range"]{
     justify-content: center;
     flex-direction: column;   
 }
-.vol-info::before{
+/*.vol-info::before{
     content: '';
     position: absolute;
     z-index: 3;
@@ -469,6 +469,17 @@ input[type="range"]{
     border-left: solid 20px transparent;
     border-right: solid 20px transparent;
     border-bottom: solid 20px #111;
+}*/
+.vol-info::after{
+    z-index: 7;
+    content: '';
+    position: absolute;
+    transition: all .3s ease-in-out;
+    top: -20px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid #111;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
 }
 .done{
     padding: .5rem 1rem;
