@@ -31,7 +31,9 @@ const fetchAudioFile = async (url) => {
         audioFileSelected = true;
         artistName.innerText = 'Unknown';
         const lastExtension = trimLastPart(url);
-        if (lastExtension) return audioTrackName.innerText = trimFileName(lastExtension);
+        if (lastExtension) {
+            audioTrackName.innerText = trimFileName(lastExtension);
+        }
         audioTrackName.innerText = 'Unknown Audio File';
         fetchResult.classList.remove("normal");
         fetchResult.classList.remove("err");
