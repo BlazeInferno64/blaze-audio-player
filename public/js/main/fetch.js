@@ -32,14 +32,22 @@ const fetchAudioFile = async (url) => {
         artistName.innerText = 'Unknown';
         const lastExtension = trimLastPart(url);
         if (lastExtension) {
-            audioTrackName.innerText = trimFileName(lastExtension);
+        audioTrackName.innerText = trimFileName(lastExtension);
+        //audioTrackName.innerText = 'Unknown Audio File';
+        fetchResult.classList.remove("normal");
+        fetchResult.classList.remove("err");
+        fetchResult.classList.add("ok");
+        fetchResult.innerText = 'Successfull';
+        return readMediaData(audioBlob);
         }
+        else {
         audioTrackName.innerText = 'Unknown Audio File';
         fetchResult.classList.remove("normal");
         fetchResult.classList.remove("err");
         fetchResult.classList.add("ok");
         fetchResult.innerText = 'Successfull';
         return readMediaData(audioBlob);
+        }
     } catch (error) {
         fetchResult.classList.remove("normal");
         fetchResult.classList.add("err");
