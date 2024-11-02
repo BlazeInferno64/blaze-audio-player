@@ -4,10 +4,10 @@ A free open source web audio player with advanced features directly accessible f
 |--------------|
 # View it here-
 
-<a href="https://blaze-audio-player.onrender.com/">
+<a href="https://blaze-audio-player.vercel.app/">
 
 ```
-https://blaze-audio-player.onrender.com/
+https://blaze-audio-player.vercel.app/
 ```
 </a>
 
