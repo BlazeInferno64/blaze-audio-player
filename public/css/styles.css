@@ -662,7 +662,7 @@ body{
     color: #fff;
 }
 .popup-bg .popup{
-    width: 400px;
+    width: 500px;
     height: 50px;
     transition: all .5s ease-in-out;
     background: rgba(30,30,30);
@@ -808,6 +808,8 @@ body{
     .app{
         width: 95%;
     }
+}
+@media (max-width: 500px) {
     .popup{
         width: 90%;
     }

@@ -141,6 +141,7 @@ audio.addEventListener("canplaythrough", async(e) => {
         closeSetCard();
         await audio.play();
         visualize();
+        closeWelcomeCard();
         setInterval(showCurrentTiming, 10);
         setInterval(updateTiming, 10);
     }
