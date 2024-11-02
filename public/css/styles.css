@@ -675,7 +675,7 @@ body{
     transition: all .5s ease-in-out;
 }
 .popup-bg .popup p{
-    font-size: 1.13rem;
+    font-size: 1rem;
 }
 .popup-bg .popup .popup-close{
     font-size: 1.5rem;
@@ -708,9 +708,9 @@ body{
     animation: open-app 1s ease-in-out;
 }
 .loader-bg{
-    height: 100%;
+    height: 100vh;
     width: 100%;
-    position: absolute;
+    position: fixed;
     z-index: 8;
     user-select: none;
     display: flex;
@@ -806,7 +806,7 @@ body{
 
 @media (max-width: 400px) {
     .app{
-        width: 95%;
+        width: 93%;
     }
 }
 @media (max-width: 500px) {
