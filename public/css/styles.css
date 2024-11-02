@@ -662,7 +662,7 @@ body{
     color: #fff;
 }
 .popup-bg .popup{
-    width: 90%;
+    width: 400px;
     height: 50px;
     transition: all .5s ease-in-out;
     background: rgba(30,30,30);
@@ -793,9 +793,22 @@ body{
         transform: rotate(360deg);
     }
 }
+@media (max-width: 250px) {
+    .vol-card{
+        width: 93%;
+    }
+}
+@media (max-width: 300px) {
+    .fetch-card,.wel-card{
+        width: 93%;
+    }
+}
 
 @media (max-width: 400px) {
     .app{
         width: 95%;
+    }
+    .popup{
+        width: 90%;
     }
 }
