@@ -38,7 +38,7 @@ const fetchAudioFile = async (url) => {
         fetchResult.classList.remove("err");
         fetchResult.classList.add("ok");
         fetchResult.innerText = 'Successfull';
-        return readMediaData(audioBlob);
+        return readMediaData(url);
         }
         else {
         audioTrackName.innerText = 'Unknown Audio File';
@@ -46,7 +46,7 @@ const fetchAudioFile = async (url) => {
         fetchResult.classList.remove("err");
         fetchResult.classList.add("ok");
         fetchResult.innerText = 'Successfull';
-        return readMediaData(audioBlob);
+        return readMediaData(url);
         }
     } catch (error) {
         fetchResult.classList.remove("normal");
