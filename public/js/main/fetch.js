@@ -37,16 +37,16 @@ const fetchAudioFile = async (url) => {
         fetchResult.classList.remove("normal");
         fetchResult.classList.remove("err");
         fetchResult.classList.add("ok");
-        fetchResult.innerText = 'Successfull';
-        return readMediaData(url);
+        fetchResult.innerText = 'Successfull!';
+        return readMediaData(audioBlob);
         }
         else {
         audioTrackName.innerText = 'Unknown Audio File';
         fetchResult.classList.remove("normal");
         fetchResult.classList.remove("err");
         fetchResult.classList.add("ok");
-        fetchResult.innerText = 'Successfull';
-        return readMediaData(url);
+        fetchResult.innerText = 'Successfull!';
+        return readMediaData(audioBlob);
         }
     } catch (error) {
         fetchResult.classList.remove("normal");
