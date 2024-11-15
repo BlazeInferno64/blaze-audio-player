@@ -116,7 +116,7 @@ const readMediaData = (file) => {
             return displayMetaData(tag,file);
         },
         onError: (error) => {
-            alert(`Error reading metadata: ${error.message}`);
+            alert(`There was an error while reading metadata of the selected audio file!\nIt might be due to the file being corrupted/damaged\nPlease try again with a fresh uncorrupted copy of the audio file\nIf you believe this is an bug/issue please report it!`);
         }
     });
 }
@@ -246,3 +246,13 @@ window.addEventListener("load", (e) => {
         }
     }, 70);
 })
+
+// Event listener for beforeunload to prevent unwanted page refresh/reload
+window.addEventListener("beforeunload", (e) => {
+    if (audioFileSelected) {
+        const confirmMessage = `You have an audio file selected. Are you sure you want to leave?`;
+        e.preventDefault(); // This line is optional but can be included for clarity
+        e.returnValue = confirmMessage; // Set the returnValue to the confirmation message
+        return confirmMessage; // Some browsers may require returning the message
+    }
+});

@@ -14,6 +14,9 @@
     margin: 0;
     box-sizing: border-box;
 }
+#dt{
+    display: none;
+}
 button,input,textarea{
     outline: none;
 }
