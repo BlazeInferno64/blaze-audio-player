@@ -64,7 +64,7 @@ const showCurrentTiming = () => {
 
     progressBarFluid.style.width = `${percentageDuration}%`;
 
-    if (audio.currentTime === audio.duration) return audio.pause();
+    //if (audio.currentTime === audio.duration) return audio.pause();
 }
 
 const trimFileName = (filename) => {
@@ -136,27 +136,49 @@ const getAudioFile = async (file, audioURL) => {
     }
 }
 
+let isUpdating = false; // Flag to control the animation loop
+
+const updateUI = () => {
+    // Update the current time and progress bar
+    showCurrentTiming();
+    
+    // Request the next frame
+    if (isUpdating) {
+        requestAnimationFrame(updateUI);
+    }
+};
+
+// You can also call this function when the audio is loaded
 audio.addEventListener("canplaythrough", async(e) => {
     if (audio.src) {
         closeSetCard();
         await audio.play();
         visualize();
         closeWelcomeCard();
-        setInterval(showCurrentTiming, 10);
-        setInterval(updateTiming, 10);
+        updateTiming(); // Initial call to set the max timer
     }
 })
+
+audio.addEventListener("timeupdate", showCurrentTiming);
 
 audio.addEventListener("play", (e) => {
     console.log('Audio is playing!');
     playBtn.style.display = 'none';
     pauseBtn.style.display = 'block';
+    isUpdating = true; // Set the flag to true
+    updateUI(); // Start the update loop
 })
 
 audio.addEventListener("pause", (e) => {
     console.log('Audio is pasued!');
     playBtn.style.display = 'block';
     pauseBtn.style.display = 'none';
+})
+
+// Ensure to stop the update loop when the audio ends
+audio.addEventListener("ended", (e) => {
+    isUpdating = false; // Stop updating when audio ends
+    return audio.pause();
 })
 
 playBtn.addEventListener("click", async(e) => {
@@ -174,17 +196,24 @@ fileInput.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const isAudio = file.type.startsWith('audio/');
-    if(!isAudio) {
+    if (!isAudio) {
         alert(`Please select a proper audio file!`);
-        return fileInput.value = '';
-    } else{
+        fileInput.value = ''; // Clear the file input
+        return;
+    } else {
         audioFileSelected = true;
-        const bloblURL = URL.createObjectURL(file);
-        await getAudioFile(file, bloblURL);
+        const blobURL = URL.createObjectURL(file); // Create a new blob URL
+
+        // Revoke the previous URL if it exists
         if (previousURL) {
             console.log(`Cleared previous object url!`);
-            return URL.revokeObjectURL(previousURL);
+            URL.revokeObjectURL(previousURL);
         }
+
+        // Set the previousURL to the new blob URL
+        previousURL = blobURL;
+
+        await getAudioFile(file, blobURL); // Load the new audio file
     }
 }
 
@@ -207,13 +236,6 @@ backwardBtn.addEventListener("click", (e) => {
     audio.currentTime -= 5;
 })
 
-progressBar.addEventListener("click", (e) => {
-    let progressWidth = progressBar.clientWidth;
-    let OffsetX = e.offsetX;
-    audio.currentTime = (OffsetX / progressWidth) * audio.duration;
-    audio.play();
-})
-
 volumeSlider.addEventListener("input", (e) => {
     volumeSliderText.innerText = `${volumeSlider.value}%`
     audio.volume = e.currentTarget.value / 100;
@@ -228,6 +250,23 @@ window.addEventListener("DOMContentLoaded", (e) => {
     volumeSliderText.innerText = `${volumeSlider.value}%`;
 })
 
+// Event listener for beforeunload to prevent unwanted page refresh/reload
+window.addEventListener("beforeunload", (e) => {
+    if (audioFileSelected) {
+        const confirmMessage = `You have an audio file selected. Are you sure you want to leave?`;
+        e.preventDefault(); // This line is optional but can be included for clarity
+        e.returnValue = confirmMessage; // Set the returnValue to the confirmation message
+        return confirmMessage; // Some browsers may require returning the message
+    }
+
+    // Cleanup: Revoke the previous object URL if it exists
+    if (previousURL) {
+        URL.revokeObjectURL(previousURL);
+    }
+});
+
+let appReady = false;
+
 window.addEventListener("load", (e) => {
     let count = 0;
     let counter = setInterval(() => {
@@ -239,20 +278,107 @@ window.addEventListener("load", (e) => {
                 loaderBg.classList.add("hide");
                 app.classList.add("open");
                 appMenu.classList.add("load-app");
+                appReady = true; // Set appReady to true after loading is complete
             }, 1000);
             return setTimeout(() => {
-                return openWelcomeCard();
+                openWelcomeCard();
             }, 1500);
         }
     }, 70);
 })
 
-// Event listener for beforeunload to prevent unwanted page refresh/reload
-window.addEventListener("beforeunload", (e) => {
-    if (audioFileSelected) {
-        const confirmMessage = `You have an audio file selected. Are you sure you want to leave?`;
-        e.preventDefault(); // This line is optional but can be included for clarity
-        e.returnValue = confirmMessage; // Set the returnValue to the confirmation message
-        return confirmMessage; // Some browsers may require returning the message
+window.addEventListener("dragover", (e) => {
+    if (appReady) return e.preventDefault();
+})
+
+window.addEventListener("dragleave", (e) => {
+    if (appReady) return e.preventDefault();
+})
+
+window.addEventListener("drop", (e) => {
+    if (appReady) return handleDrop(e);
+})
+
+const handleDrop = async (event) => {
+    try {
+        event.preventDefault();
+        const droppedFile = event.dataTransfer.files[0];
+    
+        if (!droppedFile.type.startsWith("audio/")) {
+            return alert("The selected file isn't a valid audio file!");
+        }
+        if (droppedFile) {
+            const blobURL = URL.createObjectURL(droppedFile); // Use droppedFile here
+            audioFileSelected = true;
+            await getAudioFile(droppedFile, blobURL); // Pass droppedFile instead of file
+            if (previousURL) {
+                console.log(`Cleared previous object url!`);
+                return URL.revokeObjectURL(previousURL);
+            }
+            previousURL = blobURL; // Store the current blob URL for future revocation
+        }
+    } catch (error) {
+        console.error(error);
+        return alert(`${error}`);
     }
+};
+
+let isDragging = false; // Flag to track if the user is dragging the progress bar
+
+// Function to handle mouse down event
+progressBar.addEventListener("mousedown", (e) => {
+    e.preventDefault(); // Prevent default click behavior
+    isDragging = true; // Set dragging flag to true
+    updateCurrentTime(e); // Update the current time immediately
+});
+
+// Function to handle mouse move event
+window.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+        updateCurrentTime(e); // Update the current time while dragging
+    }
+});
+
+// Function to handle mouse up event
+window.addEventListener("mouseup", () => {
+    isDragging = false; // Reset dragging flag
+});
+
+// Function to update the current time based on mouse position
+const updateCurrentTime = (e) => {
+    const progressWidth = progressBar.clientWidth; // Get the width of the progress bar
+    const offsetX = e.clientX - progressBar.getBoundingClientRect().left; // Get the mouse position relative to the progress bar
+    const percentage = offsetX / progressWidth; // Calculate the percentage of the progress bar
+    audio.currentTime = percentage * audio.duration; // Update the audio's current time
+    audio.play(); // Optionally play the audio when seeking
+};
+
+// Existing progress bar click event
+progressBar.addEventListener("click", (e) => {
+    if (!isDragging) { // Only update if not dragging
+        updateCurrentTime(e); // Update the current time on click
+    }
+    let progressWidth = progressBar.clientWidth;
+    let OffsetX = e.offsetX;
+    audio.currentTime = (OffsetX / progressWidth) * audio.duration;
+    audio.play();
+})
+
+// Function to handle touch start event
+progressBar.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Prevent default touch behavior
+    isDragging = true; // Set dragging flag to true
+    updateCurrentTime(e.touches[0]); // Update the current time immediately
+});
+
+// Function to handle touch move event
+window.addEventListener("touchmove", (e) => {
+    if (isDragging) {
+        updateCurrentTime(e.touches[0]); // Update the current time while dragging
+    }
+});
+
+// Function to handle touch end event
+window.addEventListener("touchend", () => {
+    isDragging = false; // Reset dragging flag
 });
