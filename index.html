@@ -28,7 +28,7 @@
     <div class="app">
         <div class="bg">
             <div class="head">
-                <p>
+                <p title="Blaze Audio Player">
                     Blaze Audio Player
                 </p>
             </div>
@@ -42,53 +42,53 @@
                     </div>
                     <div class="audio-details">
                         <marquee>
-                            <p class="track-name">
+                            <p class="track-name" title="Name of the song">
                                 No audio track selected
                             </p>
                         </marquee>
-                        <p class="artist">
+                        <p title="The artist of the song" class="artist">
                             No track selected
                         </p>
                     </div>
                 </div>
                 <div class="audio-progress">
-                    <div class="progress-bar">
+                    <div class="progress-bar" title="Progress Bar of the current audio track">
                         <div class="fluid"></div>
                     </div>
                     <div class="timers">
-                        <p class="ct">
+                        <p class="ct" title="Current audio duration">
                             0:00
                         </p>
-                        <p class="mt">
+                        <p class="mt" title="Max audio duration">
                             0:00
                         </p>
                     </div>
                 </div>
                 <div class="controls">
-                    <button class="backward">
+                    <button class="backward" title="Backward">
                         <i class="fa fa-backward"></i>
                     </button>
-                    <button class="pause">
+                    <button class="pause" title="Pause">
                         <i class="fa fa-pause"></i>
                     </button>
-                    <button class="play">
+                    <button class="play" title="Play">
                         <i class="fa fa-play"></i>
                     </button>
-                    <button class="forward">
+                    <button class="forward" title="Forward">
                         <i class="fa fa-forward"></i>
                     </button>
                 </div>
                 <div class="options">
-                    <li id="settings-btn">
+                    <li id="settings-btn" title="App settings">
                         <i class="fa fa-gear"></i>
                     </li>
-                    <li id="vol-btn">
+                    <li id="vol-btn" title="Volume controls">
                         <i class="fa fa-volume-high"></i>
                     </li>
-                    <li id="change">
+                    <li id="change" title="Change audio file">
                         <i class="fa fa-cloud-upload"></i>
                     </li>
-                    <li id="link-btn">
+                    <li id="link-btn" title="Link audio file">
                         <i class="fa fa-link"></i>
                     </li>
                 </div>
@@ -106,14 +106,14 @@
                     </div>
                     <div class="vol">
                         <i class="fa fa-volume-mute"></i>
-                        <input type="range" name="volume" id="vol-slider">
+                        <input title="Adjust volume using this slider" type="range" name="volume" id="vol-slider">
                         <i class="fa fa-volume-high"></i>
                     </div>
                     <div class="vol-info">
-                        <p class="vol-info-text"></p>
+                        <p title="Volume level" class="vol-info-text"></p>
                     </div>
                     <div class="done-bg">
-                        <button class="done">
+                        <button class="done" title="Done :)">
                             <i class="fa fa-check"></i> Done
                         </button>
                     </div>
@@ -134,16 +134,16 @@
                     </div>
                     <div class="set-main">
                         <ul>
-                            <li class="ch-set">
+                            <li class="ch-set" title="Change audio file">
                                 <i class="fa fa-cloud-upload"></i> Change audio
                             </li>
-                            <li class="set-vol">
+                            <li class="set-vol" title="Volume controls">
                                 <i class="fa fa-volume-high"></i> Volume settings
                             </li>
-                            <li class="link-set">
+                            <li class="link-set" title="Link audio file">
                                 <i class="fa fa-link"></i> Play audio with link
                             </li>
-                            <li class="git-set">
+                            <li class="git-set" title="Learn more about Blaze Audio Player">
                                 <i class="fa fa-github"></i> <a title="Project Repo" href="https://github.com/blazeinferno64/blaze-audio-player">Blaze Audio Player</a>
                             </li>
                         </ul>
@@ -175,16 +175,15 @@
                         <label for="url-input">
                             Fetch URL:
                         </label>
-                        <input type="text" id="url-input" class="fetch-url" name="URL-Fetch" placeholder="URL for fetching..."
-                            required />
+                        <input title="Audio file URL goes here" type="text" id="url-input" class="fetch-url" name="URL-Fetch" placeholder="URL for fetching..." required />
                     </div>
-                    <div class="result">
+                    <div class="result" title="Status of the response">
                         <p>
                             Request not sent
                         </p>
                     </div>
                     <div class="btn-bg">
-                        <button class="fetch-btn">
+                        <button class="fetch-btn" title="Start fetching audio file">
                             <i class="fa fa-send"></i> Fetch
                         </button>
                     </div>
@@ -195,8 +194,8 @@
                         </p>
                         <span class="bar"></span>
                     </div>
-                    <div class="or-txt" id="li-or">
-                        <a href="https://github.com/blazeinferno64/blaze-audio-player">Facing any issues/bugs? Report it here</a>
+                    <div class="or-txt" id="li-or" title="Blaze Audio Player issue tracker">
+                        <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any issues/bugs? Report it here</a>
                     </div>
                 </div>
             </div>

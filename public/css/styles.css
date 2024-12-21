@@ -6,6 +6,8 @@
     --ff: "Poppins", sans-serif;
     --gradient: linear-gradient(90deg, rgb(5, 215, 138), 74%, rgb(0, 213, 255));
     --second-gradient: linear-gradient(90deg,#ff1b6b,74%,#45caff);
+    --third-gradient: linear-gradient(135deg, #6a5acd, #00bfff); /* Purple bluish gradient */
+    --fourth-gradient: linear-gradient(135deg, #00ff7f, #00bfff); /* Green bluish gradient */
 }
 *,
 *::after,
@@ -46,7 +48,7 @@ body{
     background: rgba(30,30,30);
     user-select: none;
     color: #fff;
-    width: 400px;
+    width: 450px;
     height: fit-content;
     border-radius: .3rem;
     box-shadow: 0 10px 20px 0 rgba(0,0,0,.6);
@@ -192,7 +194,19 @@ body{
     pointer-events: auto;
     transform: translateY(-50%);
     background: inherit;
-    transition: opacity .2s ease-in-out;
+    transition: opacity .2s ease-in-out, height .2s ease-in-out, width .2s ease-in-out;
+}
+.app .main .audio-progress .progress-bar .fluid:hover::before{
+    width: 18px;
+    height: 18px;
+}
+.app .main .audio-progress .progress-bar .fluid:active::before{
+    width: 18px;
+    height: 18px;
+}
+.app .main .audio-progress .progress-bar:active .fluid::before{
+    width: 18px;
+    height: 18px;   
 }
 .app .main .audio-progress .timers{
     width: 100%;
@@ -641,7 +655,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: .95rem;
+    font-size: .92rem;
     text-align: center;
     cursor: pointer;
     margin-bottom: .5rem;
@@ -807,7 +821,7 @@ body{
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
     .app{
         width: 93%;
     }
