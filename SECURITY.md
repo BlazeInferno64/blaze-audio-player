@@ -2,9 +2,9 @@
 
 ## Supported Versions
 
-`
-The Latest Versions are now eligible for getting upgraded to a newer version which may change the whole repository so far that decision I will Do a poll which would help me decide about it  .
-`
+
+The latest version of the web app would get updated in future which in turn might change the whole working functionality of the web app. To help decide this I would make a community post in the discussions tab so make sure to keep an eye on it.
+
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -15,45 +15,15 @@ The Latest Versions are now eligible for getting upgraded to a newer version whi
 
 ## Reporting a Vulnerability
 
-`
-You all are totally free to report any vulnerability found in any time of the day 
-for that mail me at here -
-`
 
-<a href="mailto:blazinginfernodragon123@gmail.com"> 
+If any vulnerabilities/issues/bugs are found please open up an issue in this repo
 
-```
-Blaizing Inferno Dragon 123@gmail.com
-```
-</a>
 
-# More details 
-`
-You all can expect to get a update within 3-4 days or one week later if vulnerability 
-is reported so leave tension free and expect for a better repository in the next update 
-of this branch. You all are free to mail any bugs/issues also found I would fix them soon
-this is an open source project so thats why it depends on your opinion 
-Whether you like it or not or have any feedback or any issues/ vulner
-abilities/bugs feel free to mail me here at the email address give below at any time of the day i would try my best to  improve it
-As soon as possible -
-`
+# Update deployment
 
-<a href="mailto:blazinginfernodragon123@gmail.com"> 
+Expect to get an update of blaze audio player within 3-4 days of vulnerabilities/issues/bugs being reported. I would definitely try my best to patch it and deploy it as soon as possible meanwhile feel free to look around the source code which powers the web app :)
 
-```
-Blaizing Inferno Dragon 123@gmail.com
-```
-</a>
 
-# Check Readme.md for more info or click down in that box
-<a href="./README.md"> 
-
-```
-Check out README.md for more info.  
-```
-</a>
-
-# Thanks 
 `
 Thanks for reading it 
 Have a nice day :)
