@@ -54,7 +54,7 @@ const visualize = () => {
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
     
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = dataArray[i];
+            barHeight = dataArray[i] / 2;
     
             // Smoothly transition bar heights
             barHeights[i] += (barHeight - barHeights[i]) * 0.1; // Adjust the factor for speed of animation
