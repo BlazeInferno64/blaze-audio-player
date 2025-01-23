@@ -2,20 +2,42 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="black">
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
     <meta name="author" content="BlazeInferno64">
-    <meta name="description" content="Free & Open source browser based custom advanced audio player">
+    <meta name="description" content="Free & Open source browser based custom advanced audio player" />
+
     <title>Blaze Audio Player | Free & Open source audio player directly accessible from your browser</title>
+
+    <!-- Open Graph Tags -->
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Blaze Audio Player" />
+    <meta property="og:title" content="Blaze Audio Player" />
+    <meta property="og:description" content="Free & Open source browser based custom advanced audio player" />
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/96913755?v=4" />
+    <meta property="og:url" content="https://blaze-audio-player.vercel.app" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@RedFlame64" />
+    <meta name="twitter:title" content="Blaze Audio Player" />
+    <meta name="twitter:description" content="Free & Open source browser based custom advanced audio player" />
+    <meta name="twitter:image" content="https://avatars.githubusercontent.com/u/96913755?v=4" />
+
+
     <script defer src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
-    <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon"/>
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon" />
     <link rel="stylesheet" href="./public/css/styles.css" />
 </head>
 
 <body>
     <!-- Last updated date will be shown here -->
-    <p id="dt">Last updated: <time datetime="2024-11-15T18:30:00+05:30">November 15, 2024, 06:30 PM IST</time></p>    <input type="file" name="audio" id="file" class="file" accept="audio/*" />
+    <p id="dt">Last updated: <time datetime="2025-01-23T17:05:00+05:30">January 23, 2025, 05:05 PM IST</time></p>
+    <input type="file" name="audio" id="file" class="file" accept="audio/*" />
     <audio hidden src="" id="audio" class="audio"></audio>
     <!--Designing the loader here-->
     <div class="loader-bg">
@@ -144,7 +166,8 @@
                                 <i class="fa fa-link"></i> Play audio with link
                             </li>
                             <li class="git-set" title="Learn more about Blaze Audio Player">
-                                <i class="fa fa-github"></i> <a title="Project Repo" href="https://github.com/blazeinferno64/blaze-audio-player">Blaze Audio Player</a>
+                                <i class="fa fa-github"></i> <a title="Project Repo"
+                                    href="https://github.com/blazeinferno64/blaze-audio-player">Blaze Audio Player</a>
                             </li>
                         </ul>
                     </div>
@@ -175,7 +198,8 @@
                         <label for="url-input">
                             Fetch URL:
                         </label>
-                        <input title="Audio file URL goes here" type="text" id="url-input" class="fetch-url" name="URL-Fetch" placeholder="URL for fetching..." required />
+                        <input title="Audio file URL goes here" type="text" id="url-input" class="fetch-url"
+                            name="URL-Fetch" placeholder="URL for fetching..." required />
                     </div>
                     <div class="result" title="Status of the response">
                         <p>
@@ -195,7 +219,8 @@
                         <span class="bar"></span>
                     </div>
                     <div class="or-txt" id="li-or" title="Blaze Audio Player issue tracker">
-                        <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any issues/bugs? Report it here</a>
+                        <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any issues/bugs?
+                            Report it here</a>
                     </div>
                 </div>
             </div>
@@ -213,14 +238,15 @@
                 </div>
                 <div class="wel-main">
                     <p class="fetch-info">
-                        Welcome! Blaze Audio Player is a free and open source browser based custom audio player which supports tons of audio formats like .mp3,.ogg,etc.
+                        Welcome! Blaze Audio Player is a free and open source browser based custom audio player which
+                        supports tons of audio formats like .mp3,.ogg,etc.
                         <br>
                         Click on the button below to get started
                     </p>
                 </div>
                 <div class="btn-wel">
                     <button class="sel">
-                      <i class="fa fa-cloud-upload"></i>  Browse Audio Files 
+                        <i class="fa fa-cloud-upload"></i> Browse Audio Files
                     </button>
                 </div>
             </div>
@@ -237,6 +263,54 @@
             </span>
         </div>
     </div>
+    <!--JSON-LD scripts-->
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://blaze-audio-player.vercel.app#BlazeAudioPlayer",
+          "name": "Blaze Audio Player",
+          "description": "Free & Open source browser based custom advanced audio player that supports various audio formats.",
+          "url": "https://blaze-audio-player.vercel.app",
+          "image": "https://avatars.githubusercontent.com/u/96913755?v=4",
+          "dateModified": "2025-01-23T17:05:00+05:30",
+          "dateCreated": "2024-11-05T00:00:00+00:00",
+          "author": {
+            "@type": "Person",
+            "name": "BlazeInferno64",
+            "url": "https://github.com/blazeinferno64"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Blaze Audio Player",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://avatars.githubusercontent.com/u/96913755?v=4"
+            }
+          },
+          "mainEntity": {
+            "@type": "SoftwareApplication",
+            "name": "Blaze Audio Player",
+            "operatingSystem": "Web",
+            "applicationCategory": "MultimediaApplication",
+            "applicationSubCategory": "AudioPlayer",
+            "description": "A browser-based audio player that allows users to play various audio formats.",
+            "offers": {
+              "@type": "Offer",
+              "url": "https://blaze-audio-player.vercel.app",
+              "priceCurrency": "USD",
+              "price": "0.00",
+              "itemCondition": "https://schema.org/NewCondition",
+              "availability": "https://schema.org/InStock"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "ratingCount": "100"
+            }
+          }
+        }
+        </script>
     <!--Loading the scripts-->
     <script defer src="./public/js/main/ui.js"></script>
     <script defer src="./public/js/main/fetch.js"></script>

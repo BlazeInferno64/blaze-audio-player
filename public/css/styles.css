@@ -70,7 +70,7 @@ body{
     overflow: hidden;
 }
 .app .head{
-    background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.3)), url("../img/bg.jpg");
+    background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.3)), url("../img/bg2.jpg");
     background-attachment: fixed;
     background-size: cover;
     background-repeat: no-repeat;
@@ -97,7 +97,7 @@ body{
     overflow: hidden;
 }
 .app .main .banner-bg{
-    background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("../img/bg.jpg");
+    background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("../img/bg2.jpg");
     background-attachment: fixed;
     background-size: cover;
     background-repeat: no-repeat;
@@ -107,7 +107,7 @@ body{
     padding: .1rem .1rem 0rem .1rem;
 }
 .app .main .banner{
-    background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("../img/bg.jpg");
+    background-image: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("../img/bg2.jpg");
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
