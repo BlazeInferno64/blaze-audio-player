@@ -17,7 +17,7 @@
     <meta property="og:site_name" content="Blaze Audio Player" />
     <meta property="og:title" content="Blaze Audio Player" />
     <meta property="og:description" content="Free & Open source browser based custom advanced audio player" />
-    <meta property="og:image" content="https://avatars.githubusercontent.com/u/96913755?v=4" />
+    <meta property="og:image" content="./public/img/icon.png" />
     <meta property="og:url" content="https://blaze-audio-player.vercel.app" />
     <meta property="og:type" content="website" />
 
@@ -26,11 +26,15 @@
     <meta name="twitter:site" content="@RedFlame64" />
     <meta name="twitter:title" content="Blaze Audio Player" />
     <meta name="twitter:description" content="Free & Open source browser based custom advanced audio player" />
-    <meta name="twitter:image" content="https://avatars.githubusercontent.com/u/96913755?v=4" />
+    <meta name="twitter:image" content="./public/img/icon.png" />
 
 
     <script defer src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
-    <link rel="icon" href="https://avatars.githubusercontent.com/u/96913755?v=4" type="image/x-icon" />
+    <script defer src="./service-worker.js"></script>
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon"
+        href="./public/img/icon.png"
+        type="image/x-icon" />
     <link rel="stylesheet" href="./public/css/styles.css" />
 </head>
 
@@ -263,6 +267,21 @@
             </span>
         </div>
     </div>
+    <!--Regsiter Service Worker-->
+    <script defer>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+
+    </script>
     <!--JSON-LD scripts-->
     <script type="application/ld+json">
         {

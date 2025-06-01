@@ -382,3 +382,8 @@ window.addEventListener("touchmove", (e) => {
 window.addEventListener("touchend", () => {
     isDragging = false; // Reset dragging flag
 });
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    console.log("App is ready for the installation process!");
+    console.warn(`If changes aren't available the please try to clear this site's data and reload the page again!`);
+})
