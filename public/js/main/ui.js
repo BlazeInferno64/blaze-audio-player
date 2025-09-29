@@ -21,6 +21,10 @@ const welcomeBg = document.querySelector(".wel-bg");
 const welcomeCard = document.querySelector(".wel-card");
 const closeWelcomeCardBtn = document.querySelector(".wel-close")
 
+const openStreamCardBtn = document.querySelector(".ch-stream");
+const streamBg = document.querySelector(".stream-bg");
+const streamCard = document.querySelector(".stream-card");
+const closeStreamCardBtn = document.querySelector(".stream-close")
 
 const popupBg = document.querySelector(".popup-bg");
 const popup = document.querySelector(".popup")
@@ -54,6 +58,17 @@ const openFetchCard = () => {
 
     setTimeout(() => {
         fetchCard.classList.remove("down");
+    }, 500);
+}
+
+const openStreamCard = () => {
+    streamCard.classList.remove("none");
+    streamBg.classList.remove("hide");
+    streamCard.classList.add("ani");
+    streamCard.classList.remove("hide");
+
+    setTimeout(() => {
+        streamCard.classList.remove("down");
     }, 500);
 }
 
@@ -150,6 +165,25 @@ const closeFetchCard = () => {
     }, 1200);
 }
 
+const closeStreamCard = () => {
+    streamCard.classList.add("up");
+    streamCard.classList.add("anti");
+    setTimeout(() => {
+        streamCard.classList.add("hide");
+    }, 700);
+    setTimeout(() => {
+        streamBg.classList.add("hide");
+        streamCard.classList.remove("anti");
+        streamCard.classList.add("hide");
+    }, 1000);
+    setTimeout(() => {
+        streamCard.classList.add("down");
+        streamCard.classList.remove("up");
+        streamCard.classList.remove("ani");
+        streamCard.classList.add("none");
+    }, 1200);
+}
+
 
 volumeBtn.addEventListener("click", (e) => {
     return openVolumeCard();
@@ -180,6 +214,12 @@ openLinkBgBtn.addEventListener("click", (e) => {
 })
 openLinkSettingsBtn.addEventListener("click", (e) => {
     return openFetchCard();
+})
+openStreamCardBtn.addEventListener("click", (e) => {
+    return openStreamCard();
+})
+closeStreamCardBtn.addEventListener("click", (e) => {
+    return closeStreamCard();
 })
 
 closeWelcomeCardBtn.addEventListener("click", (e) => {

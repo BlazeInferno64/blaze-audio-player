@@ -32,9 +32,7 @@
     <script defer src="https://kit.fontawesome.com/f3220d5256.js" crossorigin="anonymous"></script>
     <script defer src="./service-worker.js"></script>
     <link rel="manifest" href="./manifest.json" />
-    <link rel="icon"
-        href="./public/img/icon.png"
-        type="image/x-icon" />
+    <link rel="icon" href="./public/img/icon.png" type="image/x-icon" />
     <link rel="stylesheet" href="./public/css/styles.css" />
 </head>
 
@@ -160,6 +158,9 @@
                     </div>
                     <div class="set-main">
                         <ul>
+                            <li class="ch-stream" title="Live 24/7 radio stream">
+                                <i class="fa fa-headset"></i> 24/7 Radio Stream
+                            </li>
                             <li class="ch-set" title="Change audio file">
                                 <i class="fa fa-cloud-upload"></i> Change audio
                             </li>
@@ -226,6 +227,39 @@
                         <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any issues/bugs?
                             Report it here</a>
                     </div>
+                </div>
+            </div>
+        </div>
+        <!---Audio Stream Card-->
+        <div class="stream-bg hide">
+            <!--Stream Card-->
+            <div class="stream-card hide down none">
+                <div class="stream-head">
+                    <p>
+                        24/7 Live Radio Stream
+                    </p>
+                    <span class="stream-close">
+                        <i class="fa fa-times"></i>
+                    </span>
+                </div>
+                <div class="stream-main">
+                    <p class="stream-info">
+                        Enjoy a 24/7 live radio stream of music. Click the play
+                        button to start listening!
+                    </p>
+                    <div class="stream-result">
+                        <p>
+                            Not Streaming currently
+                        </p>
+                    </div>
+                </div>
+                <div class="stream-btns">
+                    <button class="stream">
+                        <i class="fa fa-headset"></i> Stream Now
+                    </button>
+                    <button class="next">
+                        <i class="fa fa-arrows-rotate"></i> Next Track
+                    </button>
                 </div>
             </div>
         </div>

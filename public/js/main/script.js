@@ -155,6 +155,7 @@ audio.addEventListener("canplaythrough", async(e) => {
         await audio.play();
         visualize();
         closeWelcomeCard();
+        closeStreamCard();
         updateTiming(); // Initial call to set the max timer
     }
 })
