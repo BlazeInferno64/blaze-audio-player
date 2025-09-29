@@ -10,7 +10,7 @@ const streamNextAudioFile = document.querySelector(".next");
 
 const streamResult = document.querySelector(".stream-result");
 
-const radioURL = `http://127.0.0.1:3000/api/house`;
+const radioURL = `https://radio-station-seven.vercel.app/api/house`;
 
 const validateURL = (url) => {
     try {
@@ -141,3 +141,4 @@ streamNextAudioFile.addEventListener("click", async (e) => {
         return console.error(error);
     }
 })
+
