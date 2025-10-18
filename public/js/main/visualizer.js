@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) BlazeInferno64.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ * Author: BlazeInferno64 (https://blazeinferno64.github.io/)
+ */
 const canvas = document.querySelector(".banner");
 
 let context;

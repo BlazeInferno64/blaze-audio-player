@@ -1,3 +1,4 @@
+<!--Copyright (c) BlazeInferno64 (https://github.com/blazeinferno64)-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +11,8 @@
     <meta name="author" content="BlazeInferno64">
     <meta name="description" content="Free & Open source browser based custom advanced audio player" />
 
-    <title>Blaze Audio Player | Free & Open source audio player directly accessible from your browser</title>
+    <title id="title-name">Blaze Audio Player | Free & Open source audio player directly accessible from your browser!
+    </title>
 
     <!-- Open Graph Tags -->
     <meta property="og:locale" content="en_US" />
@@ -193,11 +195,11 @@
                 </div>
                 <div class="fetch-main">
                     <p class="fetch-info">
-                        Paste the audio link below and click on fetch.
+                        Paste the audio link below and click on Fetch.
                         <br>
                         It uses the browser's native fetch api to fetch audio files.
                         <br>
-                        It might encounter CORS error while fetching if CORS isn't allowed on the url
+                        It might encounter CORS error while fetching if CORS isn't allowed on that url!
                     </p>
                     <div class="input">
                         <label for="url-input">
@@ -247,11 +249,24 @@
                         Enjoy a 24/7 live radio stream of music. Click the play
                         button to start listening!
                     </p>
+                    <div class="stream-genre">
+                        <label for="genre">
+                            Genre:
+                        </label>
+                        <select name="genre" id="genre" class="genre">
+                            <option value="house">House</option>
+                            <option value="trap">Trap</option>
+                            <option value="dnb">Drum & Bass</option>
+                        </select>
+                    </div>
                     <div class="stream-result">
-                        <p>
+                        <p class="track-label">
                             Not Streaming currently
                         </p>
                     </div>
+                    <input title="When checked, next track will be automatically played" class="nxt-trck"
+                        type="checkbox" checked name="next-track" id="nxt-track" />
+                    <p>Automatically play next track</p>
                 </div>
                 <div class="stream-btns">
                     <button class="stream">
@@ -277,14 +292,17 @@
                 <div class="wel-main">
                     <p class="fetch-info">
                         Welcome! Blaze Audio Player is a free and open source browser based custom audio player which
-                        supports tons of audio formats like .mp3,.ogg,etc.
+                        supports tons of audio formats like .mp3,.ogg,etc. & allows 24/7 live music streaming.
                         <br>
-                        Click on the button below to get started
+                        Click on the buttons below to get started!
                     </p>
                 </div>
                 <div class="btn-wel">
-                    <button class="sel">
-                        <i class="fa fa-cloud-upload"></i> Browse Audio Files
+                    <button class="sel" title="Click to select audio">
+                        <i class="fa fa-cloud-upload"></i> <p>Browse Audio Files</p>
+                    </button>
+                    <button class="wel-stream" title="Click to stream">
+                        <i class="fa fa-headset"></i> <p class="wel-p">24/7 Radio Stream</p>
                     </button>
                 </div>
             </div>

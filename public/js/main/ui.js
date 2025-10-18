@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) BlazeInferno64.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ * Author: BlazeInferno64 (https://blazeinferno64.github.io/)
+ */
 const volumeBg = document.querySelector(".vol-bg");
 const volumeCard = document.querySelector(".vol-card");
 const volumeBtn = document.querySelector("#vol-btn");
@@ -13,6 +18,7 @@ const openSetCardBtn = document.querySelector("#settings-btn");
 const linkBg = document.querySelector(".link-bg");
 const fetchCard = document.querySelector(".fetch-card");;
 const openLinkBgBtn = document.querySelector("#link-btn");
+
 const openLinkSettingsBtn = document.querySelector(".link-set");
 const closeLinkBgBtn = document.querySelector(".close-fetch");
 const closeLinkCardBtn = document.querySelector(".close-link");

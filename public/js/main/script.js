@@ -1,8 +1,14 @@
+/**
+ * Copyright (c) BlazeInferno64.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ * Author: BlazeInferno64 (https://blazeinferno64.github.io/)
+ */
 const audio = document.querySelector(".audio");
 const fileInput = document.querySelector(".file");
 
 const audioTrackName = document.querySelector(".track-name");
 const artistName = document.querySelector(".artist");
+const titleName = document.querySelector("#title-name");
 
 const playBtn = document.querySelector(".play");
 const pauseBtn = document.querySelector(".pause");
@@ -31,6 +37,8 @@ const loaderBg = document.querySelector(".loader-bg");
 const loadingText = document.querySelector(".loading-txt");
 
 const selectBtn = document.querySelector(".sel");
+const welcomeStreamBtn = document.querySelector(".wel-stream");
+const welcomeStreamBtnText = document.querySelector(".wel-p");
 
 let previousURL = null;
 let audioFileSelected = false;
@@ -113,7 +121,7 @@ const displayMetaData = (tag, file) => {
 const readMediaData = (file) => {
     jsmediatags.read(file, {
         onSuccess: (tag) => {
-            return displayMetaData(tag,file);
+            return displayMetaData(tag, file);
         },
         onError: (error) => {
             alert(`There was an error while reading metadata of the selected audio file!\nIt might be due to the file being corrupted/damaged\nPlease try again with a fresh uncorrupted copy of the audio file\nIf you believe this is an bug/issue please report it!`);
@@ -141,7 +149,7 @@ let isUpdating = false; // Flag to control the animation loop
 const updateUI = () => {
     // Update the current time and progress bar
     showCurrentTiming();
-    
+
     // Request the next frame
     if (isUpdating) {
         requestAnimationFrame(updateUI);
@@ -149,7 +157,7 @@ const updateUI = () => {
 };
 
 // You can also call this function when the audio is loaded
-audio.addEventListener("canplaythrough", async(e) => {
+audio.addEventListener("canplaythrough", async (e) => {
     if (audio.src) {
         closeSetCard();
         await audio.play();
@@ -157,6 +165,9 @@ audio.addEventListener("canplaythrough", async(e) => {
         closeWelcomeCard();
         closeStreamCard();
         updateTiming(); // Initial call to set the max timer
+
+        const defaultTitle = titleName.innerText.split("|")[1].trim();
+        titleName.innerText = `${audioTrackName.innerText} | ${defaultTitle}`;
     }
 })
 
@@ -182,7 +193,7 @@ audio.addEventListener("ended", (e) => {
     return audio.pause();
 })
 
-playBtn.addEventListener("click", async(e) => {
+playBtn.addEventListener("click", async (e) => {
     if (!audio.src || !audioFileSelected) {
         alert("Please select an audio file first.");
         return;
@@ -202,6 +213,7 @@ fileInput.onchange = async (e) => {
         fileInput.value = ''; // Clear the file input
         return;
     } else {
+        streaming = false;  // <-- Disconnect streaming when dropping a local file
         audioFileSelected = true;
         const blobURL = URL.createObjectURL(file); // Create a new blob URL
 
@@ -219,7 +231,7 @@ fileInput.onchange = async (e) => {
 }
 
 
-changeTrackBtn.addEventListener("click", async(e) => {
+changeTrackBtn.addEventListener("click", async (e) => {
     return await fileInput.click();
 })
 
@@ -242,7 +254,7 @@ volumeSlider.addEventListener("input", (e) => {
     audio.volume = e.currentTarget.value / 100;
 })
 
-selectBtn.addEventListener("click", async(e) => {
+selectBtn.addEventListener("click", async (e) => {
     return await fileInput.click();
 })
 
@@ -286,6 +298,7 @@ window.addEventListener("load", (e) => {
             }, 1500);
         }
     }, 70);
+    console.log("App is ready!");
 })
 
 window.addEventListener("dragover", (e) => {
@@ -304,11 +317,12 @@ const handleDrop = async (event) => {
     try {
         event.preventDefault();
         const droppedFile = event.dataTransfer.files[0];
-    
+
         if (!droppedFile.type.startsWith("audio/")) {
             return alert("The selected file isn't a valid audio file!");
         }
         if (droppedFile) {
+            streaming = false;  // <-- Disconnect streaming when dropping a local file
             const blobURL = URL.createObjectURL(droppedFile); // Use droppedFile here
             audioFileSelected = true;
             await getAudioFile(droppedFile, blobURL); // Pass droppedFile instead of file
@@ -323,6 +337,12 @@ const handleDrop = async (event) => {
         return alert(`${error}`);
     }
 };
+
+// Function to handle welcomeStreamBtn click
+welcomeStreamBtn.addEventListener("click", (e) => {
+    welcomeStreamBtnText.innerText = 'Connecting to stream...';
+    return streamBtn.click();
+})
 
 let isDragging = false; // Flag to track if the user is dragging the progress bar
 

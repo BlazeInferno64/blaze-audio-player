@@ -704,26 +704,83 @@ audio {
     text-align: center;
     background: rgba(30, 30, 30);
     margin-top: .5rem;
+    margin-bottom: .5rem;
     white-space: nowrap;
     border-radius: .3rem;
     overflow: auto;
     font-size: 1.13rem;
 }
 
-.result::-webkit-scrollbar,.stream-result::-webkit-scrollbar {
+.stream-genre {
+    width: 100%;
+    margin-top: .5rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.stream-genre label {
+    font-size: 1.13rem;
+    width: 100%;
+    background: rgba(30, 30, 30);
+    padding: .3rem .5rem;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+}
+
+.stream-genre .genre {
+    outline: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    padding: .3rem .5rem;
+    font-size: 1.1rem;
+    border: none;
+    border-bottom-left-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+    margin-bottom: .5rem;
+}
+
+.stream-genre .genre option {
+    background: #2a2d2e;
+    color: #fff;
+    border: none;
+    outline: none;
+}
+
+.nxt-trck {
+    display: inline;
+    margin-right: 3px;
+    cursor: pointer;
+    transform: scale(1.5);
+    vertical-align: middle;
+    accent-color: rgb(14, 191, 91);
+}
+
+.nxt-trck+p {
+    display: inline;
+    margin: 0;
+    color: rgb(14, 191, 91);
+}
+
+.result::-webkit-scrollbar,
+.stream-result::-webkit-scrollbar {
     background: transparent;
 }
 
-.result::-webkit-scrollbar-thumb, .stream-result::-webkit-scrollbar-thumb {
+.result::-webkit-scrollbar-thumb,
+.stream-result::-webkit-scrollbar-thumb {
     background: #4b494d;
     border-radius: .5rem;
 }
 
-.result::-webkit-scrollbar-thumb:hover, .stream-result::-webkit-scrollbar-thumb:hover {
+.result::-webkit-scrollbar-thumb:hover,
+.stream-result::-webkit-scrollbar-thumb:hover {
     background: hsl(270, 3%, 39%);
 }
 
-.result::-webkit-scrollbar-thumb:active, .stream-result::-webkit-scrollbar-thumb:active {
+.result::-webkit-scrollbar-thumb:active,
+.stream-result::-webkit-scrollbar-thumb:active {
     background: hsl(270, 3%, 49%);
 }
 
@@ -746,12 +803,16 @@ audio {
 }
 
 .btn-bg .fetch-btn,
-.wel-card .sel {
+.wel-card .sel,
+.wel-card .wel-stream {
     margin-top: .5rem;
     width: 100%;
     border: none;
     padding: .3rem .5rem;
     font-size: 1.13rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
     border-radius: .3rem;
     cursor: pointer;
     background: var(--gradient);
@@ -762,7 +823,7 @@ audio {
     margin-top: .5rem;
     border: none;
     padding: .3rem .5rem;
-    font-size: 1.1rem;
+    font-size: .95rem;
     border-radius: .3rem;
     cursor: pointer;
     background: var(--gradient);
@@ -771,6 +832,7 @@ audio {
 .stream-btns .stream {
     width: 64%;
 }
+
 .stream-btns .next {
     width: 50%;
 }
@@ -778,7 +840,8 @@ audio {
 .fetch-btn:active,
 .sel:active,
 .stream:active,
-.next:active {
+.next:active,
+.wel-stream:active {
     scale: .98;
 }
 
