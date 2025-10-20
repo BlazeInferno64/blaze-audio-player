@@ -25,7 +25,7 @@ let streaming = false;
 
 //const radioURL = `http://127.0.0.1:3000/api/`;
 
-const radioURL = `https://radio-station-v2.vercel.app/api/`;
+const radioURL =  `https://radio-station-v2.onrender.com/api/`//`https://radio-station-v2.vercel.app/api/`;
 
 // Build radio URL with optional genre query parameter
 const buildRadioURL = () => {
@@ -221,5 +221,6 @@ if (typeof audio !== 'undefined' && audio) {
         }
     });
 }
+
 
 
