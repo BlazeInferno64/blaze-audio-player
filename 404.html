@@ -267,8 +267,8 @@
       const host = window.location.origin + window.location.pathname;
 
       // Extract repository info from the current URL
-      let username, username2 = 'blazeinferno64'; // default fallback
-      let repo, repo2 = 'blaze-audio-player'; // default fallback
+      let username = 'blazeinferno64'; // default fallback
+      let repo = 'blaze-audio-player'; // default fallback
 
       try {
         // Try to extract from hostname for github.io
@@ -284,6 +284,12 @@
           }
         }
 
+        // If username or repo is still undefined/empty, use defaults
+        if (!username || !repo) {
+          username = 'blazeinferno64';
+          repo = 'blaze-audio-player';
+        }
+
         // Build the URLs
         const githubPagesURL = `https://${username}.github.io/${repo}/`;
         const githubRepoURL = `https://github.com/${username}/${repo}/`;
@@ -295,8 +301,8 @@
       } catch (error) {
         console.error('Error building URLs:', error);
         // Keep the default URLs if there's an error
-        mainSiteLink.href = `https://${username2}.github.io/${repo2}/`;
-        repoLink.href = `https://github.com/${username2}/${repo2}/`;
+        mainSiteLink.href = `https://blazeinferno64.github.io/blaze-audio-player/`;
+        repoLink.href = `https://github.com/blazeinferno64/blaze-audio-player/`;
       }
 
       // Update the title and host display
