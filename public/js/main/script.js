@@ -216,6 +216,10 @@ fileInput.onchange = async (e) => {
         streaming = false;  // <-- Disconnect streaming when dropping a local file
         audioFileSelected = true;
         const blobURL = URL.createObjectURL(file); // Create a new blob URL
+        streamResult.classList.remove('normal');
+        streamResult.classList.remove('err');
+        streamResult.classList.remove('ok');
+        streamResult.innerText = 'Not Streaming currently';
 
         // Revoke the previous URL if it exists
         if (previousURL) {
