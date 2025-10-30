@@ -104,7 +104,7 @@ const fetchAudioFile = async (url) => {
 const streamAudioFile = async (url) => {
     try {
         const response = await fetch(url, {
-            method: "POST"
+            method: "GET"
         });
         const data = await response.json();
         const streamURL = data.url;
@@ -221,4 +221,5 @@ if (typeof audio !== 'undefined' && audio) {
         }
     });
 }
+
 
