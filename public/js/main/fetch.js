@@ -126,7 +126,7 @@ const streamAudioFile = async (url) => {
         streamResult.classList.remove("normal");
         streamResult.classList.remove("err");
         streamResult.classList.add("ok");
-        streamResult.innerText = 'Successfully streaming now!';
+        streamResult.innerText = 'Connected to Radio Stream!';
         audioTrackName.innerText = name || trimLastPart(url) || 'Unknown Audio File';
         audioFileSelected = true;
     } catch (error) {
@@ -134,7 +134,9 @@ const streamAudioFile = async (url) => {
         streamResult.classList.add("err");
         streamResult.classList.remove("ok");
         welcomeStreamBtnText.innerText = '24/7 Radio Stream';
+        artistName.innerText = `Failed to connect to the radio stream!`;
         streamResult.innerText = `Radio station is currently unavailable!`;
+        artistName.innerText = `Radio Station is down!`;
         alert(`Failed to connect to the radio stream!`);
         return console.error(error);
     }
@@ -168,6 +170,7 @@ streamBtn.addEventListener("click", async (e) => {
         const url = buildRadioURL();
         await streamAudioFile(url);
     } catch (error) {
+        artistName.innerText = `Failed to connect to the radio stream!`;
         return console.error(error);
     }
 })
@@ -177,6 +180,7 @@ streamNextAudioFile.addEventListener("click", async (e) => {
     streamResult.classList.remove("err");
     streamResult.classList.remove("ok");
     streamResult.innerText = `Changing to next track...`;
+    artistName.innerText = `Switching to next track...`;
     try {
         const url = buildRadioURL();
         await streamAudioFile(url);
@@ -201,15 +205,17 @@ if (typeof audio !== 'undefined' && audio) {
     audio.addEventListener('ended', async () => {
         if (!playNext || !streaming) return;  // <-- Add !streaming check: Only auto-fetch if streaming and playNext is true
         // Update UI while fetching next
-        if (streamResult) {
+        if (streamResult && artistName) {
             streamResult.classList.remove('normal');
             streamResult.classList.remove('err');
             streamResult.classList.remove('ok');
             streamResult.innerText = 'Fetching next track...';
+            artistName.innerText = `Switching to next track...`;
         }
         try {
             const url = buildRadioURL();
             await streamAudioFile(url);
+            // return artistName.innerText = `Connected to Radio Stream!`;
         } catch (err) {
             console.error('Error fetching next track:', err);
             if (streamResult) {
@@ -217,9 +223,8 @@ if (typeof audio !== 'undefined' && audio) {
                 streamResult.classList.add('err');
                 streamResult.classList.remove('ok');
                 streamResult.innerText = 'Failed to fetch next track.';
+                artistName.innerText = `Failed to fetch next track!`;
             }
         }
     });
 }
-
-

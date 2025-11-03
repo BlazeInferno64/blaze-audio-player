@@ -156,6 +156,11 @@ const updateUI = () => {
     }
 };
 
+audio.addEventListener("error", (e) => {
+    alert(`There was an error while playing the audio!\nCheck your browser console for more info!`)
+    return console.log(`Audio Error:\n${e}`);
+})
+
 // You can also call this function when the audio is loaded
 audio.addEventListener("canplaythrough", async (e) => {
     if (audio.src) {
@@ -179,6 +184,7 @@ audio.addEventListener("play", (e) => {
     pauseBtn.style.display = 'block';
     isUpdating = true; // Set the flag to true
     updateUI(); // Start the update loop
+
 })
 
 audio.addEventListener("pause", (e) => {
@@ -406,6 +412,42 @@ window.addEventListener("touchmove", (e) => {
 // Function to handle touch end event
 window.addEventListener("touchend", () => {
     isDragging = false; // Reset dragging flag
+});
+
+// Add keyboard shortcut for play/pause toggle (Ctrl + Alt + P)
+window.addEventListener("keydown", (event) => {
+    // Check for Ctrl + Alt + P (play/pause toggle) - remains global
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'p') {
+        event.preventDefault(); // Prevent any default browser action
+
+        if (!audio.src || !audioFileSelected) {
+            alert("Please select an audio file first.");
+            return;
+        }
+
+        if (audio.paused) {
+            audio.play(); // Play if paused
+        } else {
+            audio.pause(); // Pause if playing
+        }
+    }
+
+    // Check for Shift + Right Arrow (forward skip) - only if input not focused
+    else if (event.shiftKey && event.key === 'ArrowRight' && document.activeElement !== fetchURLInput) {
+        event.preventDefault(); // Prevent page scrolling
+
+        if (!audioFileSelected) return; // Same guard as your forwardBtn
+        audio.currentTime += 5; // Skip forward 5 seconds
+    }
+
+    // Check for Shift + Left Arrow (backward skip) - only if input not focused
+    else if (event.shiftKey && event.key === 'ArrowLeft' && document.activeElement !== fetchURLInput) {
+        event.preventDefault(); // Prevent page scrolling
+
+        if (!audioFileSelected) return; // Same guard as your backwardBtn
+        audio.currentTime -= 5; // Skip backward 5 seconds
+    }
+
 });
 
 window.addEventListener("beforeinstallprompt", (e) => {

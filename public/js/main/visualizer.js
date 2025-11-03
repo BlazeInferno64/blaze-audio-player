@@ -9,6 +9,10 @@ let context;
 let src;
 let analyser;
 
+//let isRendering = false;
+//let animationId;
+// Removed since it conflicts
+
 const visualize = () => {
     if (src) return;
     context = new AudioContext();
