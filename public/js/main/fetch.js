@@ -122,7 +122,7 @@ const streamAudioFile = async (url) => {
         audio.src = audioURL;
         await audio.load();
         streaming = true;
-        artistName.innerText = 'Unknown';
+        // artistName.innerText = 'Unknown';
         streamResult.classList.remove("normal");
         streamResult.classList.remove("err");
         streamResult.classList.add("ok");
