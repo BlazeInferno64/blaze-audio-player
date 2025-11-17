@@ -54,7 +54,8 @@
     <div class="app">
         <div class="bg">
             <div class="head">
-                <p title="Blaze Audio Player">
+                <img class="header-img" src="./public/img/icon.png" alt="">
+                <p data-text="Blaze Audio Player" title="Blaze Audio Player">
                     Blaze Audio Player
                 </p>
             </div>
@@ -79,6 +80,8 @@
                 </div>
                 <div class="audio-progress">
                     <div class="progress-bar" title="Progress Bar of the current audio track">
+                        <div class="audio-buffered">
+                        </div>
                         <div class="fluid"></div>
                     </div>
                     <div class="timers">
@@ -94,12 +97,12 @@
                     <button class="backward" title="Backward (Shift + &larr;)">
                         <i class="fa fa-backward"></i>
                     </button>
-                    <button class="pause" title="Pause (Ctrl + Alt + P)">
-                        <i class="fa fa-pause"></i>
-                    </button>
-                    <button class="play" title="Play (Ctrl + Alt + P)">
-                        <i class="fa fa-play"></i>
-                    </button>
+                    <div class="playpause-bg" title="Play (Ctrl + Alt + P)">
+                        <div class="playpause">
+                            <input type="checkbox" checked value="None" id="playpause" name="check" />
+                            <label for="playpause" tabindex=1></label>
+                        </div>
+                    </div>
                     <button class="forward" title="Forward (Shift + &rarr;)">
                         <i class="fa fa-forward"></i>
                     </button>
@@ -114,8 +117,8 @@
                     <li id="change" title="Change audio file">
                         <i class="fa fa-cloud-upload"></i>
                     </li>
-                    <li id="link-btn" title="Link audio file">
-                        <i class="fa fa-link"></i>
+                    <li id="link-btn" title="24/7 Audio Stream">
+                        <i class="fa fa-headset"></i>
                     </li>
                 </div>
             </div>
@@ -299,10 +302,12 @@
                 </div>
                 <div class="btn-wel">
                     <button class="sel" title="Click to select audio">
-                        <i class="fa fa-cloud-upload"></i> <p>Browse Audio Files</p>
+                        <i class="fa fa-cloud-upload"></i>
+                        <p>Browse Audio Files</p>
                     </button>
                     <button class="wel-stream" title="Click to stream">
-                        <i class="fa fa-headset"></i> <p class="wel-p">24/7 Radio Stream</p>
+                        <i class="fa fa-headset"></i>
+                        <p class="wel-p">24/7 Radio Stream</p>
                     </button>
                 </div>
             </div>

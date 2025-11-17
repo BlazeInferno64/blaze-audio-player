@@ -5,7 +5,7 @@
 
 :root {
     --ff: "Poppins", sans-serif;
-    --gradient: linear-gradient(90deg, rgb(5, 215, 138), 74%, rgb(0, 213, 255));
+    --gradient: repeating-linear-gradient(90deg, rgb(5, 215, 138), 74%, rgb(0, 213, 255));
     --second-gradient: linear-gradient(90deg, #ff1b6b, 74%, #45caff);
     --third-gradient: linear-gradient(135deg, #6a5acd, #00bfff);
     /* Purple bluish gradient */
@@ -48,6 +48,8 @@ body {
     height: 100vh;
     font-family: var(--ff);
     background: var(--gradient);
+    background-size: 400%;
+    animation: animate 10s ease-in-out infinite;
 }
 
 .file,
@@ -94,17 +96,41 @@ audio {
     width: 100%;
     padding: .5rem 1rem;
     text-align: center;
+    gap: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .app .head p {
+    position: relative;
     font-size: 1.3rem;
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.app .head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
+}
+
+.app .head .header-img {
+    width: 40px;
+    height: 40px;
 }
 
 .app .main {
@@ -180,18 +206,21 @@ audio {
 }
 
 .app .main .audio-progress {
+    position: relative;
     background: transparent;
     width: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
     padding: .3rem 1rem;
+    overflow: hidden;
 }
 
 .app .main .audio-progress .progress-bar {
     background: #2a2d2e;
     width: 100%;
     height: 8px;
+    position: relative;
     border-radius: .5rem;
     display: flex;
     align-items: start;
@@ -199,9 +228,22 @@ audio {
     position: relative;
 }
 
+.app .main .audio-progress .audio-buffered {
+    position: absolute;
+    background: hsl(195, 5%, 37%);
+    width: 0;
+    height: 8px;
+    z-index: 1;
+    display: flex;
+    border-radius: .5rem;
+    align-items: center;
+    flex-direction: column;
+}
+
 .app .main .audio-progress .progress-bar .fluid {
     background: rgb(0, 255, 110);
     height: 100%;
+    z-index: 3;
     width: 0;
     transition: background .1s ease-in-out;
     border-radius: .5rem;
@@ -277,19 +319,61 @@ audio {
     color: #fff;
 }
 
-.pause {
-    display: none;
+/* Smaller button container (like Spotify/YT) */
+.playpause-bg {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #dedede;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    padding: 0;
 }
 
-.play:hover,
-.pause:hover,
+.playpause-bg:hover {
+    background: hsl(0, 0%, 57%);
+}
+
+.playpause {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SMALL ICON (main change!) */
+.playpause label {
+    width: 0;
+    height: 22px;
+    /* smaller height */
+    border-color: transparent transparent transparent rgba(30, 30, 30);
+    border-style: double;
+    border-width: 0px 0 0px 18px;
+    /* smaller triangle width */
+    transition: 100ms all ease;
+    cursor: pointer;
+}
+
+/* Hide checkbox */
+.playpause input[type="checkbox"] {
+    position: absolute;
+    left: -9999px;
+}
+
+/* SMALL PLAY → PAUSE TRANSITION */
+.playpause input[type="checkbox"]:checked+label {
+    border-style: solid;
+    border-width: 11px 0 11px 18px;
+    /* smaller pause bars */
+}
+
 .forward:hover,
 .backward:hover {
     color: hsl(0, 0%, 70%);
 }
 
-.play:active,
-.pause:active,
+.playpause-bg:active,
 .forward:active,
 .backward:active {
     scale: .97;
@@ -904,12 +988,13 @@ audio {
 }
 
 .popup-bg .popup {
-    width: 495px;
+    width: 500px;
     height: 50px;
     transition: all .5s ease-in-out;
     background: rgba(30, 30, 30);
     display: flex;
     align-items: center;
+    flex-direction: row;
     justify-content: space-between;
     padding: .5rem .5rem;
     border-radius: .3rem;
@@ -1021,6 +1106,29 @@ audio {
     animation: anti-pop 1s ease-in-out;
 }
 
+/* Animation keyframes */
+@keyframes animate {
+    0% {
+        background-position: 0 0;
+    }
+
+    25% {
+        background-position: 100% 0;
+    }
+
+    50% {
+        background-position: 100% 100%;
+    }
+
+    75% {
+        background-position: 0 100%;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
 @keyframes open-app {
     from {
         scale: 0;
@@ -1083,8 +1191,8 @@ audio {
     }
 }
 
-@media (max-width: 495px) {
+@media (max-width: 500px) {
     .popup {
-        width: 90%;
+        width: 95%;
     }
 }

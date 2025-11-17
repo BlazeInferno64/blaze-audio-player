@@ -10,11 +10,14 @@ const audioTrackName = document.querySelector(".track-name");
 const artistName = document.querySelector(".artist");
 const titleName = document.querySelector("#title-name");
 
-const playBtn = document.querySelector(".play");
-const pauseBtn = document.querySelector(".pause");
+const playPauseBtn = document.querySelector(".playpause-bg");
+const playPauseBtnText = document.querySelector(".playpause");
+const playPauseCheckBox = document.querySelector("#playpause");
+//const pauseBtn = document.querySelector(".pause");
 const forwardBtn = document.querySelector(".forward");
 const backwardBtn = document.querySelector(".backward");
 
+const audioBuffered = document.querySelector(".audio-buffered");
 const progressBarFluid = document.querySelector(".fluid");
 const progressBar = document.querySelector(".progress-bar");
 const currentTimer = document.querySelector(".ct");
@@ -39,6 +42,12 @@ const loadingText = document.querySelector(".loading-txt");
 const selectBtn = document.querySelector(".sel");
 const welcomeStreamBtn = document.querySelector(".wel-stream");
 const welcomeStreamBtnText = document.querySelector(".wel-p");
+
+const playerIcon = document.querySelector(".header-img");
+
+playerIcon.addEventListener("contextmenu", (e) => {
+    return e.preventDefault();
+})
 
 let previousURL = null;
 let audioFileSelected = false;
@@ -156,7 +165,18 @@ const updateUI = () => {
     }
 };
 
+const updateBufferedBar = () => {
+    if (audio.buffered.length > 0 && !isNaN(audio.duration) && audio.duration > 0) {
+        const end = audio.buffered.end(audio.buffered.length - 1);
+        const percentage = (end / audio.duration) * 100;
+        audioBuffered.style.width = `${percentage.toFixed(0)}%`;
+        console.log(`Audio buffered length: ${audio.buffered.length}`);
+        console.log(`Details\n${audio.buffered.end(0), audio.duration}`);
+    }
+};
+
 audio.addEventListener("error", (e) => {
+    playPauseCheckBox.checked = true;
     alert(`There was an error while playing the audio!\nCheck your browser console for more info!`)
     return console.log(`Audio Error:\n${e}`);
 })
@@ -170,18 +190,35 @@ audio.addEventListener("canplaythrough", async (e) => {
         closeWelcomeCard();
         closeStreamCard();
         updateTiming(); // Initial call to set the max timer
+        updateBufferedBar()
 
         const defaultTitle = titleName.innerText.split("|")[1].trim();
         titleName.innerText = `${audioTrackName.innerText} | ${defaultTitle}`;
     }
 })
 
+audio.addEventListener("progress", (e) => {
+    if (audio.buffered.length > 0) {
+        const end = audio.buffered.end(audio.buffered.length - 1);
+        const duration = audio.duration;
+
+        if (duration > 0) {
+            const loadedPercentage = (end / duration) * 100;
+            audioBuffered.style.width = `${loadedPercentage.toFixed(0)}%`;
+            //audioProgress.innerText = `Audio loading progress: ${loadedPercentage.toFixed(0)}%`;
+        }
+    }
+})
+
 audio.addEventListener("timeupdate", showCurrentTiming);
+
+audio.addEventListener("progress", updateBufferedBar);
+audio.addEventListener("loadedmetadata", updateBufferedBar);
+audio.addEventListener("playing", updateBufferedBar);
 
 audio.addEventListener("play", (e) => {
     console.log('Audio is playing!');
-    playBtn.style.display = 'none';
-    pauseBtn.style.display = 'block';
+    playPauseCheckBox.checked = false;
     isUpdating = true; // Set the flag to true
     updateUI(); // Start the update loop
 
@@ -189,8 +226,7 @@ audio.addEventListener("play", (e) => {
 
 audio.addEventListener("pause", (e) => {
     console.log('Audio is pasued!');
-    playBtn.style.display = 'block';
-    pauseBtn.style.display = 'none';
+    playPauseCheckBox.checked = true;
 })
 
 // Ensure to stop the update loop when the audio ends
@@ -199,16 +235,47 @@ audio.addEventListener("ended", (e) => {
     return audio.pause();
 })
 
-playBtn.addEventListener("click", async (e) => {
+playPauseBtnText.addEventListener("click", (e) => {
     if (!audio.src || !audioFileSelected) {
+        e.preventDefault();   // <- stops label from toggling checkbox
+        e.stopPropagation(); // <- also stops bubbling
         alert("Please select an audio file first.");
+        playPauseCheckBox.checked = true;  // Force icon to 'play'
         return;
     }
-    return await audio.play();
 });
+
+
+// Prevent checkbox click bubbling
+playPauseCheckBox.addEventListener("click", (e) => {
+    e.stopPropagation();
+});
+
+// Main play/pause button logic
+playPauseBtn.addEventListener("click", (e) => {
+    // If no audio loaded → prevent toggle
+    if (!audio.src || !audioFileSelected) {
+        alert("Please select an audio file first.");
+        playPauseCheckBox.checked = true;  // Force icon to 'play'
+        return;
+    }
+
+    // Toggle the checkbox state manually
+    playPauseCheckBox.checked = !playPauseCheckBox.checked;
+
+    // Play or pause depending on the new state
+    if (!playPauseCheckBox.checked) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
+});
+
+
+/*
 pauseBtn.addEventListener("click", (e) => {
     return audio.pause();
-})
+})*/
 
 fileInput.onchange = async (e) => {
     const file = e.target.files[0];
@@ -239,6 +306,7 @@ fileInput.onchange = async (e) => {
         await getAudioFile(file, blobURL); // Load the new audio file
     }
 }
+
 
 
 changeTrackBtn.addEventListener("click", async (e) => {

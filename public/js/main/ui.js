@@ -216,7 +216,7 @@ closeLinkBgBtn.addEventListener("click", (e) => {
     return closeFetchCard();
 })
 openLinkBgBtn.addEventListener("click", (e) => {
-    return openFetchCard();
+    return openStreamCard();
 })
 openLinkSettingsBtn.addEventListener("click", (e) => {
     return openFetchCard();
