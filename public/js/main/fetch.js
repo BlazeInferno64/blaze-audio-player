@@ -82,6 +82,7 @@ const fetchAudioFile = async (url) => {
             fetchResult.classList.remove("err");
             fetchResult.classList.add("ok");
             fetchResult.innerText = 'Successfull!';
+            resetBackgroundToInitial();
             return readMediaData(audioBlob);
         }
         else {
@@ -90,6 +91,7 @@ const fetchAudioFile = async (url) => {
             fetchResult.classList.remove("err");
             fetchResult.classList.add("ok");
             fetchResult.innerText = 'Successfull!';
+            resetBackgroundToInitial();
             return readMediaData(audioBlob);
         }
     } catch (error) {
@@ -129,6 +131,7 @@ const streamAudioFile = async (url) => {
         streamResult.innerText = 'Connected to Radio Stream!';
         audioTrackName.innerText = name || trimLastPart(url) || 'Unknown Audio File';
         audioFileSelected = true;
+        resetBackgroundToInitial();
     } catch (error) {
         streamResult.classList.remove("normal");
         streamResult.classList.add("err");

@@ -95,6 +95,12 @@ const initialBackground = {
     banner: appBanner.style.backgroundImage,
 };
 
+const resetBackgroundToInitial = () => {
+    appHead.style.backgroundImage = initialBackground.head;
+    appBannerBg.style.backgroundImage = initialBackground.bannerBg;
+    appBanner.style.backgroundImage = initialBackground.banner;
+};
+
 const displayMetaData = (tag, file) => {
     const title = tag.tags.title;
     const artist = tag.tags.artist;

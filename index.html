@@ -20,6 +20,7 @@
     <meta property="og:title" content="Blaze Audio Player" />
     <meta property="og:description" content="Free & Open source browser based custom advanced audio player" />
     <meta property="og:image" content="./public/img/icon.png" />
+    <meta property="og:icon" content="./public/img/icon.png" />
     <meta property="og:url" content="https://blaze-audio-player.vercel.app" />
     <meta property="og:type" content="website" />
 
@@ -126,7 +127,7 @@
             <div class="vol-bg hide">
                 <div class="vol-card hide down">
                     <div class="vol-head">
-                        <p>
+                        <p data-text="Volume Settings">
                             Volume Settings
                         </p>
                         <span class="vol-close">
@@ -154,9 +155,12 @@
             <div class="set-outline">
                 <div class="set-card hide bottom">
                     <div class="set-head">
-                        <p>
-                            Settings
-                        </p>
+                        <div class="set-k">
+                            <i class="fa fa-gear gradient-icon"></i>
+                            <p data-text="Settings">
+                                Settings
+                            </p>
+                        </div>
                         <span class="set-close">
                             <i class="fa fa-times"></i>
                         </span>
@@ -164,10 +168,10 @@
                     <div class="set-main">
                         <ul>
                             <li class="ch-stream" title="Live 24/7 radio stream">
-                                <i class="fa fa-headset"></i> 24/7 Radio Stream
+                                <i class="fa fa-headset"></i> 24/7 Radio stream
                             </li>
                             <li class="ch-set" title="Change audio file">
-                                <i class="fa fa-cloud-upload"></i> Change audio
+                                <i class="fa fa-cloud-upload"></i> Change audio file
                             </li>
                             <li class="set-vol" title="Volume controls">
                                 <i class="fa fa-volume-high"></i> Volume settings
@@ -189,7 +193,7 @@
             <!--Fetch card-->
             <div class="fetch-card hide down none">
                 <div class="fetch-head">
-                    <p>
+                    <p data-text="Fetch Audio File">
                         Fetch Audio File
                     </p>
                     <span class="close-fetch">
@@ -240,7 +244,7 @@
             <!--Stream Card-->
             <div class="stream-card hide down none">
                 <div class="stream-head">
-                    <p>
+                    <p data-text="24/7 Live Radio Stream">
                         24/7 Live Radio Stream
                     </p>
                     <span class="stream-close">
@@ -285,7 +289,7 @@
         <div class="wel-bg hide">
             <div class="wel-card hide down none">
                 <div class="wel-head">
-                    <p>
+                    <p data-text="Welcome">
                         Welcome
                     </p>
                     <span class="wel-close">
@@ -339,54 +343,6 @@
         }
 
     </script>
-    <!--JSON-LD scripts-->
-    <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "@id": "https://blaze-audio-player.vercel.app#BlazeAudioPlayer",
-          "name": "Blaze Audio Player",
-          "description": "Free & Open source browser based custom advanced audio player that supports various audio formats.",
-          "url": "https://blaze-audio-player.vercel.app",
-          "image": "https://avatars.githubusercontent.com/u/96913755?v=4",
-          "dateModified": "2025-01-23T17:05:00+05:30",
-          "dateCreated": "2024-11-05T00:00:00+00:00",
-          "author": {
-            "@type": "Person",
-            "name": "BlazeInferno64",
-            "url": "https://github.com/blazeinferno64"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Blaze Audio Player",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://avatars.githubusercontent.com/u/96913755?v=4"
-            }
-          },
-          "mainEntity": {
-            "@type": "SoftwareApplication",
-            "name": "Blaze Audio Player",
-            "operatingSystem": "Web",
-            "applicationCategory": "MultimediaApplication",
-            "applicationSubCategory": "AudioPlayer",
-            "description": "A browser-based audio player that allows users to play various audio formats.",
-            "offers": {
-              "@type": "Offer",
-              "url": "https://blaze-audio-player.vercel.app",
-              "priceCurrency": "USD",
-              "price": "0.00",
-              "itemCondition": "https://schema.org/NewCondition",
-              "availability": "https://schema.org/InStock"
-            },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.9",
-              "ratingCount": "100"
-            }
-          }
-        }
-        </script>
     <!--Loading the scripts-->
     <script defer src="./public/js/main/ui.js"></script>
     <script defer src="./public/js/main/fetch.js"></script>

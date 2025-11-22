@@ -1,10 +1,10 @@
 /*
     Copyright (c) BlazeInferno64 --> https://github.com/blazeInferno64
 */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
-    --ff: "Poppins", sans-serif;
+    --ff: "Montserrat", sans-serif;
     --gradient: repeating-linear-gradient(90deg, rgb(5, 215, 138), 74%, rgb(0, 213, 255));
     --second-gradient: linear-gradient(90deg, #ff1b6b, 74%, #45caff);
     --third-gradient: linear-gradient(135deg, #6a5acd, #00bfff);
@@ -105,6 +105,7 @@ audio {
 .app .head p {
     position: relative;
     font-size: 1.3rem;
+    font-weight: 600;
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
@@ -118,6 +119,7 @@ audio {
     top: 0;
     left: 0;
     right: 0;
+    font-weight: 600;
     background: var(--gradient);
     background-size: 400%;
     background-clip: text;
@@ -131,6 +133,7 @@ audio {
 .app .head .header-img {
     width: 40px;
     height: 40px;
+    user-select: none;
 }
 
 .app .main {
@@ -199,10 +202,12 @@ audio {
 .app .main .info .audio-details .track-name {
     color: #dedede;
     font-size: 1.3rem;
+    font-weight: 600;
 }
 
 .app .main .info .audio-details .artist {
     color: #4b494d;
+    font-weight: 600;
 }
 
 .app .main .audio-progress {
@@ -291,6 +296,7 @@ audio {
     align-items: center;
     justify-content: space-between;
     margin-top: .3rem;
+    font-weight: 600;
 }
 
 .app .main .controls {
@@ -351,7 +357,7 @@ audio {
     border-style: double;
     border-width: 0px 0 0px 18px;
     /* smaller triangle width */
-    transition: 100ms all ease;
+    transition: 120ms all ease-in-out;
     cursor: pointer;
 }
 
@@ -392,10 +398,15 @@ audio {
 .app .main .options li {
     cursor: pointer;
     font-size: 1.13rem;
+    font-weight: 600;
 }
 
 .app .main .options li:hover {
     color: hsl(0, 0%, 70%);
+}
+
+.app .main .options li:active {
+    scale: .97;
 }
 
 .app .vol-bg {
@@ -433,11 +444,30 @@ audio {
 }
 
 .app .vol-bg .vol-card .vol-head p {
+    position: relative;
     font-size: 1.3rem;
+    font-weight: 600;
     background: var(--second-gradient);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.app .vol-bg .vol-card .vol-head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--second-gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
 }
 
 .app .vol-bg .vol-card .vol-head .vol-close {
@@ -584,12 +614,62 @@ audio {
     padding: .3rem .5rem;
 }
 
-.set-head p {
+.set-head .set-k {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: .3rem .5rem;
+}
+
+.set-head .set-k p {
+    position: relative;
     font-size: 1.3rem;
+    font-weight: 600;
     background: var(--second-gradient);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.gradient-icon {
+    font-size: 1.7rem;
+    background: var(--second-gradient);
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+    position: relative;
+}
+
+.gradient-icon::before {
+    content: "\f013"; /* Unicode for gear */
+    font-family: "Font Awesome 6 Free"; /* or correct FA font */
+    font-weight: 900; /* solid icons require this */
+    background: var(--second-gradient);
+    background-size: 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animate 10s ease-in-out infinite;
+    display: inline-block;
+}
+
+.set-head .set-k p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--second-gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
 }
 
 .set-head .set-close {
@@ -636,7 +716,8 @@ audio {
     cursor: pointer;
     border-radius: .3rem;
     font-size: 1.13rem;
-    transition: background .1s ease-in-out;
+    font-weight: 600;
+    transition: background .1s ease-in-out, color .1s ease-in-out;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -644,10 +725,11 @@ audio {
 
 .set-main li:hover {
     background: #4b494d;
+    color: #00ff7f;
 }
 
 .set-main li:active {
-    scale: .99;
+    scale: .98;
 }
 
 .link-bg,
@@ -686,27 +768,87 @@ audio {
 }
 
 .fetch-head p {
+    position: relative;
     font-size: 1.3rem;
+    font-weight: 600;
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.fetch-head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    font-weight: 600;
+    background: var(--gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
 }
 
 .wel-head p {
+    position: relative;
     font-size: 1.3rem;
+    font-weight: 600;
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.wel-head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    font-weight: 600;
+    background: var(--gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
 }
 
 .stream-head p {
-    font-size: 1.3rem;
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: 600;
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.stream-head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    font-weight: 600;
+    background: var(--gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
 }
 
 .fetch-head .close-fetch,
@@ -752,6 +894,7 @@ audio {
     word-spacing: 3px;
     border-radius: .3rem;
     margin-bottom: .5rem;
+    font-weight: 500;
 }
 
 .fetch-main .input {
@@ -767,6 +910,7 @@ audio {
     font-size: 1.13rem;
     background: rgba(30, 30, 30);
     padding: .3rem .5rem;
+    font-weight: 500;
     border-top-left-radius: .3rem;
     border-top-right-radius: .3rem;
 }
@@ -792,6 +936,7 @@ audio {
     white-space: nowrap;
     border-radius: .3rem;
     overflow: auto;
+    font-weight: 500;
     font-size: 1.13rem;
 }
 
@@ -810,6 +955,7 @@ audio {
     padding: .3rem .5rem;
     border-top-left-radius: .3rem;
     border-top-right-radius: .3rem;
+    font-weight: 500;
 }
 
 .stream-genre .genre {
@@ -1070,6 +1216,7 @@ audio {
 .loader-bg .loading-txt {
     font-size: 1.3rem;
     margin-top: .5rem;
+    font-weight: 600;
 }
 
 .load-app {
