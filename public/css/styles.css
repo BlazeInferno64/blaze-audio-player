@@ -133,6 +133,7 @@ audio {
 .app .head .header-img {
     width: 40px;
     height: 40px;
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -190,8 +191,33 @@ audio {
 .app .main .info .effect {
     width: 15px;
     height: 100%;
-    background: rgb(0, 255, 110);
+    background: rgb(28, 203, 104);
     border-radius: .3rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.effect-fluid {
+    border-radius: none;
+    height: 50%;
+    width: 100%;
+    background: hsl(146, 76%, 35%);
+    background-size: 200% 100%;
+    animation: flow 3s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes flow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 200% 100%;
+    }
 }
 
 .app .main .info .audio-details {
@@ -644,9 +670,12 @@ audio {
 }
 
 .gradient-icon::before {
-    content: "\f013"; /* Unicode for gear */
-    font-family: "Font Awesome 6 Free"; /* or correct FA font */
-    font-weight: 900; /* solid icons require this */
+    content: "\f013";
+    /* Unicode for gear */
+    font-family: "Font Awesome 6 Free";
+    /* or correct FA font */
+    font-weight: 900;
+    /* solid icons require this */
     background: var(--second-gradient);
     background-size: 400%;
     -webkit-background-clip: text;
@@ -1075,6 +1104,19 @@ audio {
     scale: .98;
 }
 
+.ck-opt {
+    background: transparent;
+    font-weight: 600;
+    gap: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .3rem .5rem;
+    border: 2px dashed #4b494d;
+    border-radius: .3rem;
+}
+
 .btn-wel {
     width: 100%;
     padding: .3rem .5rem;
@@ -1203,7 +1245,7 @@ audio {
     color: #fff;
 }
 
-.loader-bg .loader {
+/*.loader-bg .loader {
     width: 120px;
     height: 120px;
     border: 10px solid #2a2d2e;
@@ -1217,7 +1259,48 @@ audio {
     font-size: 1.3rem;
     margin-top: .5rem;
     font-weight: 600;
+}*/
+
+.loading-txt {
+    font-size: 1.3rem;
+    margin-top: .5rem;
+    font-weight: 600;
 }
+
+.loader {
+    border: 2px solid;
+    border-color: transparent rgb(5, 215, 138);
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    animation: rotation 2s linear infinite;
+}
+
+.loader::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 29px solid;
+    border-color: transparent rgb(5, 215, 138);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 
 .load-app {
     animation: open-app 1.5s ease-in-out;
@@ -1327,7 +1410,8 @@ audio {
 @media (max-width: 300px) {
 
     .fetch-card,
-    .wel-card {
+    .wel-card,
+    .stream-card {
         width: 93%;
     }
 }

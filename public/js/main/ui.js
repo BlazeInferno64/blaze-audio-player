@@ -68,6 +68,7 @@ const openFetchCard = () => {
 }
 
 const openStreamCard = () => {
+    uiIntent = "userOpenedStream"
     streamCard.classList.remove("none");
     streamBg.classList.remove("hide");
     streamCard.classList.add("ani");
@@ -172,6 +173,7 @@ const closeFetchCard = () => {
 }
 
 const closeStreamCard = () => {
+    uiIntent = "none";
     streamCard.classList.add("up");
     streamCard.classList.add("anti");
     setTimeout(() => {

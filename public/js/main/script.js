@@ -52,6 +52,13 @@ playerIcon.addEventListener("contextmenu", (e) => {
 let previousURL = null;
 let audioFileSelected = false;
 
+let audioLoadPhase = "idle";
+// "idle" | "loading" | "ready"
+
+let uiIntent = "none";
+// "none" | "userOpenedWelcome" | "userOpenedStream"
+
+
 const trimLastPart = (value) => {
     const trimmedValue = value.substring(value.lastIndexOf("/") + 1);
     return trimmedValue;
@@ -89,6 +96,40 @@ const trimFileName = (filename) => {
     return filename.substring(0, index);
 }
 
+const formatBytes = (bytes) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toFixed(2) + " " + sizes[i];
+};
+
+let totalResources = 0;
+let loadedResources = 0;
+let loaderInterval = null;
+
+const updateLoaderPercentage = () => {
+    const resources = performance.getEntriesByType("resource");
+
+    // Set total only once
+    if (totalResources === 0 && resources.length > 0) {
+        totalResources = resources.length;
+    }
+
+    // Count loaded resources
+    loadedResources = resources.filter(r => r.responseEnd > 0).length;
+
+    // Prevent divide by zero
+    if (totalResources > 0) {
+        const percent = Math.min(
+            Math.round((loadedResources / totalResources) * 100),
+            99
+        );
+
+        loadingText.innerText = `Loading... (${percent}%)`;
+    }
+};
+
 const initialBackground = {
     head: appHead.style.backgroundImage,
     bannerBg: appBannerBg.style.backgroundImage,
@@ -113,9 +154,11 @@ const displayMetaData = (tag, file) => {
             base64String += String.fromCharCode(picture.data[i]);
         }
         const imgURL = `data:${picture.format};base64,${window.btoa(base64String)}`;
+        
         appHead.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
         appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
         appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
+
         audioTrackName.innerText = `${artist} - ${title}`;
         artistName.innerText = `${artist}`;
     } else if (artist && title && !picture) {
@@ -147,6 +190,7 @@ const readMediaData = (file) => {
 
 const getAudioFile = async (file, audioURL) => {
     try {
+        audioLoadPhase = "loading";
         audio.src = audioURL;
         audio.load();
         console.log(audioURL);
@@ -188,20 +232,30 @@ audio.addEventListener("error", (e) => {
 })
 
 // You can also call this function when the audio is loaded
-audio.addEventListener("canplaythrough", async (e) => {
-    if (audio.src) {
+audio.addEventListener("canplaythrough", async () => {
+    // gnore if this is not a real new load
+    if (!audio.src) return;
+
+    audioLoadPhase = "ready";
+
+    // Only auto-close if user didn't open anything
+    if (uiIntent === "none") {
         closeSetCard();
-        await audio.play();
-        visualize();
         closeWelcomeCard();
         closeStreamCard();
-        updateTiming(); // Initial call to set the max timer
-        updateBufferedBar()
-
-        const defaultTitle = titleName.innerText.split("|")[1].trim();
-        titleName.innerText = `${audioTrackName.innerText} | ${defaultTitle}`;
+        closeFetchCard();
     }
-})
+
+    await audio.play();
+    visualize();
+
+    updateTiming();
+    updateBufferedBar();
+
+    const defaultTitle = titleName.innerText.split("|")[1].trim();
+    titleName.innerText = `${audioTrackName.innerText} | ${defaultTitle}`;
+});
+
 
 audio.addEventListener("progress", (e) => {
     if (audio.buffered.length > 0) {
@@ -223,6 +277,7 @@ audio.addEventListener("loadedmetadata", updateBufferedBar);
 audio.addEventListener("playing", updateBufferedBar);
 
 audio.addEventListener("play", (e) => {
+    isPlaying = true;
     console.log('Audio is playing!');
     playPauseCheckBox.checked = false;
     isUpdating = true; // Set the flag to true
@@ -231,8 +286,10 @@ audio.addEventListener("play", (e) => {
 })
 
 audio.addEventListener("pause", (e) => {
+    isPlaying = false;
     console.log('Audio is pasued!');
     playPauseCheckBox.checked = true;
+    lastBeatTime = 0;
 })
 
 // Ensure to stop the update loop when the audio ends
@@ -345,6 +402,7 @@ selectBtn.addEventListener("click", async (e) => {
 window.addEventListener("DOMContentLoaded", (e) => {
     volumeSlider.value = audio.volume * 100;
     volumeSliderText.innerText = `${volumeSlider.value}%`;
+    return drawCaps();
 })
 
 // Event listener for beforeunload to prevent unwanted page refresh/reload
@@ -364,8 +422,27 @@ window.addEventListener("beforeunload", (e) => {
 
 let appReady = false;
 
+const loadingInterval = setInterval(updateLoaderPercentage, 100);
+
 window.addEventListener("load", (e) => {
-    let count = 0;
+    clearInterval(loadingInterval);
+
+    clearInterval(loaderInterval);
+
+    loadingText.innerText = "Loading... (100%)";
+
+    setTimeout(() => {
+        loaderBg.classList.add("hide");
+        app.classList.add("open");
+        appMenu.classList.add("load-app");
+        appReady = true;
+    }, 300);
+    setTimeout(() => {
+        return openWelcomeCard();
+    }, 800);
+
+    console.log("App is ready!");
+    /*let count = 0;
     let counter = setInterval(() => {
         count++;
         loadingText.innerText = `Loading...(${count}%)`;
@@ -381,7 +458,11 @@ window.addEventListener("load", (e) => {
                 openWelcomeCard();
             }, 1500);
         }
-    }, 70);
+    }, 70);*/
+    /*loaderBg.classList.add("hide");
+    app.classList.add("open");
+    appMenu.classList.add("load-app");
+    appReady = true; // Set appReady to true after loading is complete*/
     console.log("App is ready!");
 })
 
@@ -428,6 +509,7 @@ welcomeStreamBtn.addEventListener("click", (e) => {
     return streamBtn.click();
 })
 
+
 let isDragging = false; // Flag to track if the user is dragging the progress bar
 
 // Function to handle mouse down event
@@ -451,23 +533,34 @@ window.addEventListener("mouseup", () => {
 
 // Function to update the current time based on mouse position
 const updateCurrentTime = (e) => {
-    const progressWidth = progressBar.clientWidth; // Get the width of the progress bar
+    /*const progressWidth = progressBar.clientWidth; // Get the width of the progress bar
     const offsetX = e.clientX - progressBar.getBoundingClientRect().left; // Get the mouse position relative to the progress bar
     const percentage = offsetX / progressWidth; // Calculate the percentage of the progress bar
-    audio.currentTime = percentage * audio.duration; // Update the audio's current time
-    audio.play(); // Optionally play the audio when seeking
+    audio.currentTime = percentage * audio.duration;*/ // Update the audio's current time
+    //audio.play(); // Optionally play the audio when seeking
+    const rect = progressBar.getBoundingClientRect();
+    const progressWidth = rect.width;
+    const offsetX = e.clientX - rect.left;
+
+    // Clamp between 0 and 1
+    const percentage = Math.min(Math.max(offsetX / progressWidth, 0), 1);
+
+    audio.currentTime = percentage * audio.duration;
 };
 
+// This part has been deprecated since the progress bar already handles the 'mousedown' event
 // Existing progress bar click event
-progressBar.addEventListener("click", (e) => {
-    if (!isDragging) { // Only update if not dragging
+/*progressBar.addEventListener("click", (e) => {
+    if (isDragging) return;
+    updateCurrentTime(e);
+    /*if (!isDragging) { // Only update if not dragging
         updateCurrentTime(e); // Update the current time on click
     }
     let progressWidth = progressBar.clientWidth;
     let OffsetX = e.offsetX;
-    audio.currentTime = (OffsetX / progressWidth) * audio.duration;
-    audio.play();
-})
+    audio.currentTime = (OffsetX / progressWidth) * audio.duration;*/
+    //audio.play();
+//})
 
 // Function to handle touch start event
 progressBar.addEventListener("touchstart", (e) => {

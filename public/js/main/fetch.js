@@ -30,23 +30,22 @@ const radioURL = `https://radio-station-v2.vercel.app/api/`;
 // Build radio URL with optional genre query parameter
 const buildRadioURL = () => {
     try {
-        // const base = new URL(radioURL);
-        const genreEl = audioGenre;
-        /*if (genreEl && genreEl.value) {
-            base.searchParams.set('genre', genreEl.value);
-        }
-        console.log(base.toString());
-        return base.toString();*/
-        const radioURL = `${radioURL}${genreEl && genreEl.value ? encodeURIComponent(genreEl.value) : 'house'}`;
-        console.log(radioURL)
-        return radioURL;
+        const genre = audioGenre && audioGenre.value
+            ? encodeURIComponent(audioGenre.value)
+            : 'house';
+
+        const finalURL = `${radioURL}${genre}`;
+        console.log(finalURL);
+        return finalURL;
 
     } catch (e) {
-        // fallback to plain string if URL constructor fails
-        if (audioGenre && audioGenre.value) return `${radioURL}${encodeURIComponent(audioGenre.value)}`;
+        if (audioGenre && audioGenre.value) {
+            return `${radioURL}${encodeURIComponent(audioGenre.value)}`;
+        }
         return radioURL;
     }
-}
+};
+
 
 const validateURL = (url) => {
     try {

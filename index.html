@@ -9,7 +9,7 @@
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="cyan" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black" />
     <meta name="author" content="BlazeInferno64">
-    <meta name="description" content="Free & Open source browser based custom advanced audio player" />
+    <meta name="description" content="Free & Open source audio player directly accessible from your browser!" />
 
     <title id="title-name">Blaze Audio Player | Free & Open source audio player directly accessible from your browser!
     </title>
@@ -18,7 +18,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Blaze Audio Player" />
     <meta property="og:title" content="Blaze Audio Player" />
-    <meta property="og:description" content="Free & Open source browser based custom advanced audio player" />
+    <meta property="og:description" content="Free & Open source audio player directly accessible from your browser!" />
     <meta property="og:image" content="./public/img/icon.png" />
     <meta property="og:icon" content="./public/img/icon.png" />
     <meta property="og:url" content="https://blaze-audio-player.vercel.app" />
@@ -28,7 +28,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@RedFlame64" />
     <meta name="twitter:title" content="Blaze Audio Player" />
-    <meta name="twitter:description" content="Free & Open source browser based custom advanced audio player" />
+    <meta name="twitter:description" content="Free & Open source audio player directly accessible from your browser!" />
     <meta name="twitter:image" content="./public/img/icon.png" />
 
 
@@ -41,14 +41,19 @@
 
 <body>
     <!-- Last updated date will be shown here -->
-    <p id="dt">Last updated: <time datetime="2025-01-23T17:05:00+05:30">January 23, 2025, 05:05 PM IST</time></p>
+    <!--<p id="dt">Last updated: <time datetime="2025-01-23T17:05:00+05:30">January 23, 2025, 05:05 PM IST</time></p>-->
     <input type="file" name="audio" id="file" class="file" accept="audio/*" />
     <audio hidden src="" id="audio" class="audio"></audio>
     <!--Designing the loader here-->
     <div class="loader-bg">
-        <div class="loader"></div>
+        <!--<div class="loader"></div>
         <p class="loading-txt">
             Loading... (0%)
+        </p>-->
+        <span class="loader"></span>
+        <br>
+        <p class="loading-txt">
+            Loading...
         </p>
     </div>
     <!--Design Structure of the App-->
@@ -66,7 +71,9 @@
                 </div>
                 <div class="info">
                     <div class="effect">
-                        <div class="effect-fluid"></div>
+                        <div class="effect-fluid">
+                            
+                        </div>
                     </div>
                     <div class="audio-details">
                         <marquee>
@@ -275,9 +282,11 @@
                             Not Streaming currently
                         </p>
                     </div>
-                    <input title="When checked, next track will be automatically played" class="nxt-trck"
-                        type="checkbox" checked name="next-track" id="nxt-track" />
-                    <p>Automatically play next track</p>
+                    <div class="ck-opt">
+                        <input title="When checked, next track will be automatically played" class="nxt-trck"
+                            type="checkbox" checked name="next-track" id="nxt-track" />
+                        <p>Automatically play next track</p>
+                    </div>
                 </div>
                 <div class="stream-btns">
                     <button class="stream">
