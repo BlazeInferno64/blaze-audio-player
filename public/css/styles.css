@@ -88,21 +88,48 @@ audio {
 }
 
 .app .head {
-    background-image: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, .3)), url("../img/bg2.jpg");
-    background-attachment: fixed;
+    position: relative;
+    background-image: url("../img/bg2.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+
     width: 100%;
     padding: .5rem 1rem;
     text-align: center;
     gap: 5px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+
+    overflow: hidden;
 }
 
-.app .head p {
+.app .head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    /* dark tint */
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    /* Safari */
+    z-index: 0;
+}
+
+.app .head * {
+    position: relative;
+    z-index: 1;
+}
+
+
+.app .head-div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app .head .head-div p {
     position: relative;
     font-size: 1.3rem;
     font-weight: 600;
@@ -113,7 +140,7 @@ audio {
     animation: animate 10s ease-in-out infinite;
 }
 
-.app .head p::after {
+.app .head .head-div p::after {
     position: absolute;
     content: attr(data-text);
     top: 0;
@@ -130,11 +157,30 @@ audio {
     animation: animate 10s ease-in-out infinite;
 }
 
-.app .head .header-img {
+.app .head .head-div .header-img {
     width: 40px;
     height: 40px;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.active {
+    font-size: .85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.active-logo {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 10px;
+    height: 10px;
+    background: #a6a3a9;
+    border-radius: 50%;
 }
 
 .app .main {
@@ -152,18 +198,20 @@ audio {
     background-repeat: no-repeat;
     background-position: center;
     width: 100%;
-    height: fit-content;
-    padding: .1rem .1rem 0rem .1rem;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .app .main .banner {
     background-image: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, .2)), url("../img/bg2.jpg");
-    background-attachment: fixed;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     width: 100%;
-    height: 250px;
+    height: 300px;
     display: flex;
     align-items: end;
     flex-direction: row;
@@ -348,10 +396,10 @@ audio {
 .forward,
 .backward {
     font-size: 1.5rem;
-    color: #fff;
+    color: #dedede;
 }
 
-/* Smaller button container (like Spotify/YT) */
+
 .playpause-bg {
     cursor: pointer;
     display: flex;
@@ -374,35 +422,29 @@ audio {
     justify-content: center;
 }
 
-/* SMALL ICON (main change!) */
 .playpause label {
     width: 0;
     height: 22px;
-    /* smaller height */
     border-color: transparent transparent transparent rgba(30, 30, 30);
     border-style: double;
     border-width: 0px 0 0px 18px;
-    /* smaller triangle width */
     transition: 120ms all ease-in-out;
     cursor: pointer;
 }
 
-/* Hide checkbox */
 .playpause input[type="checkbox"] {
     position: absolute;
     left: -9999px;
 }
 
-/* SMALL PLAY → PAUSE TRANSITION */
 .playpause input[type="checkbox"]:checked+label {
     border-style: solid;
     border-width: 11px 0 11px 18px;
-    /* smaller pause bars */
 }
 
 .forward:hover,
 .backward:hover {
-    color: hsl(0, 0%, 70%);
+    color: hsl(0, 0%, 57%);
 }
 
 .playpause-bg:active,
@@ -425,14 +467,40 @@ audio {
     cursor: pointer;
     font-size: 1.13rem;
     font-weight: 600;
+    position: relative;
+    border-radius: .4rem;
+    transition: all .25s ease;
+}
+
+.app .main .options li::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(circle at center, rgba(0, 255, 127, .5), transparent 60%);
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity .3s ease;
+    z-index: 0;
+}
+
+.app .main .options li * {
+    position: relative;
+    z-index: 1;
 }
 
 .app .main .options li:hover {
-    color: hsl(0, 0%, 70%);
+    color: #00ff7f;
+    background: rgba(0, 255, 127, 0.08);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 255, 127, 0.25);
+}
+
+.app .main .options li:hover::after {
+    opacity: 1;
 }
 
 .app .main .options li:active {
-    scale: .97;
+    transform: translateY(0px) scale(.97);
 }
 
 .app .vol-bg {
@@ -746,20 +814,54 @@ audio {
     border-radius: .3rem;
     font-size: 1.13rem;
     font-weight: 600;
-    transition: background .1s ease-in-out, color .1s ease-in-out;
     display: flex;
     align-items: center;
     gap: 10px;
+
+    position: relative;
+    overflow: hidden;
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s ease,
+        box-shadow 0.25s ease;
+}
+
+.set-main li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(135deg, #00ff7f, #00bfff);
+    opacity: 0.12;
+    transition: width 0.3s ease;
+    z-index: 0;
+}
+
+
+.set-main li * {
+    position: relative;
+    z-index: 1;
 }
 
 .set-main li:hover {
-    background: #4b494d;
+    background: rgba(75, 73, 77, 0.6);
     color: #00ff7f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 255, 127, 0.15);
+}
+
+
+.set-main li:hover::before {
+    width: 100%;
 }
 
 .set-main li:active {
-    scale: .98;
+    transform: scale(0.98);
 }
+
 
 .link-bg,
 .stream-bg {
@@ -967,6 +1069,19 @@ audio {
     overflow: auto;
     font-weight: 500;
     font-size: 1.13rem;
+}
+
+.stream-abt {
+    width: 100%;
+    padding: .3rem .5rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border: 3px dashed #4b4b4b;
+    margin-bottom: .5rem;
+    font-size: .95rem;
+    border-radius: .3rem;
+    color: #00ff7f;
 }
 
 .stream-genre {
@@ -1336,6 +1451,22 @@ audio {
     animation: anti-pop 1s ease-in-out;
 }
 
+.success {
+    background: #00ff7f;
+}
+
+.warn {
+    background: yellow;
+}
+
+.error {
+    background: rgb(255, 0, 72);
+}
+
+.afk {
+    background: #a6a3a9;
+}
+
 /* Animation keyframes */
 @keyframes animate {
     0% {
@@ -1418,7 +1549,15 @@ audio {
 
 @media (max-width: 450px) {
     .app {
-        width: 93%;
+        width: 95%;
+    }
+
+    .active {
+        font-size: .66rem;
+    }
+
+    .app .head-div {
+        gap: 5px;
     }
 }
 

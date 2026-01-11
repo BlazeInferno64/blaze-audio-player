@@ -43,14 +43,14 @@
     <!-- Last updated date will be shown here -->
     <!--<p id="dt">Last updated: <time datetime="2025-01-23T17:05:00+05:30">January 23, 2025, 05:05 PM IST</time></p>-->
     <input type="file" name="audio" id="file" class="file" accept="audio/*" />
-    <audio hidden src="" id="audio" class="audio"></audio>
+    <audio hidden src="" id="audio" class="audio" crossorigin="anonymous"></audio>
     <!--Designing the loader here-->
     <div class="loader-bg">
-        <!--<div class="loader"></div>
+    <!--<div class="loader"></div>
         <p class="loading-txt">
             Loading... (0%)
         </p>-->
-        <span class="loader"></span>
+    <span class="loader"></span>
         <br>
         <p class="loading-txt">
             Loading...
@@ -60,10 +60,19 @@
     <div class="app">
         <div class="bg">
             <div class="head">
-                <img class="header-img" src="./public/img/icon.png" alt="">
-                <p data-text="Blaze Audio Player" title="Blaze Audio Player">
-                    Blaze Audio Player
-                </p>
+                <div class="active" title="Currently you are offline!">
+                    <span class="active-logo"></span>
+                    <p id="active-count">
+                        Offline
+                    </p>
+                </div>
+                <div class="head-div">
+                    <img class="header-img" src="./public/img/icon.png" alt="">
+                    <p data-text="Blaze Audio Player" title="Blaze Audio Player">
+                        Blaze Audio Player
+                    </p>
+                </div>
+                <span></span>
             </div>
             <div class="main">
                 <div class="banner-bg">
@@ -72,7 +81,7 @@
                 <div class="info">
                     <div class="effect">
                         <div class="effect-fluid">
-                            
+
                         </div>
                     </div>
                     <div class="audio-details">
@@ -274,6 +283,7 @@
                             <option value="dubstep">Dubstep</option>
                             <option value="fhouse">Future House</option>
                             <option value="dhouse">Deep House</option>
+                            <option value="uhouse">Underground House</option>
                             <option value="techno">Techno</option>
                         </select>
                     </div>
@@ -281,6 +291,9 @@
                         <p class="track-label">
                             Not Streaming currently
                         </p>
+                    </div>
+                    <div title="No data" class="stream-abt">
+                        No data available!
                     </div>
                     <div class="ck-opt">
                         <input title="When checked, next track will be automatically played" class="nxt-trck"
@@ -358,6 +371,7 @@
     </script>
     <!--Loading the scripts-->
     <script defer src="./public/js/main/ui.js"></script>
+    <script defer src="./public/js/main/ws.js"></script>
     <script defer src="./public/js/main/fetch.js"></script>
     <script defer src="./public/js/main/script.js"></script>
     <script defer src="./public/js/main/visualizer.js"></script>

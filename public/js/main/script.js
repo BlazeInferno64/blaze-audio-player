@@ -45,6 +45,8 @@ const welcomeStreamBtnText = document.querySelector(".wel-p");
 
 const playerIcon = document.querySelector(".header-img");
 
+const appName = `Blaze Audio Player`;
+
 playerIcon.addEventListener("contextmenu", (e) => {
     return e.preventDefault();
 })
@@ -155,7 +157,7 @@ const displayMetaData = (tag, file) => {
         }
         const imgURL = `data:${picture.format};base64,${window.btoa(base64String)}`;
         
-        appHead.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
+        appHead.style.backgroundImage = `url("${imgURL}")`;
         appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
         appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
 
@@ -182,6 +184,7 @@ const readMediaData = (file) => {
             return displayMetaData(tag, file);
         },
         onError: (error) => {
+            console.error(error);
             alert(`There was an error while reading metadata of the selected audio file!\nIt might be due to the file being corrupted/damaged\nPlease try again with a fresh uncorrupted copy of the audio file\nIf you believe this is an bug/issue please report it!`);
         }
     });
@@ -222,6 +225,7 @@ const updateBufferedBar = () => {
         audioBuffered.style.width = `${percentage.toFixed(0)}%`;
         console.log(`Audio buffered length: ${audio.buffered.length}`);
         console.log(`Details\n${audio.buffered.end(0), audio.duration}`);
+        console.log(`Audio Buffered: ${percentage.toFixed(0)}%`)
     }
 };
 
@@ -253,7 +257,7 @@ audio.addEventListener("canplaythrough", async () => {
     updateBufferedBar();
 
     const defaultTitle = titleName.innerText.split("|")[1].trim();
-    titleName.innerText = `${audioTrackName.innerText} | ${defaultTitle}`;
+    titleName.innerText = `${audioTrackName.innerText} | Now playing in ${appName} | ${defaultTitle}`;
 });
 
 
@@ -402,6 +406,7 @@ selectBtn.addEventListener("click", async (e) => {
 window.addEventListener("DOMContentLoaded", (e) => {
     volumeSlider.value = audio.volume * 100;
     volumeSliderText.innerText = `${volumeSlider.value}%`;
+    initPresenceSocket();
     return drawCaps();
 })
 
@@ -439,38 +444,25 @@ window.addEventListener("load", (e) => {
     }, 300);
     setTimeout(() => {
         return openWelcomeCard();
-    }, 800);
+    }, 500);
 
     console.log("App is ready!");
-    /*let count = 0;
-    let counter = setInterval(() => {
-        count++;
-        loadingText.innerText = `Loading...(${count}%)`;
-        if (count >= 100) {
-            clearInterval(counter);
-            setTimeout(() => {
-                loaderBg.classList.add("hide");
-                app.classList.add("open");
-                appMenu.classList.add("load-app");
-                appReady = true; // Set appReady to true after loading is complete
-            }, 1000);
-            return setTimeout(() => {
-                openWelcomeCard();
-            }, 1500);
-        }
-    }, 70);*/
-    /*loaderBg.classList.add("hide");
+    loaderBg.classList.add("hide");
     app.classList.add("open");
     appMenu.classList.add("load-app");
-    appReady = true; // Set appReady to true after loading is complete*/
+    appReady = true; // Set appReady to true after loading is complete
     console.log("App is ready!");
 })
 
+const audioCurrentName = audioTrackName.innerText;
+
 window.addEventListener("dragover", (e) => {
+    audioTrackName.innerText = "Release your audio file here to start playing!";
     if (appReady) return e.preventDefault();
 })
 
 window.addEventListener("dragleave", (e) => {
+    audioTrackName.innerText = audioTrackName.dataset.original || "No track playing";
     if (appReady) return e.preventDefault();
 })
 
@@ -484,7 +476,7 @@ const handleDrop = async (event) => {
         const droppedFile = event.dataTransfer.files[0];
 
         if (!droppedFile.type.startsWith("audio/")) {
-            return alert("The selected file isn't a valid audio file!");
+            return alert(`That file isn’t a valid audio format! Please drop an MP3, WAV, or similar file!`);
         }
         if (droppedFile) {
             streaming = false;  // <-- Disconnect streaming when dropping a local file

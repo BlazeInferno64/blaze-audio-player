@@ -102,6 +102,21 @@ const fetchAudioFile = async (url) => {
     }
 }
 
+const isValidAudioStream = async (url) => {
+    try {
+        const res = await fetch(url, {
+            headers: { Range: "bytes=0-1023" }
+        });
+
+        if (!res.ok) return false;
+
+        const contentType = res.headers.get("content-type");
+        return contentType && contentType.startsWith("audio/");
+    } catch {
+        return false;
+    }
+}
+
 const streamAudioFile = async (url) => {
     try {
         const response = await fetch(url, {
@@ -110,8 +125,16 @@ const streamAudioFile = async (url) => {
         const data = await response.json();
         const streamURL = data.url;
         const name = data.name;
-        const audioBlob = await fetch(streamURL).then(res => res.blob());
-        if (!audioBlob.type.startsWith('audio/')) {
+        //const audioBlob = await fetch(streamURL).then(res => res.blob());
+        /*if (!audioBlob.type.startsWith('audio/')) {
+            alert(`The response isn't a valid audio file!`);
+            console.error(`Not a valid audio response!`);
+            streamResult.classList.add("normal");
+            streamResult.classList.remove("err");
+            streamResult.classList.remove("ok");
+            return streamResult.innerText = `Request was successfull! But didn't received a valid audio file as response!`
+        }*/
+        if (!isValidAudioStream(streamURL)) {
             alert(`The response isn't a valid audio file!`);
             console.error(`Not a valid audio response!`);
             streamResult.classList.add("normal");
@@ -119,8 +142,8 @@ const streamAudioFile = async (url) => {
             streamResult.classList.remove("ok");
             return streamResult.innerText = `Request was successfull! But didn't received a valid audio file as response!`
         }
-        const audioURL = URL.createObjectURL(audioBlob);
-        audio.src = audioURL;
+        //const audioURL = URL.createObjectURL(audioBlob);
+        audio.src = streamURL;
         await audio.load();
         streaming = true;
         artistName.innerText = 'Connected to Radio Stream!';
