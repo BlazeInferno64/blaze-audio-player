@@ -144,19 +144,66 @@ const resetBackgroundToInitial = () => {
     appBanner.style.backgroundImage = initialBackground.banner;
 };
 
+const resetMediaSessionHandlers = () => {
+    if ('mediaSession' in navigator) {
+        try {
+            navigator.mediaSession.setActionHandler('play', null);
+            navigator.mediaSession.setActionHandler('pause', null);
+            navigator.mediaSession.setActionHandler('seekbackward', null);
+            navigator.mediaSession.setActionHandler('seekforward', null);
+            navigator.mediaSession.setActionHandler('previoustrack', null);
+            navigator.mediaSession.setActionHandler('nexttrack', null);
+        } catch (error) {
+            console.log('Error resetting media session handlers:', error);
+        }
+    }
+};
+
 const displayMetaData = (tag, file) => {
+    resetMediaSessionHandlers();
     const title = tag.tags.title;
     const artist = tag.tags.artist;
     const album = tag.tags.album;
     const picture = tag.tags.picture;
+
+    let imgURL = "./public/img/icon.png";
+
+    let media;
+
+    if ("mediaSession" in navigator) {
+        media = new MediaMetadata({
+            title: "Unknown Title",
+            artist: "Unknown Artist",
+            album: 'Unknown Album',
+            artwork: []
+        });
+    }
 
     if (artist && title && picture) {
         var base64String = '';
         for (let i = 0; i < picture.data.length; i++) {
             base64String += String.fromCharCode(picture.data[i]);
         }
-        const imgURL = `data:${picture.format};base64,${window.btoa(base64String)}`;
-        
+        imgURL = `data:${picture.format};base64,${window.btoa(base64String)}`;
+
+        if (media) {
+            media.album = album || 'Unknown Album';
+            media.title = title || 'Unknown Title';
+            media.artist = artist || 'Unknown Artist';
+            media.artwork = [
+                {
+                    src: imgURL,
+                    sizes: '512x512',
+                    type: picture.format
+                }
+            ]
+            navigator.mediaSession.metadata = media;
+            navigator.mediaSession.setActionHandler('play', () => audio.play());
+            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
+            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
+        }
+
         appHead.style.backgroundImage = `url("${imgURL}")`;
         appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
         appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
@@ -164,6 +211,24 @@ const displayMetaData = (tag, file) => {
         audioTrackName.innerText = `${artist} - ${title}`;
         artistName.innerText = `${artist}`;
     } else if (artist && title && !picture) {
+
+        if (media) {
+            media.album = album || 'Unknown Album';
+            media.title = `${artist} - ${title}`;
+            media.artist = artist || 'Unknown Artist';
+            media.artwork = [
+                {
+                    src: initialBackground.bannerBg,
+                    sizes: '512x512',
+                    type: picture.format
+                }
+            ]
+            navigator.mediaSession.metadata = media;
+            navigator.mediaSession.setActionHandler('play', () => audio.play());
+            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
+            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
+        }
         audioTrackName.innerText = `${artist} - ${title}`;
         artistName.innerText = `${artist}`;
         // Revert to initial background styles if no picture is found
@@ -171,6 +236,23 @@ const displayMetaData = (tag, file) => {
         appBannerBg.style.backgroundImage = initialBackground.bannerBg;
         appBanner.style.backgroundImage = initialBackground.banner;
     } else {
+        if (media) {
+            media.album = album || 'Unknown Album';
+            media.title = `${audioTrackName.innerText}`;
+            media.artist = artist || 'Unknown Artist';
+            media.artwork = [
+                {
+                    src: initialBackground.bannerBg,
+                    sizes: '512x512',
+                    type: 'image/png'
+                }
+            ]
+            navigator.mediaSession.metadata = media;
+            navigator.mediaSession.setActionHandler('play', () => audio.play());
+            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
+            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
+        }
         // Revert to initial background styles if no metadata is found
         appHead.style.backgroundImage = initialBackground.head;
         appBannerBg.style.backgroundImage = initialBackground.bannerBg;
@@ -551,7 +633,7 @@ const updateCurrentTime = (e) => {
     let progressWidth = progressBar.clientWidth;
     let OffsetX = e.offsetX;
     audio.currentTime = (OffsetX / progressWidth) * audio.duration;*/
-    //audio.play();
+//audio.play();
 //})
 
 // Function to handle touch start event

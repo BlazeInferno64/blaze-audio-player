@@ -117,6 +117,106 @@ const isValidAudioStream = async (url) => {
     }
 }
 
+const resetMediaSession = () => {
+    if ('mediaSession' in navigator) {
+        try {
+            // Clear all handlers
+            navigator.mediaSession.setActionHandler('play', null);
+            navigator.mediaSession.setActionHandler('pause', null);
+            navigator.mediaSession.setActionHandler('seekbackward', null);
+            navigator.mediaSession.setActionHandler('seekforward', null);
+            navigator.mediaSession.setActionHandler('previoustrack', null);
+            navigator.mediaSession.setActionHandler('nexttrack', null);
+            navigator.mediaSession.metadata = null;
+        } catch (error) {
+            console.log('Error resetting media session:', error);
+        }
+    }
+};
+
+const updateStreamMediaSession = () => {
+    resetMediaSession();
+    if ('mediaSession' in navigator) {
+        try {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: audioTrackName.innerText || 'Unknown',
+                artist: 'Unknown',
+                album: 'Unknown',
+                artwork: [
+                    {
+                        src: 'https://picsum.photos/96',
+                        sizes: '96x96',
+                        type: 'image/jpeg'
+                    },
+                    {
+                        src: 'https://picsum.photos/128',
+                        sizes: '128x128',
+                        type: 'image/jpeg'
+                    },
+                    {
+                        src: 'https://picsum.photos/192',
+                        sizes: '192x192',
+                        type: 'image/jpeg'
+                    },
+                    {
+                        src: 'https://picsum.photos/256',
+                        sizes: '256x256',
+                        type: 'image/jpeg'
+                    },
+                    {
+                        src: 'https://picsum.photos/512',
+                        sizes: '512x512',
+                        type: 'image/jpeg'
+                    }
+                ]
+            });
+
+            // Set action handlers with error handling
+            try {
+                navigator.mediaSession.setActionHandler('play', () => audio.play());
+            } catch (error) {
+                console.log('play handler not supported');
+            }
+            
+            try {
+                navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+            } catch (error) {
+                console.log('pause handler not supported');
+            }
+            
+            try {
+                navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
+            } catch (error) {
+                console.log('seekbackward handler not supported');
+            }
+            
+            try {
+                navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
+            } catch (error) {
+                console.log('seekforward handler not supported');
+            }
+            
+            try {
+                navigator.mediaSession.setActionHandler('previoustrack', () => {
+                    if (streaming) streamNextAudioFile.click();
+                });
+            } catch (error) {
+                console.log('previoustrack handler not supported');
+            }
+            
+            try {
+                navigator.mediaSession.setActionHandler('nexttrack', () => {
+                    if (streaming) streamNextAudioFile.click();
+                });
+            } catch (error) {
+                console.log('nexttrack handler not supported');
+            }
+        } catch (error) {
+            console.log('MediaMetadata not supported on this device:', error);
+        }
+    }
+};
+
 const streamAudioFile = async (url) => {
     try {
         const response = await fetch(url, {
@@ -154,6 +254,7 @@ const streamAudioFile = async (url) => {
         audioTrackName.innerText = name || trimLastPart(url) || 'Unknown Audio File';
         audioFileSelected = true;
         resetBackgroundToInitial();
+        updateStreamMediaSession();
     } catch (error) {
         streamResult.classList.remove("normal");
         streamResult.classList.add("err");
