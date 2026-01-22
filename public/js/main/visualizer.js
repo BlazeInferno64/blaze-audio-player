@@ -96,19 +96,31 @@ const visualize = () => {
                 }
                 kickEnergy /= kickBins;
 
-                const beatThreshold = bassAvg * 0.9;
+                /* ---- Mid-range energy (for complex D&B patterns) ---- */
+                let midEnergy = 0;
+                const midStart = 15;
+                const midEnd = 30;
+                for (let i = midStart; i <= midEnd; i++) {
+                    midEnergy += dataArray[i];
+                }
+                midEnergy /= (midEnd - midStart + 1);
+                midEnergy *= 0.4; // Weight it less than kick
+
+                const totalBassEnergy = kickEnergy + midEnergy;
+
+                const beatThreshold = Math.max(bassAvg * 0.8 + 10, totalBassEnergy * 0.75);
 
                 /* ---- Beat detection + BPM smoothing ---- */
                 if (
                     kickEnergy > beatThreshold &&
-                    now - lastBeatTime > 300
+                    now - lastBeatTime > 150
                 ) {
                     if (lastBeatTime !== 0) {
                         const interval = now - lastBeatTime;
                         let detectedBPM = 60000 / interval;
 
                         while (detectedBPM < 80) detectedBPM *= 2;
-                        while (detectedBPM > 180) detectedBPM /= 2;
+                        while (detectedBPM > 220) detectedBPM /= 2;
 
                         beatIntervals.push(detectedBPM);
                         if (beatIntervals.length > MAX_INTERVALS) {
@@ -138,16 +150,16 @@ const visualize = () => {
                 // const bpmPulse = Math.sin(gridPhase * Math.PI * 2) * 0.15;
 
                 // Punchy kick-style pulse (recommended)
-                const bpmPulse = Math.exp(-gridPhase * 6) * 0.25;
+                const bpmPulse = Math.exp(-gridPhase * 6) * 0.25 + (1 - gridPhase) * 0.05;
 
                 const targetScale =
                     1 +
-                    (bassAvg / 255) * 0.35 +
+                    (bassAvg / 255) * 0.5 +
                     bpmPulse;
 
                 /* ---- Premium attack / decay ---- */
-                const attackSpeed = 0.45;
-                const decaySpeed = 0.08;
+                const attackSpeed = 0.65;
+                const decaySpeed = 0.12;
 
                 if (targetScale > smoothScale) {
                     smoothScale +=
@@ -157,11 +169,14 @@ const visualize = () => {
                         (targetScale - smoothScale) * decaySpeed;
                 }
             } else {
-                // Pause → smoothly settle
-                smoothScale += (1 - smoothScale) * 0.15;
+                // Stop → smoothly settle back to 1
+                smoothScale += (1 - smoothScale) * 0.2;
+                if (Math.abs(smoothScale - 1) < 0.01) {
+                    smoothScale = 1; // Lock to 1 when close enough
+                }
             }
 
-            smoothScale = Math.max(1, smoothScale);
+            smoothScale = Math.max(1, Math.min(smoothScale, 2.5));
             effectFluid.style.transform = `scale(${smoothScale})`;
         }
 

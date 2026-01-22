@@ -11,6 +11,7 @@ const FILES_TO_CACHE = [
     '/public/js/main/script.js',
     '/public/js/main/visualizer.js',
     '/public/js/main/ws.js',
+    '/public/js/main/github-client.js',
     '/public/js/media-parser/jsmediatags.min.js',
     '/manifest.json',
     '/public/img/icon.png',

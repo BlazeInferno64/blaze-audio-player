@@ -45,6 +45,9 @@ const welcomeStreamBtnText = document.querySelector(".wel-p");
 
 const playerIcon = document.querySelector(".header-img");
 
+const downloadAppBtn = document.querySelector(".down-set");
+const lastUpdate = document.querySelector(".last-update");
+
 const appName = `Blaze Audio Player`;
 
 playerIcon.addEventListener("contextmenu", (e) => {
@@ -53,6 +56,7 @@ playerIcon.addEventListener("contextmenu", (e) => {
 
 let previousURL = null;
 let audioFileSelected = false;
+let deferedPrompt;
 
 let audioLoadPhase = "idle";
 // "idle" | "loading" | "ready"
@@ -130,6 +134,64 @@ const updateLoaderPercentage = () => {
 
         loadingText.innerText = `Loading... (${percent}%)`;
     }
+};
+
+const formatDate = (date) => {
+    const d = new Date(date);
+
+    const day = d.getDate();
+    const year = d.getFullYear();
+
+    const month = d.toLocaleString('en-US', { month: 'long' });
+
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+
+    const getOrdinal = (n) => {
+        if (n > 3 && n < 21) return 'th';
+        switch (n % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+        }
+    };
+
+    return `${day}${getOrdinal(day)} ${month}, ${year} at ${hours}:${minutes}`;
+};
+
+const lastUpdated = (date) => {
+    const lastModifiedDate = new Date(date);
+    const now = new Date();
+    const timeDiff = Math.floor((now - lastModifiedDate) / 1000);
+
+    let timeAgo;
+
+    if (timeDiff < 60) {
+        timeAgo = "just now";
+    } else if (timeDiff < 3600) {
+        const minutes = Math.floor(timeDiff / 60);
+        timeAgo = `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    } else if (timeDiff < 86400) {
+        const hours = Math.floor(timeDiff / 3600);
+        timeAgo = `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else if (timeDiff < 604800) { // Less than 7 days
+        const days = Math.floor(timeDiff / 86400);
+        timeAgo = `${days} day${days !== 1 ? 's' : ''} ago`;
+    } else if (timeDiff < 2592000) { // Less than 30 days (but more than or equal to 7 days)
+        const weeks = Math.floor(timeDiff / 604800); // 604800 seconds in a week
+        timeAgo = `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
+    } else if (timeDiff >= 2592000 && timeDiff < 5184000) { // Less than 2 months (but more than or equal to 30 days)
+        timeAgo = '1 month ago'; //For anything 30 days or more but less than 2 months
+    } else if (timeDiff < 31556952) { // Less than a year
+        const months = Math.floor(timeDiff / 2592000); // 2592000 seconds in a month
+        timeAgo = `${months} month${months !== 1 ? 's' : ''} ago`;
+    } else {
+        const years = Math.floor(timeDiff / 31556952); // 31556952 seconds in a year
+        timeAgo = `${years} year${years !== 1 ? 's' : ''} ago`;
+    }
+
+    return timeAgo;
 };
 
 const initialBackground = {
@@ -242,7 +304,7 @@ const displayMetaData = (tag, file) => {
             media.artist = artist || 'Unknown Artist';
             media.artwork = [
                 {
-                    src: initialBackground.bannerBg,
+                    src: "./public/img/icon.png",
                     sizes: '512x512',
                     type: 'image/png'
                 }
@@ -485,7 +547,9 @@ selectBtn.addEventListener("click", async (e) => {
     return await fileInput.click();
 })
 
-window.addEventListener("DOMContentLoaded", (e) => {
+window.addEventListener("DOMContentLoaded", async (e) => {
+    const repo = await client.getSpecificRepo("blazeinferno64", "blaze-audio-player");
+    lastUpdate.innerHTML = `<i class="fa-regular fa-clock"></i> Last Updated: ${lastUpdated(repo.updated_at)}`;
     volumeSlider.value = audio.volume * 100;
     volumeSliderText.innerText = `${volumeSlider.value}%`;
     initPresenceSocket();
@@ -691,7 +755,38 @@ window.addEventListener("keydown", (event) => {
 
 });
 
+let deferredPrompt = null;
+let isAppInstalled = false;
+
 window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
     console.log("App is ready for the installation process!");
-    console.warn(`If changes aren't available the please try to clear this site's data and reload the page again!`);
+    console.warn(`If changes aren't available then please try to clear this site's data and reload the page again!`);
+});
+
+downloadAppBtn.addEventListener("click", async (e) => {
+    if (isAppInstalled) {
+        console.warn("App is already installed on your device as a standalone app!");
+        alert(`Blaze Audio Player is already installed on your device as a standalone app!\nYou may launch it from your operating system's app menu!`);
+        return;
+    }
+    
+    if (deferredPrompt !== null) {
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+        } else {
+            console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+    }
+});
+
+window.addEventListener("appinstalled", (e) => {
+    isAppInstalled = true;
+    alert(`Thank you for installing Blaze Audio Player a standalone app!\nHope you enjoy using the app!`);
+    console.info("Blaze Audio Player has been installed successfully on your device as a standalone app!\nLaunch it from your operating system's app menu!");
+    deferedPrompt = null;
 })
