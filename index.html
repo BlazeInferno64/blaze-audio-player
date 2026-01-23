@@ -322,7 +322,7 @@
             <div class="wel-card hide down none">
                 <div class="wel-head">
                     <p data-text="Welcome">
-                        Welcome
+                        Welcome!
                     </p>
                     <span class="wel-close">
                         <i class="fa fa-times"></i>
@@ -366,14 +366,39 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
+                        console.log('SW registered:', registration.scope);
+
+                        // Check for updates manually on load
+                        if (registration.active) {
+                            registration.active.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                        }
+
+                        // Handle the case where an update is already waiting
+                        if (registration.waiting) {
+                            window.dispatchEvent(new CustomEvent('swUpdateAvailable'));
+                        }
+
+                        // Listen for new updates found while the app is open
+                        registration.onupdatefound = () => {
+                            const installingWorker = registration.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Fire a custom event that script.js can listen to
+                                    window.dispatchEvent(new CustomEvent('swUpdateAvailable'));
+                                }
+                            };
+                        };
                     });
             });
-        }
 
+            // Ensure the page reloads only once when the new worker takes control
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
+            });
+        }
     </script>
     <!--Loading the scripts-->
     <script defer src="./public/js/main/github-client.js"></script>

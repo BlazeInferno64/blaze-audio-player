@@ -48,6 +48,8 @@ const playerIcon = document.querySelector(".header-img");
 const downloadAppBtn = document.querySelector(".down-set");
 const lastUpdate = document.querySelector(".last-update");
 
+const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
 const appName = `Blaze Audio Player`;
 
 playerIcon.addEventListener("contextmenu", (e) => {
@@ -56,14 +58,12 @@ playerIcon.addEventListener("contextmenu", (e) => {
 
 let previousURL = null;
 let audioFileSelected = false;
-let deferedPrompt;
 
 let audioLoadPhase = "idle";
 // "idle" | "loading" | "ready"
 
 let uiIntent = "none";
 // "none" | "userOpenedWelcome" | "userOpenedStream"
-
 
 const trimLastPart = (value) => {
     const trimmedValue = value.substring(value.lastIndexOf("/") + 1);
@@ -373,11 +373,30 @@ const updateBufferedBar = () => {
     }
 };
 
-audio.addEventListener("error", (e) => {
+
+audio.addEventListener("error", () => {
     playPauseCheckBox.checked = true;
-    alert(`There was an error while playing the audio!\nCheck your browser console for more info!`)
-    return console.log(`Audio Error:\n${e}`);
-})
+
+    const error = audio.error;
+    let details = "Unknown Error";
+
+    if (error) {
+        switch (error.code) {
+            case 1: details = "The fetching process for the media resource was aborted by the user."; break;
+            case 2: details = "A network error caused the media download to fail."; break;
+            case 3: details = "An error occurred while decoding the media resource."; break;
+            case 4: details = "The media resource is not supported."; break;
+        }
+    }
+
+    alert(`There was an error while playing the audio!\nDetails: ${details}\nCheck your browser console for more info!`);
+
+    console.error("Audio Error Details:", {
+        code: error ? error.code : "N/A",
+        message: error ? error.message : "N/A",
+        src: audio.src
+    });
+});
 
 // You can also call this function when the audio is loaded
 audio.addEventListener("canplaythrough", async () => {
@@ -577,11 +596,8 @@ const loadingInterval = setInterval(updateLoaderPercentage, 100);
 
 window.addEventListener("load", (e) => {
     clearInterval(loadingInterval);
-
     clearInterval(loaderInterval);
-
     loadingText.innerText = "Loading... (100%)";
-
     setTimeout(() => {
         loaderBg.classList.add("hide");
         app.classList.add("open");
@@ -592,11 +608,6 @@ window.addEventListener("load", (e) => {
         return openWelcomeCard();
     }, 500);
 
-    console.log("App is ready!");
-    loaderBg.classList.add("hide");
-    app.classList.add("open");
-    appMenu.classList.add("load-app");
-    appReady = true; // Set appReady to true after loading is complete
     console.log("App is ready!");
 })
 
@@ -757,36 +768,248 @@ window.addEventListener("keydown", (event) => {
 
 let deferredPrompt = null;
 let isAppInstalled = false;
+let beforeInstallPromptHandled = false;
+
+// Check if app was uninstalled
+function checkIfAppUninstalled() {
+    // If beforeinstallprompt fires and we think app is installed, it means it was uninstalled
+    if (isAppInstalled && beforeInstallPromptHandled) {
+        console.warn('✗ App appears to have been uninstalled!');
+        isAppInstalled = false;
+        beforeInstallPromptHandled = false;
+        localStorage.removeItem("isAppInstalled"); // Clear localStorage
+        downloadAppBtn.style.display = 'block'; // Show download button again
+        console.log('[App] Cleared isAppInstalled from localStorage');
+    }
+}
 
 window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
+
+    // Check for uninstall
+    checkIfAppUninstalled();
+
     deferredPrompt = e;
-    console.log("App is ready for the installation process!");
-    console.warn(`If changes aren't available then please try to clear this site's data and reload the page again!`);
+
+    if (!beforeInstallPromptHandled) {
+        beforeInstallPromptHandled = true;
+        downloadAppBtn.style.display = 'block'; // Show download button
+        console.log("✓ App is ready for the installation process!");
+        console.warn(`If changes aren't available then please try to clear this site's data and reload the page again!`);
+    }
 });
 
 downloadAppBtn.addEventListener("click", async (e) => {
     if (isAppInstalled) {
-        console.warn("App is already installed on your device as a standalone app!");
-        alert(`Blaze Audio Player is already installed on your device as a standalone app!\nYou may launch it from your operating system's app menu!`);
+        console.log("App is already installed! Checking for updates...");
+
+        // Check for updates
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+
+            // Show a checking message
+            const originalText = downloadAppBtn.innerHTML;
+            downloadAppBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking for updates...';
+
+            // Reset button text after 3 seconds
+            setTimeout(() => {
+                downloadAppBtn.innerHTML = originalText;
+                return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
+            }, 3000);
+        } else {
+            console.warn("Service Worker not available for update check");
+            alert("Unable to check for updates. Please refresh the page!");
+        }
         return;
     }
-    
+
     if (deferredPrompt !== null) {
         deferredPrompt.prompt();
         const choiceResult = await deferredPrompt.userChoice;
         if (choiceResult.outcome === 'accepted') {
             console.log('User accepted the install prompt');
+            isAppInstalled = true;
+            //downloadAppBtn.style.display = 'none';
+            localStorage.setItem("isAppInstalled", "true");
         } else {
             console.log('User dismissed the install prompt');
+            isAppInstalled = false;
+            deferredPrompt = null;
+            localStorage.setItem("isAppInstalled", "false");
         }
-        deferredPrompt = null;
     }
 });
 
 window.addEventListener("appinstalled", (e) => {
     isAppInstalled = true;
-    alert(`Thank you for installing Blaze Audio Player a standalone app!\nHope you enjoy using the app!`);
-    console.info("Blaze Audio Player has been installed successfully on your device as a standalone app!\nLaunch it from your operating system's app menu!");
-    deferedPrompt = null;
+    downloadAppBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Check for Updates';
+    //downloadAppBtn.style.display = 'none'; // Hide download button after installation
+    localStorage.setItem("isAppInstalled", "true"); // Persist to localStorage
+    console.info("✓ Blaze Audio Player has been installed successfully on your device as a standalone app!\nLaunch it from your operating system's app menu!");
+    alert(`Thank you for installing Blaze Audio Player!\nYou can now launch it from your device's app menu.\nEnjoy your music experience for free!`);
+    deferredPrompt = null;
 })
+
+// Periodic check for uninstall (every 5 seconds when app reports as installed)
+setInterval(() => {
+    const storedInstallState = localStorage.getItem("isAppInstalled");
+
+    if (storedInstallState === "true") {
+        // App was installed according to localStorage
+        // Check if we're still in standalone mode
+        const isStandalone = window.navigator.standalone === true ||
+            window.matchMedia('(display-mode: standalone)').matches;
+
+        // If NOT in standalone mode and app is NOT running in PWA, check via beforeinstallprompt
+        // If beforeinstallprompt can fire, app must be uninstalled
+        if (!isStandalone && !beforeInstallPromptHandled) {
+            console.warn('✗ App may have been uninstalled - no longer in standalone mode');
+            isAppInstalled = false;
+            localStorage.removeItem("isAppInstalled");
+            //downloadAppBtn.style.display = 'block';
+        }
+    }
+}, 5000);
+
+// Service Worker Update Management
+let updateRefreshScheduled = false;
+
+// Check for updates when app loads
+window.addEventListener('load', () => {
+    // Register service worker if not already registered
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('[App] Service Worker registered successfully');
+
+                // Check for updates immediately when app loads
+                if (registration.controller) {
+                    registration.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                }
+
+                // Optional: Check for updates every 30 seconds
+                setInterval(() => {
+                    if (registration.controller) {
+                        registration.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+                    }
+                }, 30000);
+            })
+            .catch(error => {
+                console.error('[App] Service Worker registration failed:', error);
+            });
+    }
+
+    // Listen for update notifications from the service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                console.log('[App] Update available:', event.data.message);
+
+                // Show update notification to user
+                showUpdateNotification();
+            }
+
+            // Handle installation complete message
+            if (event.data && event.data.type === 'INSTALLATION_COMPLETE') {
+                console.log('[App] Installation complete:', event.data.message);
+
+                // Show installation complete alert to user
+                showInstallationCompleteAlert(event.data.version);
+            }
+        });
+    }
+});
+
+// Add this event listener to your script.js
+window.addEventListener('swUpdateAvailable', () => {
+    showUpdateNotification();
+});
+
+// Function to show update notification
+function showUpdateNotification() {
+    if (updateRefreshScheduled) return;
+    updateRefreshScheduled = true;
+
+    const userConfirmed = confirm(
+        'A new version of Blaze Audio Player is available!\n' +
+        'Click OK to update and apply the changes now!'
+    );
+
+    if (userConfirmed) {
+        // Find the waiting worker and tell it to take over
+        navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.waiting) {
+                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+                // Fallback if no worker is waiting
+                loaderBg.classList.remove("hide");
+                loadingText.innerText = `Applying updates...`;
+                setTimeout(() => {
+                    loadingText.innerText = `Almost done...`;
+                }, 1000);
+                setTimeout(() => {
+                    return window.location.reload();
+                }, 2000);
+                //window.location.reload();
+            }
+        });
+    } else {
+        updateRefreshScheduled = false;
+    }
+}
+
+let shown = false;
+
+// Function to show installation complete notification
+function showInstallationCompleteAlert(version) {
+    // Show alert that installation is complete
+    if (!shown) {
+        alert(
+            `Blaze Audio Player ${version} is ready!\n` +
+            'The app has been updated successfully!\n' +
+            'Applying changes...'
+        );
+        shown = true;
+        // Reset flag after 2 seconds
+        setTimeout(() => {
+            shown = false;
+        }, 2000);
+    }
+}
+
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'UPDATE_AVAILABLE') {
+            showUpdateNotification();
+        }
+
+        if (event.data.type === 'NO_UPDATE_FOUND') {
+            // Reset button text
+            if (isPWA) {
+                downloadAppBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Check for Updates';
+                downloadAppBtn.onclick = async (e) => {
+                    const originalText = downloadAppBtn.innerHTML;
+                    downloadAppBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking for updates...';
+                    setTimeout(() => {
+                        downloadAppBtn.innerHTML = originalText;
+                        return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
+                    }, 3000);
+                }
+                console.log('[App] No update found - app is on the latest version');
+            }
+        }
+
+        if (event.data.type === 'INSTALLATION_COMPLETE') {
+            showInstallationCompleteAlert(event.data.version);
+        }
+    });
+
+    // Listen for controller change (when service worker updates)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[App] Service worker controller changed - new version is now active');
+        window.location.reload();
+    });
+}
+
+//console.log(isPWA);
