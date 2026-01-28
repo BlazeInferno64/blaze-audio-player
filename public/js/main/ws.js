@@ -99,6 +99,9 @@ window.addEventListener("offline", () => {
     streamAbout.textContent = "No Internet Connection!";
     activeLogo.classList.remove("success", "warn");
     activeLogo.classList.add("error");
+    if (socket) {
+        socket.close();
+    }
 });
 
 window.addEventListener("online", () => {
@@ -108,19 +111,27 @@ window.addEventListener("online", () => {
     return initPresenceSocket();
 });
 
-window.addEventListener("blur", (e) => {
+/*window.addEventListener("blur", (e) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
         console.log("[Presence] Tab became inactive. Closing connection...");
         socket.close();
     }
-})
+})*/
 
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
+        console.log("[Presence] Tab visible. Checking connection...");
         checkAndReconnect();
+    } else {
+        // Only close if the tab is actually hidden (switched tabs or minimized)
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            console.log("[Presence] Tab hidden. Closing connection...");
+            socket.close();
+        }
     }
 });
 
-window.addEventListener("focus", () => {
+/*window.addEventListener("focus", () => {
     checkAndReconnect();
-});
+
+});*/
