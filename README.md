@@ -1,5 +1,9 @@
 # Blaze-Audio-Player
-About
+
+<div align="center">
+  <img src="https://github.com/BlazeInferno64/blaze-audio-player/releases/download/Logo/c6fbd3aa-e562-4316-b2e4-150bfa5e3560.png" />
+</div>
+
 A free open source web audio player with advanced features directly accessible from your browser!
 |--------------|
 # View it here-
