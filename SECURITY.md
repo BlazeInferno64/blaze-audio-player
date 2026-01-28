@@ -1,30 +1,44 @@
-# Security Policy 2.0
+# 🔐 Security Policy
 
-## Supported Versions
+## 📦 Supported Versions
 
+The table below shows which versions of the project are currently receiving security updates.
 
-The latest version of the web app would get updated in future which in turn might change the whole working functionality of the web app. To help decide this I would make a community post in the discussions tab so make sure to keep an eye on it.
+| Version | Supported |
+| ------- | --------- |
+| 5.1.x   | ✅ Yes     |
+| 5.0.x   | ❌ No      |
+| 4.0.x   | ✅ Yes     |
+| < 4.0   | ❌ No      |
 
+Only supported versions will receive security patches and updates.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+---
 
-## Reporting a Vulnerability
+## 🚨 Reporting a Vulnerability
 
+If you discover a security vulnerability, **please do not open a public issue**.
 
-If any vulnerabilities/issues/bugs are found please open up an issue in this repo
+Instead, report it responsibly using one of the methods below:
 
+- 📧 Email: **blazinginfernodragon123@gmail.com**  
+- 🌐 Contact form: https://blazeinferno64.github.io/#contact
 
-# Update deployment
+Please include as much detail as possible:
+- Description of the vulnerability  
+- Steps to reproduce (if applicable)  
+- Potential impact  
+- Screenshots or proof-of-concept (if safe to share)
 
-Expect to get an update of blaze audio player within 3-4 days of vulnerabilities/issues/bugs being reported. I would definitely try my best to patch it and deploy it as soon as possible meanwhile feel free to look around the source code which powers the web app :)
+You can expect an initial response within **3–4 days**.
 
+---
 
-`
-Thanks for reading it 
-Have a nice day :)
-`
+## 🛠 Security Update Process
+
+Once a vulnerability is confirmed:
+- A fix will be developed as quickly as possible  
+- A patched version will be deployed  
+- A security notice may be posted after the issue is resolved  
+
+We appreciate responsible disclosure and your efforts to help keep the project secure ❤️
