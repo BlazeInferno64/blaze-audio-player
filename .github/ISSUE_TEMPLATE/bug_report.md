@@ -1,44 +1,54 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: 🐛 Bug Report
+about: Report a bug or unexpected behavior to help us improve
+title: "[BUG] "
+labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-It maybe any bug/issue , but you all are always free to contact me in my email address provided at my repository or click here
-<a href="mailto: blazinginfernodragon123@gmail.com">
+## 🐛 Describe the Bug
+Please provide a clear and concise description of the issue you encountered.
 
-```
-blazinginfernodragon123@gmail.com
-```
-</a>
+If needed, you can also contact me:
+- 📧 Email: blazinginfernodragon123@gmail.com  
+- 🌐 Contact form: https://blazeinferno64.github.io/#contact
 
-**To Reproduce**
+---
+
+## 🔁 To Reproduce
 Steps to reproduce the behavior:
-1. Go to 'the readme.md file of this repository'
-2. Click on 'mail photo'
-3. Scroll down to 'click on mail option'
-4. See error
+1. Go to the `README.md` file of this repository
+2. Click on the mail icon/image
+3. Scroll down and click on the mail option
+4. Observe the error
 
-**Expected behavior**
+---
+
+## ✅ Expected Behavior
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+---
+
+## 📸 Screenshots
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+---
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## 💻 Desktop (please complete the following information)
+- OS: (e.g., Windows, macOS, Linux)
+- Browser: (e.g., Chrome, Firefox, Safari)
+- Version:
 
-**Additional context**
-So hope it HELPS btw feel free to mail me if you all have any issues/bugs
+---
+
+## 📱 Smartphone (please complete the following information)
+- Device: (e.g., Samsung Galaxy, iPhone)
+- OS: (e.g., Android 14, iOS 17)
+- Browser:
+- Version:
+
+---
+
+## 📝 Additional Context
+Add any other context about the problem here.
