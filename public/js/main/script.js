@@ -58,6 +58,7 @@ playerIcon.addEventListener("contextmenu", (e) => {
 
 let previousURL = null;
 let audioFileSelected = false;
+let fileName = null;
 
 let audioLoadPhase = "idle";
 // "idle" | "loading" | "ready"
@@ -96,6 +97,40 @@ const showCurrentTiming = () => {
 
     //if (audio.currentTime === audio.duration) return audio.pause();
 }
+
+const updateUI = () => {
+    showCurrentTiming(); // Existing function
+
+    // --- Add Lyric Sync Logic Here ---
+    const current = audio.currentTime;
+    let activeIdx = -1;
+
+    // Find the current active line based on audio time
+    for (let i = 0; i < lyricsArray.length; i++) {
+        if (current >= lyricsArray[i].time) {
+            activeIdx = i;
+        } else {
+            break;
+        }
+    }
+
+    if (activeIdx !== -1) {
+        const activeEl = lyricsArray[activeIdx].element;
+        if (!activeEl.classList.contains('active')) {
+            // Remove active class from other lines
+            document.querySelectorAll('.lyric-line').forEach(l => l.classList.remove('active'));
+
+            // Highlight and center the current line
+            activeEl.classList.add('active');
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+    // ---------------------------------
+
+    if (isUpdating) {
+        requestAnimationFrame(updateUI);
+    }
+};
 
 const trimFileName = (filename) => {
     const index = filename.lastIndexOf('.');
@@ -221,6 +256,76 @@ const resetMediaSessionHandlers = () => {
     }
 };
 
+let lyricsArray = []; // Stores time-stamped lyric objects
+
+function parseLRC(lrc) {
+    const lyricsWindow = document.getElementById('lyrics-window'); // Ensure this ID exists in index.html
+    lyricsArray = [];
+    lyricsWindow.innerHTML = "";
+
+    const lines = lrc.split('\n');
+    // Regex to match [mm:ss.xx] or [mm:ss.xxx]
+    const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
+
+    lines.forEach((line) => {
+        const match = timeRegex.exec(line);
+        if (match) {
+            // Convert timestamp to total seconds
+            const time = parseInt(match[1]) * 60 + parseInt(match[2]) + parseInt(match[3]) / (match[3].length === 3 ? 1000 : 100);
+            const text = line.replace(timeRegex, '').trim();
+
+            if (text) {
+                const div = document.createElement('div');
+                div.className = 'lyric-line';
+                div.innerText = text;
+                lyricsWindow.appendChild(div);
+                lyricsArray.push({ time, element: div });
+            }
+        }
+    });
+}
+
+async function fetchLyrics(query) {
+    const lyricsWindow = document.getElementById('lyrics-window');
+    if (!lyricsWindow) return;
+
+    // 1. Immediately reset state and show active searching status
+    lyricsArray = [];
+    lyricsWindow.innerHTML = ""; // Clear old lyrics
+
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'lyric-line active'; // Force active here
+    statusDiv.innerText = "Searching for lyrics...";
+    lyricsWindow.appendChild(statusDiv);
+
+    // Ensure it scrolls to center immediately
+    statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    try {
+        const response = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        lyricsWindow.style.display = 'block'; // Ensure lyrics window is visible
+
+        const match = data.find(s => s.syncedLyrics);
+
+        if (match) {
+            parseLRC(match.syncedLyrics);
+        } else {
+            const plainMatch = data.find(s => s.plainLyrics);
+            if (plainMatch) {
+                // For plain lyrics, we make the whole block active
+                lyricsWindow.innerHTML = `<div class='lyric-line active' style='white-space: pre-wrap;'>${plainMatch.plainLyrics}</div>`;
+            } else {
+                lyricsWindow.innerHTML = "<div class='lyric-line active'>No lyrics found</div>";
+            }
+        }
+    } catch (err) {
+        console.error("LRCLIB Error:", err);
+        lyricsWindow.innerHTML = "<div class='lyric-line active'>Error loading lyrics</div>";
+    }
+}
+
 const displayMetaData = (tag, file) => {
     resetMediaSessionHandlers();
     const title = tag.tags.title;
@@ -325,10 +430,33 @@ const displayMetaData = (tag, file) => {
 const readMediaData = (file) => {
     jsmediatags.read(file, {
         onSuccess: (tag) => {
+            const title = tag.tags.title;
+            const artist = tag.tags.artist;
+
+            // Determine search query
+            let query;
+            if (title && artist) {
+                query = `${artist} - ${title}`;
+            } else if (title) {
+                query = title;
+            } else {
+                // Fallback to filename logic from demo.html
+                query = file.name
+                    .replace(/\.[^/.]+$/, "")             // Remove extension
+                    .replace(/^\d+[\s.-]+/, "")           // Remove track numbers
+                    .replace(/[\[\(\{].*?[\]\)\}]/g, "")  // Remove brackets
+                    .replace(/[_-]/g, " ")                // Normalize spaces
+                    .trim();
+            }
+
+            // Fetch lyrics and display metadata
+            fetchLyrics(query);
             return displayMetaData(tag, file);
         },
         onError: (error) => {
             console.error(error);
+            const fallbackQuery = file.name.replace(/\.[^/.]+$/, "").trim();
+            fetchLyrics(fallbackQuery);
             alert(`There was an error while reading metadata of the selected audio file!\nIt might be due to the file being corrupted/damaged\nPlease try again with a fresh uncorrupted copy of the audio file\nIf you believe this is an bug/issue please report it!`);
         }
     });
@@ -351,16 +479,6 @@ const getAudioFile = async (file, audioURL) => {
 }
 
 let isUpdating = false; // Flag to control the animation loop
-
-const updateUI = () => {
-    // Update the current time and progress bar
-    showCurrentTiming();
-
-    // Request the next frame
-    if (isUpdating) {
-        requestAnimationFrame(updateUI);
-    }
-};
 
 const updateBufferedBar = () => {
     if (audio.buffered.length > 0 && !isNaN(audio.duration) && audio.duration > 0) {
@@ -398,10 +516,13 @@ audio.addEventListener("error", () => {
     });
 });
 
+
+
 // You can also call this function when the audio is loaded
 audio.addEventListener("canplaythrough", async () => {
     // gnore if this is not a real new load
     if (!audio.src) return;
+
 
     audioLoadPhase = "ready";
 
@@ -411,6 +532,14 @@ audio.addEventListener("canplaythrough", async () => {
         closeWelcomeCard();
         closeStreamCard();
         closeFetchCard();
+    }
+
+    if (isLoaderShown) {
+        loadingText.innerText = `Finishing up...`;
+        setTimeout(() => {
+            loaderBg.classList.add("hide");
+        }, 500);
+        isLoaderShown = false;
     }
 
     await audio.play();
@@ -516,6 +645,7 @@ fileInput.onchange = async (e) => {
         fileInput.value = ''; // Clear the file input
         return;
     } else {
+        isLoaderShown = false;
         streaming = false;  // <-- Disconnect streaming when dropping a local file
         audioFileSelected = true;
         const blobURL = URL.createObjectURL(file); // Create a new blob URL
@@ -532,6 +662,13 @@ fileInput.onchange = async (e) => {
 
         // Set the previousURL to the new blob URL
         previousURL = blobURL;
+
+        if (!isLoaderShown) {
+            loaderBg.classList.remove("hide");
+            loaderBg.style.opacity = '.85'
+            loadingText.innerText = 'Loading stream...';
+            isLoaderShown = true;
+        }
 
         await getAudioFile(file, blobURL); // Load the new audio file
     }
@@ -568,7 +705,7 @@ selectBtn.addEventListener("click", async (e) => {
 
 window.addEventListener("DOMContentLoaded", async (e) => {
     const repo = await client.getSpecificRepo("blazeinferno64", "blaze-audio-player");
-    lastUpdate.innerHTML = `<i class="fa-regular fa-clock"></i> Last Updated: ${lastUpdated(repo.updated_at)}`;
+    lastUpdate.innerHTML = `<span class="material-symbols-outlined">calendar_clock</span> Last Updated: ${lastUpdated(repo.updated_at)}`;
     volumeSlider.value = audio.volume * 100;
     volumeSliderText.innerText = `${volumeSlider.value}%`;
     initPresenceSocket();
@@ -594,7 +731,15 @@ let appReady = false;
 
 const loadingInterval = setInterval(updateLoaderPercentage, 100);
 
+lastUpdate.addEventListener("click", (e) => {
+    alert(`Processing your request...`);
+    setTimeout(() => {
+        window.location.href = 'https://github.com/BlazeInferno64/blaze-audio-player/commits/main/';
+    }, 1000);
+});
+
 window.addEventListener("load", (e) => {
+    // Load everything completely
     clearInterval(loadingInterval);
     clearInterval(loaderInterval);
     loadingText.innerText = "Loading... (100%)";
@@ -629,6 +774,7 @@ window.addEventListener("drop", (e) => {
 
 const handleDrop = async (event) => {
     try {
+        isLoaderShown = false;
         event.preventDefault();
         const droppedFile = event.dataTransfer.files[0];
 
@@ -639,6 +785,12 @@ const handleDrop = async (event) => {
             streaming = false;  // <-- Disconnect streaming when dropping a local file
             const blobURL = URL.createObjectURL(droppedFile); // Use droppedFile here
             audioFileSelected = true;
+            if (!isLoaderShown) {
+                loaderBg.classList.remove("hide");
+                loaderBg.style.opacity = '.85'
+                loadingText.innerText = 'Loading audio...';
+                isLoaderShown = true;
+            }
             await getAudioFile(droppedFile, blobURL); // Pass droppedFile instead of file
             if (previousURL) {
                 console.log(`Cleared previous object url!`);
@@ -942,6 +1094,7 @@ function showUpdateNotification() {
                 reg.waiting.postMessage({ type: 'SKIP_WAITING' });
             } else {
                 // Fallback if no worker is waiting
+                loaderBg.style.opacity = '1';
                 loaderBg.classList.remove("hide");
                 loadingText.innerText = `Applying updates...`;
                 setTimeout(() => {

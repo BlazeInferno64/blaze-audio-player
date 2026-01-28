@@ -36,6 +36,13 @@ const popupBg = document.querySelector(".popup-bg");
 const popup = document.querySelector(".popup")
 const closePopupBtn = document.querySelector(".popup-close");
 
+const lyricsBg = document.querySelector(".lyrics-bg");
+const lyricsBtn = document.querySelector(".lyrics-set");
+const lyricsCard = document.querySelector(".lyrics-card");
+const openLyricsCardBtn = document.querySelector("#lyrics-btn");
+const closeLyricsCardBtn = document.querySelector(".lyrics-close");
+
+
 const openVolumeCard = () => {
     volumeBg.classList.remove("hide");
     volumeCard.classList.add("ani");
@@ -43,6 +50,17 @@ const openVolumeCard = () => {
 
     setTimeout(() => {
         volumeCard.classList.remove("down");
+    }, 500);
+
+}
+
+const openLyricsCard = () => {
+    lyricsBg.classList.remove("hide");
+    lyricsCard.classList.add("ani");
+    lyricsCard.classList.remove("hide");
+
+    setTimeout(() => {
+        lyricsCard.classList.remove("down");
     }, 500);
 }
 
@@ -132,6 +150,24 @@ const closeVolumeCard = () => {
         volumeCard.classList.add("down");
         volumeCard.classList.remove("up");
         volumeCard.classList.remove("ani");
+    }, 1200);
+}
+
+const closeLyricsCard = () => {
+    lyricsCard.classList.add("up");
+    lyricsCard.classList.add("anti");
+    setTimeout(() => {
+        lyricsCard.classList.add("hide");
+    }, 700);
+    setTimeout(() => {
+        lyricsBg.classList.add("hide");
+        lyricsCard.classList.remove("anti");
+        lyricsCard.classList.add("hide");
+    }, 1000);   
+    setTimeout(() => {
+        lyricsCard.classList.add("down");
+        lyricsCard.classList.remove("up");
+        lyricsCard.classList.remove("ani");
     }, 1200);
 }
 
@@ -237,4 +273,16 @@ closeWelcomeCardBtn.addEventListener("click", (e) => {
 
 closePopupBtn.addEventListener("click", (e) => {
     return closePopup();
+})
+
+closeLyricsCardBtn.addEventListener("click", (e) => {
+    return closeLyricsCard();
+});
+
+openLyricsCardBtn.addEventListener("click", (e) => {
+    return openLyricsCard();
+});
+
+lyricsBtn.addEventListener("click", (e) => {
+    return openLyricsCard();
 })

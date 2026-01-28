@@ -60,6 +60,12 @@ audio {
     z-index: -1;
 }
 
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .app {
     background: rgba(30, 30, 30);
     user-select: none;
@@ -728,22 +734,8 @@ audio {
 }
 
 .gradient-icon {
-    font-size: 1.7rem;
-    background: var(--second-gradient);
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: animate 10s ease-in-out infinite;
-    position: relative;
-}
-
-.gradient-icon::before {
-    content: "\f013";
-    /* Unicode for gear */
-    font-family: "Font Awesome 6 Free";
-    /* or correct FA font */
-    font-weight: 900;
-    /* solid icons require this */
+    font-size: 2rem !important;
+    font-family: 'Material Symbols Outlined';
     background: var(--second-gradient);
     background-size: 400%;
     -webkit-background-clip: text;
@@ -751,6 +743,9 @@ audio {
     -webkit-text-fill-color: transparent;
     animation: animate 10s ease-in-out infinite;
     display: inline-block;
+
+    font-variation-settings: 'opsz' 48;
+    line-height: 1;
 }
 
 .set-head .set-k p::after {
@@ -840,6 +835,10 @@ audio {
     z-index: 0;
 }
 
+.set-main ul li a {
+    width: 100%;
+    height: 100%;
+}
 
 .set-main li * {
     position: relative;
@@ -864,7 +863,8 @@ audio {
 
 
 .link-bg,
-.stream-bg {
+.stream-bg,
+.lyrics-bg {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -878,7 +878,7 @@ audio {
 
 .fetch-card,
 .wel-card,
-.stream-card {
+.stream-card,.lyrics-card {
     width: 300px;
     background: #2a2d2e;
     transition: all .5s ease-in-out;
@@ -890,7 +890,8 @@ audio {
 
 .fetch-head,
 .wel-head,
-.stream-head {
+.stream-head,
+.lyrics-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -982,9 +983,38 @@ audio {
     animation: animate 10s ease-in-out infinite;
 }
 
+.lyrics-head p {
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: var(--gradient);
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.lyrics-head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    font-weight: 600;
+    background: var(--gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
+}
+
 .fetch-head .close-fetch,
 .wel-head .wel-close,
-.stream-head .stream-close {
+.stream-head .stream-close,
+.lyrics-head .lyrics-close {
     width: 40px;
     transition: all .1s ease-in-out;
     height: 100%;
@@ -1001,19 +1031,22 @@ audio {
 
 .close-fetch:hover,
 .wel-close:hover,
-.stream-close:hover {
+.stream-close:hover,
+.lyrics-close:hover {
     background: #4b494d;
 }
 
 .fetch-main,
 .wel-main,
-.stream-main {
+.stream-main,
+.lyrics-main {
     width: 100%;
     padding: .3rem .5rem;
 }
 
 .fetch-info,
-.stream-info {
+.stream-info,
+.lyrics-info {
     width: 100%;
     font-size: .98rem;
     border: 2px dashed rgb(0, 255, 110);
@@ -1054,6 +1087,52 @@ audio {
     border-bottom-left-radius: .3rem;
     border-bottom-right-radius: .3rem;
     margin-bottom: .5rem;
+}
+
+
+/* Lyrics Container Styling */
+#lyrics-window {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #111;
+    flex-grow: 1;
+    width: 100%;
+    max-width: 800px;
+    height: 300px; /* Adjust based on your app's layout */
+    overflow-y: auto;
+    padding: 200px 0; /* Creates space for masking effect */
+    padding: .3rem .5rem; /* Creates the "middle-focus" scroll area */
+    scrollbar-width: none;
+    /* Soft fade effect at top and bottom */
+    mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+}
+
+#lyrics-window::-webkit-scrollbar {
+    display: none;
+}
+
+/* Individual Lyric Lines */
+.lyric-line {
+    padding: 15px 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #444; /* Dimmed color for inactive lines */
+    transition: all 0.25s ease-out;
+    text-align: center;
+    transform: scale(0.9);
+    filter: blur(1px);
+}
+
+/* Active Lyric Highlight */
+.lyric-line.active {
+    font-size: 1.5rem;
+    color: #fff; /* Bright white for active line */
+    transform: scale(1.1); /* Slightly larger */
+    filter: blur(0);
 }
 
 .result,
@@ -1543,7 +1622,8 @@ audio {
 
     .fetch-card,
     .wel-card,
-    .stream-card {
+    .stream-card,
+    .lyrics-card {
         width: 93%;
     }
 }
@@ -1559,6 +1639,15 @@ audio {
 
     .app .head-div {
         gap: 5px;
+    }
+    .lyric-line {
+        padding: 10px 15px;
+        line-height: 1.2;
+    }
+    
+    #lyrics-window {
+        /* Reduce padding slightly on mobile so more lines are visible */
+        padding: 150px 0; 
     }
 }
 

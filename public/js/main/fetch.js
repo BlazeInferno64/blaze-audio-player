@@ -23,6 +23,10 @@ let playNext = true;
 
 let streaming = false;
 
+let isLoaderShown = false;
+
+let isNormalStream = true;
+
 //const radioURL = `http://127.0.0.1:3000/api/`;
 
 const radioURL = `https://radio-station-v2.vercel.app/api/`;
@@ -177,25 +181,25 @@ const updateStreamMediaSession = () => {
             } catch (error) {
                 console.log('play handler not supported');
             }
-            
+
             try {
                 navigator.mediaSession.setActionHandler('pause', () => audio.pause());
             } catch (error) {
                 console.log('pause handler not supported');
             }
-            
+
             try {
                 navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
             } catch (error) {
                 console.log('seekbackward handler not supported');
             }
-            
+
             try {
                 navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
             } catch (error) {
                 console.log('seekforward handler not supported');
             }
-            
+
             try {
                 navigator.mediaSession.setActionHandler('previoustrack', () => {
                     if (streaming) streamNextAudioFile.click();
@@ -203,7 +207,7 @@ const updateStreamMediaSession = () => {
             } catch (error) {
                 console.log('previoustrack handler not supported');
             }
-            
+
             try {
                 navigator.mediaSession.setActionHandler('nexttrack', () => {
                     if (streaming) streamNextAudioFile.click();
@@ -219,6 +223,11 @@ const updateStreamMediaSession = () => {
 
 const streamAudioFile = async (url) => {
     try {
+        if (!isLoaderShown) {
+            loaderBg.classList.remove("hide");
+            loaderBg.style.opacity = '.85'
+            loadingText.innerText = isNormalStream === true ? 'Loading stream...' : 'Loading next track...';
+        }
         const response = await fetch(url, {
             method: "GET"
         });
@@ -252,9 +261,27 @@ const streamAudioFile = async (url) => {
         streamResult.classList.add("ok");
         streamResult.innerText = 'Connected to Radio Stream!';
         audioTrackName.innerText = name || trimLastPart(url) || 'Unknown Audio File';
+        // Construct query: "Artist - Title"
         audioFileSelected = true;
+        if (!isLoaderShown) {
+            loadingText.innerText = `Buffering audio...`;
+            setTimeout(() => {
+                loaderBg.classList.add("hide");
+                isLoaderShown = false;
+            }, 300);
+        }
+        isLoaderShown = false;
         resetBackgroundToInitial();
         updateStreamMediaSession();
+        const lyricsQuery = name
+            .replace(/\.[^/.]+$/, "")             // Remove extension
+            .replace(/^\d+[\s.-]+/, "")           // Remove track numbers
+            .replace(/[\[\(\{].*?[\]\)\}]/g, "")  // Remove brackets
+            .replace(/[_-]/g, " ")                // Normalize spaces
+            .trim();
+        if (typeof fetchLyrics === "function") {
+            fetchLyrics(lyricsQuery);
+        }
     } catch (error) {
         streamResult.classList.remove("normal");
         streamResult.classList.add("err");
@@ -292,6 +319,7 @@ streamBtn.addEventListener("click", async (e) => {
     streamResult.classList.remove("err");
     streamResult.classList.remove("ok");
     streamResult.innerText = `Connecting to stream...`;
+    isNormalStream = true;
     try {
         const url = buildRadioURL();
         await streamAudioFile(url);
@@ -307,6 +335,7 @@ streamNextAudioFile.addEventListener("click", async (e) => {
     streamResult.classList.remove("ok");
     streamResult.innerText = `Changing to next track...`;
     artistName.innerText = `Switching to next track...`;
+    isNormalStream = false;
     try {
         const url = buildRadioURL();
         await streamAudioFile(url);
@@ -337,6 +366,7 @@ if (typeof audio !== 'undefined' && audio) {
             streamResult.classList.remove('ok');
             streamResult.innerText = 'Fetching next track...';
             artistName.innerText = `Switching to next track...`;
+            isNormalStream = false;
         }
         try {
             const url = buildRadioURL();

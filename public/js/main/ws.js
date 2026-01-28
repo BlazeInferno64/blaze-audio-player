@@ -15,7 +15,26 @@ const wsUrl = 'wss://presence-server.blazinginfernodragon123.workers.dev/ws';
 
 let socket = null;
 
+function checkAndReconnect() {
+    // Reconnect only if socket is null, closed, or closing
+    if (!socket || socket.readyState === WebSocket.CLOSED || socket.readyState === WebSocket.CLOSING) {
+        console.log("[Presence] Tab became active. Attempting to reconnect...");
+        streamAbout.textContent = "Reconnecting Presence...";
+        initPresenceSocket();
+    }
+}
+
 function initPresenceSocket() {
+    
+    if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+        return;
+    }
+
+    if (socket) {
+        socket.close();
+        socket = null;
+    }
+
     socket = new WebSocket(wsUrl);
 
     socket.addEventListener("open", (event) => {
@@ -87,4 +106,21 @@ window.addEventListener("online", () => {
     activeLogo.classList.remove("error");
     activeLogo.classList.add("warn");
     return initPresenceSocket();
+});
+
+window.addEventListener("blur", (e) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log("[Presence] Tab became inactive. Closing connection...");
+        socket.close();
+    }
+})
+
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        checkAndReconnect();
+    }
+});
+
+window.addEventListener("focus", () => {
+    checkAndReconnect();
 });

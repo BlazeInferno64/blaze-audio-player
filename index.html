@@ -37,6 +37,8 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./public/img/icon.png" type="image/x-icon" />
     <link rel="stylesheet" href="./public/css/styles.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -126,16 +128,29 @@
                 </div>
                 <div class="options">
                     <li id="settings-btn" title="App settings">
-                        <i class="fa fa-gear"></i>
+                        <span class="material-symbols-outlined">
+                            settings
+                        </span>
                     </li>
                     <li id="vol-btn" title="Volume controls">
-                        <i class="fa fa-volume-high"></i>
+                        <span class="material-symbols-outlined">
+                            volume_up
+                        </span>
                     </li>
                     <li id="change" title="Change audio file">
-                        <i class="fa fa-cloud-upload"></i>
+                        <span class="material-symbols-outlined">
+                            cloud_upload
+                        </span>
                     </li>
-                    <li id="link-btn" title="24/7 Audio Stream">
-                        <i class="fa fa-headset"></i>
+                    <li id="lyrics-btn" title="Shows lyrics of the song">
+                        <span class="material-symbols-outlined">
+                            lyrics
+                        </span>
+                    </li>
+                    <li id="link-btn" title="24/7 Radio Stream">
+                        <span class="material-symbols-outlined">
+                            cell_tower
+                        </span>
                     </li>
                 </div>
             </div>
@@ -172,7 +187,9 @@
                 <div class="set-card hide bottom">
                     <div class="set-head">
                         <div class="set-k">
-                            <i class="fa fa-gear gradient-icon"></i>
+                            <span class="material-symbols-outlined gradient-icon">
+                                settings
+                            </span>
                             <p data-text="Settings">
                                 Settings
                             </p>
@@ -184,26 +201,43 @@
                     <div class="set-main">
                         <ul>
                             <li class="ch-stream" title="Live 24/7 radio stream">
-                                <i class="fa fa-headset"></i> 24/7 Radio stream
+                                <span class="material-symbols-outlined">
+                                    cell_tower
+                                </span> 24/7 Radio stream
                             </li>
                             <li class="ch-set" title="Change audio file">
-                                <i class="fa fa-cloud-upload"></i> Change audio file
+                                <span class="material-symbols-outlined">
+                                    cloud_upload
+                                </span> Change audio file
                             </li>
                             <li class="set-vol" title="Volume controls">
-                                <i class="fa fa-volume-high"></i> Volume settings
+                                <span class="material-symbols-outlined">
+                                    volume_up
+                                </span> Volume settings
                             </li>
                             <li class="link-set" title="Link audio file">
-                                <i class="fa fa-link"></i> Play audio with link
+                                <span class="material-symbols-outlined">
+                                    add_link
+                                </span> Play audio with link
+                            </li>
+                            <li class="lyrics-set" title="Lyrics of the song(If any)">
+                                <span class="material-symbols-outlined">
+                                    lyrics
+                                </span> Show lyrics
                             </li>
                             <li class="git-set" title="Learn more about Blaze Audio Player">
                                 <i class="fa fa-github"></i> <a title="Project Repo"
                                     href="https://github.com/blazeinferno64/blaze-audio-player">Blaze Audio Player</a>
                             </li>
                             <li class="down-set" title="Download Blaze Audio Player">
-                                <i class="fa fa-download"></i> Install Blaze Audio Player
+                                <span class="material-symbols-outlined">
+                                    download
+                                </span> Install Blaze Audio Player
                             </li>
                             <li class="last-update" title="Last updated">
-                                <i class="fa-regular fa-clock"></i> Updated: Unknown
+                                <span class="material-symbols-outlined">
+                                    calendar_clock
+                                </span> Updated: Unknown
                             </li>
                         </ul>
                     </div>
@@ -244,7 +278,9 @@
                     </div>
                     <div class="btn-bg">
                         <button class="fetch-btn" title="Start fetching audio file">
-                            <i class="fa fa-send"></i> Fetch
+                            <span class="material-symbols-outlined">
+                                send
+                            </span> Fetch
                         </button>
                     </div>
                     <div class="or">
@@ -309,11 +345,37 @@
                 </div>
                 <div class="stream-btns">
                     <button class="stream">
-                        <i class="fa fa-headset"></i> Stream Now
+                        <span class="material-symbols-outlined">
+                            cell_tower
+                        </span> Stream Now
                     </button>
                     <button class="next">
-                        <i class="fa fa-arrows-rotate"></i> Next Track
+                        <span class="material-symbols-outlined">
+                            autorenew
+                        </span> Next Track
                     </button>
+                </div>
+            </div>
+        </div>
+        <!--Lyrics card-->
+        <div class="lyrics-bg hide">
+            <div class="lyrics-card hide down none">
+                <div class="lyrics-head">
+                    <p data-text="Lyrics">
+                        Lyrics
+                    </p>
+                    <span class="lyrics-close">
+                        <i class="fa fa-times"></i>
+                    </span>
+                </div>
+                <div class="lyrics-main">
+                    <div class="lyrics-display" title="Lyrics will be displayed here">
+                        <div class="lyrics-text" id="lyrics-window">
+                            <div class="lyric-line active">
+                                No track is currently playing
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
