@@ -31,6 +31,8 @@ let isNormalStream = true;
 
 const radioURL = `https://radio-station-v2.vercel.app/api/`;
 
+let artistGiven = null;
+
 // Build radio URL with optional genre query parameter
 const buildRadioURL = () => {
     try {
@@ -145,7 +147,7 @@ const updateStreamMediaSession = () => {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: audioTrackName.innerText || 'Unknown',
                 artist: 'Unknown',
-                album: 'Unknown',
+                album: artistGiven,
                 artwork: [
                     {
                         src: 'https://picsum.photos/96',
@@ -234,6 +236,7 @@ const streamAudioFile = async (url) => {
         const data = await response.json();
         const streamURL = data.url;
         const name = data.name;
+        artistGiven = data.artist || "Unknown";
         //const audioBlob = await fetch(streamURL).then(res => res.blob());
         /*if (!audioBlob.type.startsWith('audio/')) {
             alert(`The response isn't a valid audio file!`);
@@ -384,3 +387,4 @@ if (typeof audio !== 'undefined' && audio) {
         }
     });
 }
+
