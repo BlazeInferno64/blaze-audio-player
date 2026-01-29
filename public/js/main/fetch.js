@@ -146,8 +146,8 @@ const updateStreamMediaSession = () => {
         try {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: audioTrackName.innerText || 'Unknown',
-                artist: 'Unknown',
-                album: artistGiven,
+                artist: artistGiven,
+                album: 'Unknown',
                 artwork: [
                     {
                         src: 'https://picsum.photos/96',
@@ -387,4 +387,5 @@ if (typeof audio !== 'undefined' && audio) {
         }
     });
 }
+
 
