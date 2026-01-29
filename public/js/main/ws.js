@@ -70,9 +70,9 @@ function initPresenceSocket() {
     })
 
     socket.addEventListener("error", (err) => {
-        activeTab.title = `Connection unsuccessful!Check console for more info!`;
-        streamAbout.title = `Connection unsuccessful!Check console for more info!`;
-        streamAbout.textContent = `Connection unsuccessful!`;
+        activeTab.title = `Connection unsuccessfull!Check console for more info!`;
+        streamAbout.title = `Connection unsuccessfull!Check console for more info!`;
+        streamAbout.textContent = `Connection unsuccessfull!`;
         console.error(`WebSocket error: ${err}`);
         activeLogo.classList.remove("success", "afk", "warn");
         activeLogo.classList.add("error");
@@ -92,12 +92,6 @@ function initPresenceSocket() {
         activeLogo.classList.remove("success", "error", "warn");
         activeLogo.classList.add("afk");
         activeUsersCount.textContent = `Offline`;
-
-        if (navigator.onLine) {
-            setTimeout(() => {
-                console.log("[Presence] Attempting auto-reconnect...");
-                initPresenceSocket();
-            }, 3000);
     })
 }
 
@@ -132,7 +126,7 @@ document.addEventListener("visibilitychange", () => {
         // Only close if the tab is actually hidden (switched tabs or minimized)
         if (socket && socket.readyState === WebSocket.OPEN) {
             console.log("[Presence] Tab hidden. Closing connection...");
-            //socket.close(); Prevent auto disconnects
+            //socket.close();
         }
     }
 });
@@ -141,4 +135,3 @@ document.addEventListener("visibilitychange", () => {
     checkAndReconnect();
 
 });*/
-
