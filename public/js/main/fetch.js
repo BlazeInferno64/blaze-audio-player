@@ -231,6 +231,9 @@ const updateStreamMediaSession = () => {
 
 const streamAudioFile = async (url) => {
     try {
+        imgLink = null; 
+        myURL = null;
+        
         if (!isLoaderShown) {
             loaderBg.classList.remove("hide");
             loaderBg.style.opacity = '.85'
@@ -439,5 +442,6 @@ if (typeof audio !== 'undefined' && audio) {
         });
     }
 }
+
 
 
