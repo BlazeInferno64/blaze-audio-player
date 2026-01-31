@@ -27,6 +27,38 @@ let isLoaderShown = false;
 
 let isNormalStream = true;
 
+let imgLink = null;
+
+let myURL = null;
+
+const imgArray = [
+    {
+        src: 'https://picsum.photos/96',
+        sizes: '96x96',
+        type: 'image/jpeg'
+    },
+    {
+        src: 'https://picsum.photos/128',
+        sizes: '128x128',
+        type: 'image/jpeg'
+    },
+    {
+        src: 'https://picsum.photos/192',
+        sizes: '192x192',
+        type: 'image/jpeg'
+    },
+    {
+        src: 'https://picsum.photos/256',
+        sizes: '256x256',
+        type: 'image/jpeg'
+    },
+    {
+        src: 'https://picsum.photos/512',
+        sizes: '512x512',
+        type: 'image/jpeg'
+    }
+]
+
 //const radioURL = `http://127.0.0.1:3000/api/`;
 
 const radioURL = `https://radio-station-v2.vercel.app/api/`;
@@ -148,33 +180,7 @@ const updateStreamMediaSession = () => {
                 title: audioTrackName.innerText || 'Unknown',
                 artist: artistGiven,
                 album: 'Unknown',
-                artwork: [
-                    {
-                        src: 'https://picsum.photos/96',
-                        sizes: '96x96',
-                        type: 'image/jpeg'
-                    },
-                    {
-                        src: 'https://picsum.photos/128',
-                        sizes: '128x128',
-                        type: 'image/jpeg'
-                    },
-                    {
-                        src: 'https://picsum.photos/192',
-                        sizes: '192x192',
-                        type: 'image/jpeg'
-                    },
-                    {
-                        src: 'https://picsum.photos/256',
-                        sizes: '256x256',
-                        type: 'image/jpeg'
-                    },
-                    {
-                        src: 'https://picsum.photos/512',
-                        sizes: '512x512',
-                        type: 'image/jpeg'
-                    }
-                ]
+                artwork: imgLink || imgArray
             });
 
             // Set action handlers with error handling
@@ -255,6 +261,16 @@ const streamAudioFile = async (url) => {
             return streamResult.innerText = `Request was successfull! But didn't received a valid audio file as response!`
         }
         //const audioURL = URL.createObjectURL(audioBlob);
+        if (data.img) {
+            myURL = data.img;
+            imgLink = [
+                {
+                    src: data.img,
+                    sizes: '512x512', // You can specify a large size as a catch-all
+                    type: 'image/jpeg'
+                }
+            ];
+        }
         audio.src = streamURL;
         await audio.load();
         streaming = true;
@@ -386,6 +402,42 @@ if (typeof audio !== 'undefined' && audio) {
             }
         }
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (audioGenre) {
+            const genres = [
+                { value: "house", label: "House" },
+                { value: "trap", label: "Trap" },
+                { value: "dnb", label: "Drum & Bass" },
+                { value: "dubstep", label: "Dubstep" },
+                { value: "fhouse", label: "Future House" },
+                { value: "dhouse", label: "Deep House" },
+                { value: "uhouse", label: "Underground House" },
+                { value: "techno", label: "Techno" }
+            ];
+
+            genres.sort((a, b) => a.label.localeCompare(b.label));
+
+            audioGenre.innerHTML = ''; // Clear existing
+            genres.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.value;
+                opt.textContent = g.label;
+                audioGenre.appendChild(opt);
+            });
+
+            audioGenre.value = "house";
+        }
+    });
+
+    if (audioGenre) {
+        audioGenre.addEventListener("change", () => {
+            if (streaming) {
+                console.log("Genre changed, switching stream...");
+                streamNextAudioFile.click();
+            }
+        });
+    }
 }
 
 

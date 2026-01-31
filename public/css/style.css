@@ -361,6 +361,7 @@ body{
     flex-direction: column;
 }
 .vol-card span{
+    font-weight: 600;
     background: #111;
     padding: .3rem .5rem;
     font-size: 1.3rem;
@@ -398,6 +399,7 @@ body{
     transition: all .3s ease-in-out;
     border-radius: .3rem;
     cursor: pointer;
+    font-weight: 600;
     background: linear-gradient(90deg,rgb(4, 209, 89),74%,rgb(0, 153, 255));
 }
 .done:hover{

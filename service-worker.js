@@ -1,5 +1,5 @@
 // Define a cache name with version
-const VERSION = 'v3.0'; // Increment this to force cache update (v1, v2, v3, etc.)
+const VERSION = 'v3.5'; // Increment this to force cache update (v1, v2, v3, etc.)
 const CACHE_NAME = `Blaze Audio Player ${VERSION}`;
 
 // List of files to cache

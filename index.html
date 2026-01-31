@@ -175,7 +175,9 @@
                     </div>
                     <div class="done-bg">
                         <button class="done" title="Done :)">
-                            <i class="fa fa-check"></i> Done
+                            <span class="material-symbols-outlined">
+                                done_outline
+                            </span> Done
                         </button>
                     </div>
                 </div>
@@ -316,17 +318,12 @@
                     </p>
                     <div class="stream-genre">
                         <label for="genre">
+                            <span class="material-symbols-outlined">
+                                genres
+                            </span>
                             Genre:
                         </label>
                         <select name="genre" id="genre" class="genre">
-                            <option value="house">House</option>
-                            <option value="trap">Trap</option>
-                            <option value="dnb">Drum & Bass</option>
-                            <option value="dubstep">Dubstep</option>
-                            <option value="fhouse">Future House</option>
-                            <option value="dhouse">Deep House</option>
-                            <option value="uhouse">Underground House</option>
-                            <option value="techno">Techno</option>
                         </select>
                     </div>
                     <div class="stream-result">
@@ -340,7 +337,7 @@
                     <div class="ck-opt">
                         <input title="When checked, next track will be automatically played" class="nxt-trck"
                             type="checkbox" checked name="next-track" id="nxt-track" />
-                        <p>Automatically play next track</p>
+                        <label for="nxt-track" id="p-trk">Automatically play next track</label>
                     </div>
                 </div>
                 <div class="stream-btns">
@@ -392,19 +389,25 @@
                 </div>
                 <div class="wel-main">
                     <p class="fetch-info">
-                        Welcome! Blaze Audio Player is a free and open source browser based custom audio player which
-                        supports tons of audio formats like .mp3,.ogg,etc. & allows 24/7 live music streaming.
+                        Welcome! Blaze Audio Player is a free and open source browser based custom audio player for your
+                        favourite audio tracks.
+
+                        Stream live 24/7 radio or play your local audio files with ease!
                         <br>
-                        Click on the buttons below to get started!
+                        Select an option below to get started!
                     </p>
                 </div>
                 <div class="btn-wel">
                     <button class="sel" title="Click to select audio">
-                        <i class="fa fa-cloud-upload"></i>
+                        <span class="material-symbols-outlined">
+                            cloud_upload
+                        </span>
                         <p>Browse Audio Files</p>
                     </button>
                     <button class="wel-stream" title="Click to stream">
-                        <i class="fa fa-headset"></i>
+                        <span class="material-symbols-outlined">
+                            cell_tower
+                        </span>
                         <p class="wel-p">24/7 Radio Stream</p>
                     </button>
                 </div>
@@ -415,7 +418,8 @@
     <div class="popup-bg hide">
         <div class="popup go-down hide">
             <p>
-                Click on the <i class="fa fa-cloud-upload"></i> icon to upload audio file
+                Listen to your <span style="color: #ff1b6b; font-weight: bold;">Local Files</span>
+                or stream the <span style="color: #45caff; font-weight: bold;">24/7 Radio</span>!
             </p>
             <span class="popup-close">
                 <i class="fa fa-times"></i>

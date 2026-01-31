@@ -616,6 +616,7 @@ audio {
 }
 
 .app .vol-bg .vol-card .done {
+    font-weight: 500;
     padding: .5rem 1rem;
     width: 100%;
     background: var(--gradient);
@@ -656,6 +657,7 @@ audio {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    font-weight: 550;
 }
 
 .app .vol-bg .vol-card .vol-info p::after {
@@ -1179,6 +1181,10 @@ audio {
     border-top-left-radius: .3rem;
     border-top-right-radius: .3rem;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 5px;
 }
 
 .stream-genre .genre {
@@ -1201,7 +1207,22 @@ audio {
     outline: none;
 }
 
+.ck-opt {
+    background: transparent;
+    font-weight: 600;
+    gap: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .3rem .5rem;
+    border: 2px dashed #4b494d;
+    border-radius: .3rem;
+    cursor: pointer;
+}
+
 .nxt-trck {
+    cursor: pointer;
     display: inline;
     margin-right: 3px;
     cursor: pointer;
@@ -1210,10 +1231,12 @@ audio {
     accent-color: rgb(14, 191, 91);
 }
 
-.nxt-trck+p {
+.nxt-trck+label {
     display: inline;
     margin: 0;
+    font-size: .9rem;
     color: rgb(14, 191, 91);
+    cursor: pointer;
 }
 
 .result::-webkit-scrollbar,
@@ -1298,23 +1321,18 @@ audio {
     scale: .98;
 }
 
-.ck-opt {
-    background: transparent;
-    font-weight: 600;
-    gap: 5px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: .3rem .5rem;
-    border: 2px dashed #4b494d;
-    border-radius: .3rem;
-}
-
 .btn-wel {
     width: 100%;
     padding: .3rem .5rem;
     margin-bottom: .3rem;
+}
+
+.btn-wel button {
+    font-family: "Monsterat", sans-serif;
+    font-weight: 550;
+    display: flex;
+    align-items: center;
+    
 }
 
 .or {
@@ -1356,53 +1374,63 @@ audio {
 
 .popup-bg {
     width: 100%;
-    background: transparent;
     position: fixed;
-    z-index: 5;
-    user-select: none;
+    z-index: 100; /* Increased to stay above visualizer */
     bottom: 5%;
     left: 0;
-    right: 0;
     display: flex;
-    align-items: center;
     justify-content: center;
-    color: #fff;
+    pointer-events: none; /* Prevents blocking clicks behind the popup */
+    user-select: none;
 }
 
 .popup-bg .popup {
-    width: 500px;
-    height: 50px;
-    transition: all .5s ease-in-out;
-    background: rgba(30, 30, 30);
+    width: 90%; /* Responsive */
+    max-width: 500px; 
+    height: 55px; /* Slightly taller for breathing room */
+    background: rgba(25, 25, 25, 0.85); /* Slightly transparent */
+    backdrop-filter: blur(10px); /* Modern glass effect */
     display: flex;
     align-items: center;
-    flex-direction: row;
     justify-content: space-between;
-    padding: .5rem .5rem;
-    border-radius: .3rem;
-    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .6);
-    transition: all .5s ease-in-out;
+    padding: 0 1rem;
+    border-radius: 12px; /* Smoother corners */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle edge glow */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappy bounce */
+    pointer-events: auto; /* Re-enable clicks for the popup itself */
 }
 
 .popup-bg .popup p {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    color: #efefef;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+/* Make the icon pop with your theme color */
+.popup-bg .popup p i {
+    color: #45caff; 
+    margin: 0 5px;
 }
 
 .popup-bg .popup .popup-close {
-    font-size: 1.5rem;
-    height: 100%;
-    width: 50px;
+    font-size: 1.2rem;
+    height: 35px;
+    width: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    border-radius: .3rem;
-    transition: all .1s ease-in-out;
+    border-radius: 8px;
+    transition: all 0.2s ease;
     cursor: pointer;
+    color: #888;
 }
 
 .popup-close:hover {
-    background: #4b494d;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: scale(1.1);
 }
 
 .go-down {
@@ -1628,6 +1656,7 @@ audio {
     }
 }
 
+
 @media (max-width: 450px) {
     .app {
         width: 95%;
@@ -1639,6 +1668,10 @@ audio {
 
     .app .head-div {
         gap: 5px;
+    }
+
+    .nxt-trck+label {
+        font-size: .8rem;
     }
     .lyric-line {
         padding: 10px 15px;
@@ -1653,6 +1686,6 @@ audio {
 
 @media (max-width: 500px) {
     .popup {
-        width: 95%;
+        width: 98%;
     }
 }

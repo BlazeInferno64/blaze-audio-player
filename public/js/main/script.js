@@ -507,8 +507,15 @@ audio.addEventListener("error", () => {
         }
     }
 
-    alert(`There was an error while playing the audio!\nDetails: ${details}\nCheck your browser console for more info!`);
+    streaming ? alert(`There was an error while playing the audio!\nDetails: ${details}\n\nMessage: ${error ? `'${error.message}'` : "'No error message available'"}\n\nCheck your browser console for more info!\n\nIf you were streaming from the radio, please skip to another station or try again later.\nIf you believe this is an bug/issue please report it!`) : alert(`There was an error while playing the audio!\nDetails: ${details}\n\nMessage: ${error ? `'${error.message}'` : "'No error message available'"}\n\nCheck your browser console for more info!\nIf you believe this is an bug/issue please report it!`);
 
+    if (streaming) {
+        welcomeStreamBtnText.innerText = `Error loading audio!`;
+        streamResult.classList.remove('normal');
+        streamResult.classList.remove('ok');
+        streamResult.classList.add('err');
+        streamResult.innerText = 'Error loading audio!';
+    }
     console.error("Audio Error Details:", {
         code: error ? error.code : "N/A",
         message: error ? error.message : "N/A",
@@ -542,6 +549,7 @@ audio.addEventListener("canplaythrough", async () => {
         isLoaderShown = false;
     }
 
+    welcomeStreamBtnText.innerText = streaming ? `Streaming Live Radio` : `24/7 Radio Station`;
     await audio.play();
     visualize();
 

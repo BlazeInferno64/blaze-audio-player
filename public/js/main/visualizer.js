@@ -1,293 +1,186 @@
 /**
  * Copyright (c) BlazeInferno64.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- * Author: BlazeInferno64 (https://blazeinferno64.github.io/)
+ * Licensed under the MIT License.
+ * Version: BPM-Synced + Accelerated Cap Gravity + Clamped Height.
  */
 const canvas = document.querySelector(".banner");
 const effectFluid = document.querySelector(".effect-fluid");
 
-let context;
-let src;
-let analyser;
+let context, src, analyser;
 let smoothScale = 1;
 let lastBeatTime = 0;
-let bpm = 120; // fallback BPM
+let bpm = 120;
 let isPlaying = false;
 let beatIntervals = [];
 const MAX_INTERVALS = 8;
+let animationId; 
 
-// 🔒 Beat grid
 let beatGridStart = 0;
 let beatInterval = 60000 / bpm;
 
-//let isRendering = false;
-//let animationId;
-// Removed since it conflicts
-
 const visualize = () => {
-    if (src) return;
-    context = new AudioContext();
-    src = context.createMediaElementSource(audio);
-    analyser = context.createAnalyser();
+    if (animationId) cancelAnimationFrame(animationId);
+    
+    if (!context) {
+        context = new (window.AudioContext || window.webkitAudioContext)();
+        src = context.createMediaElementSource(audio); 
+        analyser = context.createAnalyser();
+        src.connect(analyser);
+        analyser.connect(context.destination);
+    }
 
     const ctx = canvas.getContext('2d');
-
-    src.connect(analyser);
-    analyser.connect(context.destination);
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr); 
 
     analyser.fftSize = 256;
     const bufferLength = analyser.frequencyBinCount;
-    console.log(`Buffer length of the current audio file: ${bufferLength}`);
-
     const dataArray = new Uint8Array(bufferLength);
-    const WIDTH = canvas.width;
-    const HEIGHT = canvas.height;
+    const WIDTH = rect.width;
+    const HEIGHT = rect.height;
 
-    const barWidth = (WIDTH / bufferLength) * 2.5;
-    let barHeight;
-    let x = 0;
-
-    // Create an array to store the bar heights
+    // --- Configuration ---
+    const barWidth = (WIDTH / bufferLength) * 2.5; 
     const barHeights = new Array(bufferLength).fill(0);
+    const barCaps = new Array(bufferLength).fill(0);
+    const capDropSpeeds = new Array(bufferLength).fill(0);
+    
+    // NEW: Height limit (85% of canvas height)
+    const MAX_BAR_HEIGHT = HEIGHT * 0.92; 
 
-    // Function to draw a rounded rectangle
-    function drawRoundedRect(ctx, x, y, width, height, radius) {
-        radius = Math.min(radius, width / 2, height / 2); // ensure radius doesn't exceed dimensions
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height);
-        ctx.lineTo(x, y + height);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
-        ctx.fill();
+    const barColors = [];
+    const colors = { start: [255, 27, 107], mid: [69, 202, 255], end: [255, 255, 255] };
+
+    for (let i = 0; i < bufferLength; i++) {
+        let r, g, b;
+        let factor = (i < bufferLength / 2) ? i / (bufferLength / 2) : (i - bufferLength / 2) / (bufferLength / 2);
+        let c1 = (i < bufferLength / 2) ? colors.start : colors.mid;
+        let c2 = (i < bufferLength / 2) ? colors.mid : colors.end;
+        
+        r = Math.floor(c1[0] + (c2[0] - c1[0]) * factor);
+        g = Math.floor(c1[1] + (c2[1] - c1[1]) * factor);
+        b = Math.floor(c1[2] + (c2[2] - c1[2]) * factor);
+        barColors.push(`rgb(${r},${g},${b})`);
     }
 
-
     function renderFrame() {
-        requestAnimationFrame(renderFrame);
-        x = 0;
-
+        animationId = requestAnimationFrame(renderFrame);
         analyser.getByteFrequencyData(dataArray);
+        
+        const now = performance.now();
 
-        // ---- Bass energy (lower frequencies feel better) ----
+        // ---- 1. BPM Detection ----
+        let kickEnergy = 0;
+        for (let i = 0; i < 6; i++) kickEnergy += dataArray[i];
+        kickEnergy /= 6;
+
         let bassSum = 0;
-        const bassRange = Math.floor(bufferLength * 0.15); // lowest 15%
+        for (let i = 0; i < 10; i++) bassSum += dataArray[i];
+        let bassAvg = bassSum / 10;
 
-        for (let i = 0; i < bassRange; i++) {
-            bassSum += dataArray[i];
-        }
-
-        const bassAvg = bassSum / bassRange; // 0 → 255
-        //console.log(bassAvg);
-
-        // ---- Audio-reactive fluid scale + BPM detection ----
-        if (effectFluid) {
-            if (isPlaying) {
-                const now = performance.now();
-
-                /* ---- Kick energy (lowest bins) ---- */
-                let kickEnergy = 0;
-                const kickBins = 6;
-                for (let i = 1; i <= kickBins; i++) {
-                    kickEnergy += dataArray[i];
+        if (isPlaying) {
+            if (kickEnergy > (bassAvg * 0.8 + 15) && now - lastBeatTime > 170) {
+                if (lastBeatTime !== 0) {
+                    const interval = now - lastBeatTime;
+                    let detectedBPM = 60000 / interval;
+                    while (detectedBPM < 85) detectedBPM *= 2;
+                    while (detectedBPM > 190) detectedBPM /= 2;
+                    
+                    beatIntervals.push(detectedBPM);
+                    if (beatIntervals.length > MAX_INTERVALS) beatIntervals.shift();
+                    bpm = beatIntervals.reduce((a, b) => a + b, 0) / beatIntervals.length;
+                    
+                    beatInterval = 60000 / bpm;
+                    beatGridStart = now; 
                 }
-                kickEnergy /= kickBins;
-
-                /* ---- Mid-range energy (for complex D&B patterns) ---- */
-                let midEnergy = 0;
-                const midStart = 15;
-                const midEnd = 30;
-                for (let i = midStart; i <= midEnd; i++) {
-                    midEnergy += dataArray[i];
-                }
-                midEnergy /= (midEnd - midStart + 1);
-                midEnergy *= 0.4; // Weight it less than kick
-
-                const totalBassEnergy = kickEnergy + midEnergy;
-
-                const beatThreshold = Math.max(bassAvg * 0.8 + 10, totalBassEnergy * 0.75);
-
-                /* ---- Beat detection + BPM smoothing ---- */
-                if (
-                    kickEnergy > beatThreshold &&
-                    now - lastBeatTime > 150
-                ) {
-                    if (lastBeatTime !== 0) {
-                        const interval = now - lastBeatTime;
-                        let detectedBPM = 60000 / interval;
-
-                        while (detectedBPM < 80) detectedBPM *= 2;
-                        while (detectedBPM > 220) detectedBPM /= 2;
-
-                        beatIntervals.push(detectedBPM);
-                        if (beatIntervals.length > MAX_INTERVALS) {
-                            beatIntervals.shift();
-                        }
-
-                        bpm =
-                            beatIntervals.reduce((a, b) => a + b, 0) /
-                            beatIntervals.length;
-
-                        // LOCK BEAT GRID
-                        beatInterval = 60000 / bpm;
-                        beatGridStart = now;
-                    }
-
-                    lastBeatTime = now;
-                }
-
-                /* ---- GRID-SNAPPED BPM PULSE ---- */
-                const timeSinceGrid = now - beatGridStart;
-                const gridPhase =
-                    (timeSinceGrid % beatInterval) / beatInterval;
-
-                // Choose ONE pulse type:
-
-                // Smooth club pulse
-                // const bpmPulse = Math.sin(gridPhase * Math.PI * 2) * 0.15;
-
-                // Punchy kick-style pulse (recommended)
-                const bpmPulse = Math.exp(-gridPhase * 6) * 0.25 + (1 - gridPhase) * 0.05;
-
-                const targetScale =
-                    1 +
-                    (bassAvg / 255) * 0.5 +
-                    bpmPulse;
-
-                /* ---- Premium attack / decay ---- */
-                const attackSpeed = 0.65;
-                const decaySpeed = 0.12;
-
-                if (targetScale > smoothScale) {
-                    smoothScale +=
-                        (targetScale - smoothScale) * attackSpeed;
-                } else {
-                    smoothScale +=
-                        (targetScale - smoothScale) * decaySpeed;
-                }
-            } else {
-                // Stop → smoothly settle back to 1
-                smoothScale += (1 - smoothScale) * 0.2;
-                if (Math.abs(smoothScale - 1) < 0.01) {
-                    smoothScale = 1; // Lock to 1 when close enough
-                }
+                lastBeatTime = now;
             }
 
-            smoothScale = Math.max(1, Math.min(smoothScale, 2.5));
+            // ---- 2. Perfect BPM Fluid Scaling ----
+            const timeSinceGrid = now - beatGridStart;
+            const gridPhase = (timeSinceGrid % beatInterval) / beatInterval;
+            const beatPulse = Math.exp(-gridPhase * 5); 
+            const targetScale = 1.0 + (beatPulse * 0.45) + (bassAvg / 255 * 0.1);
+
+            const lerpSpeed = (targetScale > smoothScale) ? 0.45 : 0.12;
+            smoothScale += (targetScale - smoothScale) * lerpSpeed;
+        } else {
+            smoothScale += (1 - smoothScale) * 0.1;
+        }
+
+        if (effectFluid) {
             effectFluid.style.transform = `scale(${smoothScale})`;
         }
 
-
-        // Clear the canvas
+        // ---- 3. Drawing & Gravity Fix ----
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-        // ---- Initialize barCaps array (for peak indicators) ----
-        if (!window.barCaps) {
-            window.barCaps = new Array(bufferLength).fill(0);
-        }
-        const barCaps = window.barCaps;
-
-        // ---- Precompute gradient colors outside the loop ----
-        const startColor = { r: 255, g: 27, b: 107 }; // #ff1b6b
-        const middleColor = { r: 69, g: 202, b: 255 }; // #45caff
-        const white = { r: 255, g: 255, b: 255 }; // white
+        let x = 0;
 
         for (let i = 0; i < bufferLength; i++) {
-            const barHeight = dataArray[i] / 2;
+            // UPDATED: Scale based on MAX_BAR_HEIGHT instead of full HEIGHT
+            const targetH = (dataArray[i] / 255) * MAX_BAR_HEIGHT; 
+            barHeights[i] += (targetH - barHeights[i]) * 0.15; 
 
-            // Smoothly transition bar heights
-            barHeights[i] += (barHeight - barHeights[i]) * 0.1;
-
-            // ---- Gradient colors ----
-            let r, g, b;
-            if (i < bufferLength / 2) {
-                const factor = i / (bufferLength / 2);
-                r = Math.floor(startColor.r + (middleColor.r - startColor.r) * factor);
-                g = Math.floor(startColor.g + (middleColor.g - startColor.g) * factor);
-                b = Math.floor(startColor.b + (middleColor.b - startColor.b) * factor);
-            } else {
-                const factor = (i - bufferLength / 2) / (bufferLength / 2);
-                r = Math.floor(middleColor.r + (white.r - middleColor.r) * factor);
-                g = Math.floor(middleColor.g + (white.g - middleColor.g) * factor);
-                b = Math.floor(middleColor.b + (white.b - middleColor.b) * factor);
-            }
-
-            ctx.fillStyle = `rgb(${r},${g},${b})`;
+            ctx.fillStyle = barColors[i];
             ctx.fillRect(x, HEIGHT - barHeights[i], barWidth, barHeights[i]);
-            //drawRoundedRect(ctx, x, HEIGHT - barHeights[i], barWidth, barHeights[i], 3);
 
-            // ---- Bar caps / peak indicators ----
-            const capFallSpeed = 2; // how fast the peak falls
             if (barHeights[i] > barCaps[i]) {
-                barCaps[i] = barHeights[i]; // new peak
+                barCaps[i] = barHeights[i];
+                capDropSpeeds[i] = 0; 
             } else {
-                barCaps[i] -= capFallSpeed;
-                if (barCaps[i] < 0) barCaps[i] = 0;
+                capDropSpeeds[i] += 0.22; 
+                barCaps[i] -= capDropSpeeds[i];
             }
 
-            // Draw the cap
-            ctx.fillStyle = `rgb(${r},${g},${b})`; // Match cap color with bar
-            ctx.fillRect(x, HEIGHT - barCaps[i] - 2, barWidth, 2); // 2px high cap
+            if (barCaps[i] < 0) {
+                barCaps[i] = 0;
+                capDropSpeeds[i] = 0;
+            }
 
+            ctx.fillRect(x, HEIGHT - barCaps[i] - 4, barWidth, 4);
             x += barWidth + 1;
         }
     }
-
-    // Reset bar heights when the audio ends
-    audio.onended = () => {
-        isPlaying = false;
-        lastBeatTime = 0;
-        beatIntervals.length = 0;
-        for (let i = 0; i < barHeights.length; i++) {
-            barHeights[i] = 0; // Reset to original height
-        }
-    };
-
     renderFrame();
 }
 
+/**
+ * Static initialization for idle state
+ */
 const drawCaps = () => {
     const ctx = canvas.getContext('2d');
-    const WIDTH = canvas.width;
-    const HEIGHT = canvas.height;
-    const bufferLength = 128; // match your analyser.fftSize / 2
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const WIDTH = rect.width;
+    const HEIGHT = rect.height;
+    const bufferLength = 128; 
     const barWidth = (WIDTH / bufferLength) * 2.5;
 
-    // Precompute gradient colors
-    const startColor = { r: 255, g: 27, b: 107 };
-    const middleColor = { r: 69, g: 202, b: 255 };
-    const white = { r: 255, g: 255, b: 255 };
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    // Initialize barCaps array
-    window.barCaps = new Array(bufferLength);
+    const colors = { start: [255, 27, 107], mid: [69, 202, 255], end: [255, 255, 255] };
 
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
-        const capHeight = 2; // caps are 2px high
-        window.barCaps[i] = capHeight;
+        let factor = (i < bufferLength / 2) ? i / (bufferLength / 2) : (i - bufferLength / 2) / (bufferLength / 2);
+        let c1 = (i < bufferLength / 2) ? colors.start : colors.mid;
+        let c2 = (i < bufferLength / 2) ? colors.mid : colors.end;
+        
+        let r = Math.floor(c1[0] + (c2[0] - c1[0]) * factor);
+        let g = Math.floor(c1[1] + (c2[1] - c1[1]) * factor);
+        let b = Math.floor(c1[2] + (c2[2] - c1[2]) * factor);
 
-        // Compute gradient color
-        let r, g, b;
-        if (i < bufferLength / 2) {
-            const factor = i / (bufferLength / 2);
-            r = Math.floor(startColor.r + (middleColor.r - startColor.r) * factor);
-            g = Math.floor(startColor.g + (middleColor.g - startColor.g) * factor);
-            b = Math.floor(startColor.b + (middleColor.b - startColor.b) * factor);
-        } else {
-            const factor = (i - bufferLength / 2) / (bufferLength / 2);
-            r = Math.floor(middleColor.r + (white.r - middleColor.r) * factor);
-            g = Math.floor(middleColor.g + (white.g - middleColor.g) * factor);
-            b = Math.floor(middleColor.b + (white.b - middleColor.b) * factor);
-        }
-
-        // Draw the cap at the very bottom
         ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.fillRect(x, HEIGHT - capHeight, barWidth, capHeight);
-
+        ctx.fillRect(x, HEIGHT - 4, barWidth, 4);
         x += barWidth + 1;
     }
 }
-
