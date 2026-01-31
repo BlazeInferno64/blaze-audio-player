@@ -1,3 +1,4 @@
+![Uptime Monitor Badge](https://badgen.net/uptime-robot/week/m802259942-ec02ac5b182eddf9d75ff547)
 # Blaze-Audio-Player
 
 <div align="center">
