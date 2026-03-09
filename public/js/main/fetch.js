@@ -417,7 +417,8 @@ if (typeof audio !== 'undefined' && audio) {
                 { value: "dhouse", label: "Deep House" },
                 { value: "uhouse", label: "Underground House" },
                 { value: "techno", label: "Techno" },
-                { value: "chill", label: "Chill Station" }
+                { value: "chill", label: "Chill Station" },
+                { value: "global", label: "Global Station" }
             ];
 
             genres.sort((a, b) => a.label.localeCompare(b.label));
@@ -443,6 +444,7 @@ if (typeof audio !== 'undefined' && audio) {
         });
     }
 }
+
 
 
 
