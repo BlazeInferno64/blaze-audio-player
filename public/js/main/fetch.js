@@ -220,7 +220,7 @@ const streamAudioFile = async (url) => {
     try {
         imgLink = null;
         myURL = null;
-
+        myURi = null; // Reset this at the start
         if (!isLoaderShown) {
             loaderBg.classList.remove("hide");
             loaderBg.style.opacity = '.85'
@@ -280,6 +280,13 @@ const streamAudioFile = async (url) => {
                 const srch = await itunes.search(name);
                 if (srch.results[0].artworkUrl100) {
                     myURi = srch.results[0].artworkUrl100 || imgArray[4].src;
+                    imgLink = [
+                        {
+                            src: myURi,
+                            sizes: '512x512', // You can specify a large size as a catch-all
+                            type: 'image/jpeg'
+                        }
+                    ];
                 } else {
                     myURi = myURL || imgArray[4].src;
                 }
