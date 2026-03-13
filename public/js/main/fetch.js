@@ -31,6 +31,7 @@ let imgLink = null;
 
 let myURL = null;
 
+/*
 const imgArray = [
     {
         src: 'https://picsum.photos/96',
@@ -57,7 +58,7 @@ const imgArray = [
         sizes: '512x512',
         type: 'image/jpeg'
     }
-]
+]*/
 
 //const radioURL = `http://127.0.0.1:3000/api/`;
 
@@ -155,85 +156,71 @@ const isValidAudioStream = async (url) => {
     }
 }
 
-const resetMediaSession = () => {
-    if ('mediaSession' in navigator) {
-        try {
-            // Clear all handlers
-            navigator.mediaSession.setActionHandler('play', null);
-            navigator.mediaSession.setActionHandler('pause', null);
-            navigator.mediaSession.setActionHandler('seekbackward', null);
-            navigator.mediaSession.setActionHandler('seekforward', null);
-            navigator.mediaSession.setActionHandler('previoustrack', null);
-            navigator.mediaSession.setActionHandler('nexttrack', null);
-            navigator.mediaSession.metadata = null;
-        } catch (error) {
-            console.log('Error resetting media session:', error);
-        }
-    }
-};
+/*
+const updateStreamMediaSession = (title, artist) => {
+    if (!('mediaSession' in navigator)) return;
+    try {
+        const artwork = myURL ? [
+            { src: myURL, sizes: '96x96', type: 'image/jpeg' },
+            { src: myURL, sizes: '128x128', type: 'image/jpeg' },
+            { src: myURL, sizes: '192x192', type: 'image/jpeg' },
+            { src: myURL, sizes: '256x256', type: 'image/jpeg' },
+            { src: myURL, sizes: '384x384', type: 'image/jpeg' },
+            { src: myURL, sizes: '512x512', type: 'image/jpeg' }
+        ] : imgArray;
 
-const updateStreamMediaSession = () => {
-    resetMediaSession();
-    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title || 'Unknown',
+            artist: artist || 'Blaze Radio',
+            album: 'Blaze Audio Player',
+            artwork
+        });
+
         try {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: audioTrackName.innerText || 'Unknown',
-                artist: artistGiven,
-                album: 'Unknown',
-                artwork: imgLink || imgArray
+            navigator.mediaSession.setActionHandler('play', async () => {
+                await audio.play();
+                navigator.mediaSession.playbackState = 'playing';
+                playPauseCheckBox.checked = false;
             });
+        } catch (error) { console.log('play handler not supported'); }
 
-            // Set action handlers with error handling
-            try {
-                navigator.mediaSession.setActionHandler('play', () => audio.play());
-            } catch (error) {
-                console.log('play handler not supported');
-            }
+        try {
+            navigator.mediaSession.setActionHandler('pause', () => {
+                audio.pause();
+                navigator.mediaSession.playbackState = 'paused';
+                playPauseCheckBox.checked = true;
+            });
+        } catch (error) { console.log('pause handler not supported'); }
 
-            try {
-                navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-            } catch (error) {
-                console.log('pause handler not supported');
-            }
+        try { navigator.mediaSession.setActionHandler('seekbackward', null); } catch (_) { }
+        try { navigator.mediaSession.setActionHandler('seekforward', null); } catch (_) { }
 
-            try {
-                navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
-            } catch (error) {
-                console.log('seekbackward handler not supported');
-            }
+        try {
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                streamNextAudioFile.click();
+            });
+        } catch (error) { console.log('previoustrack handler not supported'); }
 
-            try {
-                navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
-            } catch (error) {
-                console.log('seekforward handler not supported');
-            }
+        try {
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                streamNextAudioFile.click();
+            });
+        } catch (error) { console.log('nexttrack handler not supported'); }
 
-            try {
-                navigator.mediaSession.setActionHandler('previoustrack', () => {
-                    if (streaming) streamNextAudioFile.click();
-                });
-            } catch (error) {
-                console.log('previoustrack handler not supported');
-            }
+        navigator.mediaSession.playbackState = audio.paused ? 'paused' : 'playing';
 
-            try {
-                navigator.mediaSession.setActionHandler('nexttrack', () => {
-                    if (streaming) streamNextAudioFile.click();
-                });
-            } catch (error) {
-                console.log('nexttrack handler not supported');
-            }
-        } catch (error) {
-            console.log('MediaMetadata not supported on this device:', error);
-        }
+    } catch (error) {
+        console.log('MediaMetadata not supported on this device:', error);
     }
-};
+};*/
+
+let myURi = null;
 
 const streamAudioFile = async (url) => {
     try {
-        imgLink = null; 
+        imgLink = null;
         myURL = null;
-        
+
         if (!isLoaderShown) {
             loaderBg.classList.remove("hide");
             loaderBg.style.opacity = '.85'
@@ -246,6 +233,20 @@ const streamAudioFile = async (url) => {
         const streamURL = data.url;
         const name = data.name;
         artistGiven = data.artist || "Unknown";
+        if (!data.artist) {
+            try {
+                const srch = await itunes.search(name);
+                if (srch.results[0].artistName) {
+                    artistGiven = srch.results[0].artistName;
+                } else {
+                    artistGiven = `Unknown Artist`;
+                }
+            } catch (error) {
+                console.error(error);
+                artistGiven = `Unknown Artist`;
+            }
+        }
+
         //const audioBlob = await fetch(streamURL).then(res => res.blob());
         /*if (!audioBlob.type.startsWith('audio/')) {
             alert(`The response isn't a valid audio file!`);
@@ -274,6 +275,22 @@ const streamAudioFile = async (url) => {
                 }
             ];
         }
+        if (!data.img) {
+            try {
+                const srch = await itunes.search(name);
+                if (srch.results[0].artworkUrl100) {
+                    myURi = srch.results[0].artworkUrl100 || imgArray[4].src;
+                } else {
+                    myURi = myURL || imgArray[4].src;
+                }
+            } catch (error) {
+                console.error(error);
+                myURi = myURL || imgArray[4].src;
+            }
+        }
+        appHead.style.backgroundImage = `url("${myURi || myURL || imgArray[4].src}")`;
+        appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${myURi || myURL || imgArray[4].src}")`;
+        appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${myURi || myURL || imgArray[4].src}")`;
         audio.src = streamURL;
         await audio.load();
         streaming = true;
@@ -293,16 +310,37 @@ const streamAudioFile = async (url) => {
             }, 300);
         }
         isLoaderShown = false;
-        resetBackgroundToInitial();
-        updateStreamMediaSession();
-        const lyricsQuery = name
-            .replace(/\.[^/.]+$/, "")             // Remove extension
-            .replace(/^\d+[\s.-]+/, "")           // Remove track numbers
-            .replace(/[\[\(\{].*?[\]\)\}]/g, "")  // Remove brackets
-            .replace(/[_-]/g, " ")                // Normalize spaces
+        //resetBackgroundToInitial();
+        //updateStreamMediaSession(name, artistGiven);
+        if (data && data.url) {
+            // 1. Set the audio source and play
+            // audio.src = data.url; 
+            // audio.play();
+
+            // 2. Update Media Session
+            setMediaSessionApi(
+                audio,
+                data.name || "Streaming Track", // Use song name from response
+                artistGiven || "Unknown Artist", // Use artist from response
+                "Blaze Audio Player's 24/7 Radio Station",
+                imgLink, // Passing img
+                'image/jpeg',
+                false // local = false enables Next/Prev buttons
+            );
+        }
+        const cleanName = name
+            .replace(/\.[^/.]+$/, "")
+            .replace(/^\d+[\s.-]+/, "")
+            .replace(/[\[\(\{].*?[\]\)\}]/g, "")
             .trim();
+
+        const myText = (artistGiven && artistGiven !== "Unknown")
+            ? `${artistGiven} - ${cleanName}`
+            : cleanName;
+        //await getLyrics(name);
         if (typeof fetchLyrics === "function") {
-            fetchLyrics(lyricsQuery);
+            //fetchLyrics(lyricsQuery);
+            fetchLyrics(myText);
         }
     } catch (error) {
         streamResult.classList.remove("normal");
@@ -377,6 +415,19 @@ if (streamNextAudioFile) {
     });
 }
 
+// Override forward/backward buttons to skip to next stream track when streaming
+if (typeof forwardBtn !== 'undefined' && forwardBtn) {
+    forwardBtn.addEventListener('click', () => {
+        if (streaming) streamNextAudioFile.click();
+    });
+}
+
+if (typeof backwardBtn !== 'undefined' && backwardBtn) {
+    backwardBtn.addEventListener('click', () => {
+        if (streaming) streamNextAudioFile.click();
+    });
+}
+
 // Listen for audio end to auto-fetch next when enabled
 if (typeof audio !== 'undefined' && audio) {
     audio.addEventListener('ended', async () => {
@@ -444,8 +495,3 @@ if (typeof audio !== 'undefined' && audio) {
         });
     }
 }
-
-
-
-
-

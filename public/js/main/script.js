@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  * Author: BlazeInferno64 (https://blazeinferno64.github.io/)
  */
-const audio = document.querySelector(".audio");
+const audio = document.querySelector(".audio-el");
 const fileInput = document.querySelector(".file");
 
 const audioTrackName = document.querySelector(".track-name");
@@ -241,6 +241,49 @@ const resetBackgroundToInitial = () => {
     appBanner.style.backgroundImage = initialBackground.banner;
 };
 
+/*
+const setupMediaSessionActions = () => {
+    if ('mediaSession' in navigator) {
+        // Play Action
+        navigator.mediaSession.setActionHandler('play', async () => {
+            await audio.play();
+            navigator.mediaSession.playbackState = 'playing';
+            playPauseCheckBox.checked = false; // Sync UI
+        });
+
+        // Pause Action
+        navigator.mediaSession.setActionHandler('pause', () => {
+            audio.pause();
+            navigator.mediaSession.playbackState = 'paused';
+            playPauseCheckBox.checked = true; // Sync UI
+        });
+
+        // Next Track (Triggers your existing logic)
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            if (playNextBtn) playNextBtn.click();
+        });
+
+        // Previous Track (Restarts song)
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            audio.currentTime = 0;
+        });
+
+        // Seek Actions
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+            if (!streaming) {
+                audio.currentTime = Math.max(audio.currentTime - 5, 0);
+            }
+            return streamNextAudioFile.click();
+        });
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+            if (!streaming) {
+                audio.currentTime = Math.min(audio.currentTime + 5, audio.duration)
+            }
+            return streamNextAudioFile.click();
+        });
+    }
+};
+
 const resetMediaSessionHandlers = () => {
     if ('mediaSession' in navigator) {
         try {
@@ -254,178 +297,65 @@ const resetMediaSessionHandlers = () => {
             console.log('Error resetting media session handlers:', error);
         }
     }
-};
+};*/
 
-let lyricsArray = []; // Stores time-stamped lyric objects
-
-function parseLRC(lrc) {
-    const lyricsWindow = document.getElementById('lyrics-window'); // Ensure this ID exists in index.html
-    lyricsArray = [];
-    lyricsWindow.innerHTML = "";
-
-    const lines = lrc.split('\n');
-    // Regex to match [mm:ss.xx] or [mm:ss.xxx]
-    const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
-
-    lines.forEach((line) => {
-        const match = timeRegex.exec(line);
-        if (match) {
-            // Convert timestamp to total seconds
-            const time = parseInt(match[1]) * 60 + parseInt(match[2]) + parseInt(match[3]) / (match[3].length === 3 ? 1000 : 100);
-            const text = line.replace(timeRegex, '').trim();
-
-            if (text) {
-                const div = document.createElement('div');
-                div.className = 'lyric-line';
-                div.innerText = text;
-                lyricsWindow.appendChild(div);
-                lyricsArray.push({ time, element: div });
-            }
-        }
-    });
-}
-
-async function fetchLyrics(query) {
-    const lyricsWindow = document.getElementById('lyrics-window');
-    if (!lyricsWindow) return;
-
-    // 1. Immediately reset state and show active searching status
-    lyricsArray = [];
-    lyricsWindow.innerHTML = ""; // Clear old lyrics
-
-    const statusDiv = document.createElement('div');
-    statusDiv.className = 'lyric-line active'; // Force active here
-    statusDiv.innerText = "Searching for lyrics...";
-    lyricsWindow.appendChild(statusDiv);
-
-    // Ensure it scrolls to center immediately
-    statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    try {
-        const response = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-
-        lyricsWindow.style.display = 'block'; // Ensure lyrics window is visible
-
-        const match = data.find(s => s.syncedLyrics);
-
-        if (match) {
-            parseLRC(match.syncedLyrics);
-        } else {
-            const plainMatch = data.find(s => s.plainLyrics);
-            if (plainMatch) {
-                // For plain lyrics, we make the whole block active
-                lyricsWindow.innerHTML = `<div class='lyric-line active' style='white-space: pre-wrap;'>${plainMatch.plainLyrics}</div>`;
-            } else {
-                lyricsWindow.innerHTML = "<div class='lyric-line active'>No lyrics found</div>";
-            }
-        }
-    } catch (err) {
-        console.error("LRCLIB Error:", err);
-        lyricsWindow.innerHTML = "<div class='lyric-line active'>Error loading lyrics</div>";
-    }
-}
-
-const displayMetaData = (tag, file) => {
-    resetMediaSessionHandlers();
-    const title = tag.tags.title;
-    const artist = tag.tags.artist;
-    const album = tag.tags.album;
-    const picture = tag.tags.picture;
-
-    let imgURL = "./public/img/icon.png";
-
-    let media;
-
-    if ("mediaSession" in navigator) {
-        media = new MediaMetadata({
-            title: "Unknown Title",
-            artist: "Unknown Artist",
-            album: 'Unknown Album',
-            artwork: []
+const resetMediaSessionHandlers = () => {
+    if ('mediaSession' in navigator) {
+        const actions = ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack', 'stop'];
+        actions.forEach(action => {
+            try { navigator.mediaSession.setActionHandler(action, null); } catch (e) { }
         });
     }
+};
 
-    if (artist && title && picture) {
-        var base64String = '';
-        for (let i = 0; i < picture.data.length; i++) {
-            base64String += String.fromCharCode(picture.data[i]);
-        }
+const displayMetaData = (tag, file) => {
+    // 1. Reset any old OS handlers
+    //
+    resetMediaSessionHandlers();
+
+    const { title, artist, album, picture } = tag.tags;
+    let imgURL = "./public/img/icon.png"; // Default fallback
+    let mimeType = 'image/png';
+
+    // 2. Process the Image if it exists
+    if (picture) {
+        const base64String = picture.data.reduce((acc, byte) => acc + String.fromCharCode(byte), "");
         imgURL = `data:${picture.format};base64,${window.btoa(base64String)}`;
-
-        if (media) {
-            media.album = album || 'Unknown Album';
-            media.title = title || 'Unknown Title';
-            media.artist = artist || 'Unknown Artist';
-            media.artwork = [
-                {
-                    src: imgURL,
-                    sizes: '512x512',
-                    type: picture.format
-                }
-            ]
-            navigator.mediaSession.metadata = media;
-            navigator.mediaSession.setActionHandler('play', () => audio.play());
-            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
-            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
-        }
+        mimeType = picture.format;
 
         appHead.style.backgroundImage = `url("${imgURL}")`;
         appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
         appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
-
-        audioTrackName.innerText = `${artist} - ${title}`;
-        artistName.innerText = `${artist}`;
-    } else if (artist && title && !picture) {
-
-        if (media) {
-            media.album = album || 'Unknown Album';
-            media.title = `${artist} - ${title}`;
-            media.artist = artist || 'Unknown Artist';
-            media.artwork = [
-                {
-                    src: initialBackground.bannerBg,
-                    sizes: '512x512',
-                    type: picture.format
-                }
-            ]
-            navigator.mediaSession.metadata = media;
-            navigator.mediaSession.setActionHandler('play', () => audio.play());
-            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
-            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
-        }
-        audioTrackName.innerText = `${artist} - ${title}`;
-        artistName.innerText = `${artist}`;
-        // Revert to initial background styles if no picture is found
-        appHead.style.backgroundImage = initialBackground.head;
-        appBannerBg.style.backgroundImage = initialBackground.bannerBg;
-        appBanner.style.backgroundImage = initialBackground.banner;
     } else {
-        if (media) {
-            media.album = album || 'Unknown Album';
-            media.title = `${audioTrackName.innerText}`;
-            media.artist = artist || 'Unknown Artist';
-            media.artwork = [
-                {
-                    src: "./public/img/icon.png",
-                    sizes: '512x512',
-                    type: 'image/png'
-                }
-            ]
-            navigator.mediaSession.metadata = media;
-            navigator.mediaSession.setActionHandler('play', () => audio.play());
-            navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-            navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime -= 5);
-            navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime += 5);
-        }
-        // Revert to initial background styles if no metadata is found
-        appHead.style.backgroundImage = initialBackground.head;
-        appBannerBg.style.backgroundImage = initialBackground.bannerBg;
-        appBanner.style.backgroundImage = initialBackground.banner;
+        resetBackgroundToInitial();
     }
-}
+
+    // 3. Set Player UI Text
+    const finalTitle = title || trimFileName(file.name);
+    const finalArtist = artist || "Unknown Artist";
+
+    audioTrackName.innerText = title && artist ? `${artist} - ${title}` : finalTitle;
+    artistName.innerText = finalArtist;
+
+    if (!broadCastEnd) {
+        if (hostPlayer.src) {
+            hostPlayer.pause();
+            hostPlayer.currentTime = 0;
+        }
+    }
+
+    // 4. Send to MediaSession API
+    // We pass the processed imgURL and the actual mimeType
+    setMediaSessionApi(
+        audio,
+        title || trimFileName(file.name),
+        artist || "Unknown Artist",
+        album || "Unknown Album",
+        imgURL,
+        mimeType,
+        true // Set to true to hide the Next/Prev buttons
+    );
+};
 
 const readMediaData = (file) => {
     jsmediatags.read(file, {
@@ -550,6 +480,7 @@ audio.addEventListener("canplaythrough", async () => {
     }
 
     welcomeStreamBtnText.innerText = streaming ? `Streaming Live Radio` : `24/7 Radio Station`;
+    //if (!streaming) setupMediaSessionActions();
     await audio.play();
     visualize();
 
@@ -582,6 +513,12 @@ audio.addEventListener("playing", updateBufferedBar);
 
 audio.addEventListener("play", (e) => {
     isPlaying = true;
+    if (!broadCastEnd && streaming) {
+        if (hostPlayer.src) {
+            //return;
+            hostPlayer.play();
+        }
+    }
     console.log('Audio is playing!');
     playPauseCheckBox.checked = false;
     isUpdating = true; // Set the flag to true
@@ -591,6 +528,9 @@ audio.addEventListener("play", (e) => {
 
 audio.addEventListener("pause", (e) => {
     isPlaying = false;
+    if (hostPlayer.src && streaming) {
+        hostPlayer.pause();
+    }
     console.log('Audio is pasued!');
     playPauseCheckBox.checked = true;
     lastBeatTime = 0;
@@ -631,7 +571,7 @@ playPauseBtn.addEventListener("click", (e) => {
     playPauseCheckBox.checked = !playPauseCheckBox.checked;
 
     // Play or pause depending on the new state
-    if (!playPauseCheckBox.checked) {
+    if (audio.paused) {
         audio.play();
     } else {
         audio.pause();
@@ -694,11 +634,13 @@ changeTrackSettingsBtn.addEventListener("click", async (e) => {
 
 forwardBtn.addEventListener("click", (e) => {
     if (!audioFileSelected) return;
+    if (streaming) return streamNextAudioFile.click();
     audio.currentTime += 5;
 })
 
 backwardBtn.addEventListener("click", (e) => {
     if (!audioFileSelected) return;
+    if (streaming) return streamNextAudioFile.click();
     audio.currentTime -= 5;
 })
 
@@ -913,6 +855,7 @@ window.addEventListener("keydown", (event) => {
         event.preventDefault(); // Prevent page scrolling
 
         if (!audioFileSelected) return; // Same guard as your forwardBtn
+        if (streaming) return streamNextAudioFile.click();
         audio.currentTime += 5; // Skip forward 5 seconds
     }
 
@@ -921,6 +864,7 @@ window.addEventListener("keydown", (event) => {
         event.preventDefault(); // Prevent page scrolling
 
         if (!audioFileSelected) return; // Same guard as your backwardBtn
+        if (streaming) return streamNextAudioFile.click();
         audio.currentTime -= 5; // Skip backward 5 seconds
     }
 
