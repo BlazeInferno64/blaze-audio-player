@@ -5,7 +5,7 @@
  */
 const volumeBg = document.querySelector(".vol-bg");
 const volumeCard = document.querySelector(".vol-card");
-const volumeBtn = document.querySelector("#vol-btn");
+//const volumeBtn = document.querySelector("#vol-btn");
 const openVolCardBtn = document.querySelector(".set-vol");
 const doneBtn = document.querySelector(".done");
 const closeVolumeCardBtn = document.querySelector(".vol-close");
@@ -43,6 +43,14 @@ const openLyricsCardBtn = document.querySelector("#lyrics-btn");
 const closeLyricsCardBtn = document.querySelector(".lyrics-close");
 
 
+const playlistCard = document.querySelector(".playlist-card");
+const playlistBg = document.querySelector(".playlist-bg");
+const openPlaylistBtn = document.querySelector(".ch-playlist");
+const closePlaylistCardBtn = document.querySelector(".playlist-close");
+const playlistBtn = document.querySelector("#playlist-btn");
+
+const playlistSettingBtn = document.querySelector(".ch-playlist");
+
 const openVolumeCard = () => {
     volumeBg.classList.remove("hide");
     volumeCard.classList.add("ani");
@@ -61,6 +69,16 @@ const openLyricsCard = () => {
 
     setTimeout(() => {
         lyricsCard.classList.remove("down");
+    }, 500);
+}
+
+const openPlaylistCard = () => {
+    playlistBg.classList.remove("hide");
+    playlistCard.classList.add("ani");
+    playlistCard.classList.remove("hide");
+
+    setTimeout(() => {
+        playlistCard.classList.remove("down");
     }, 500);
 }
 
@@ -153,6 +171,24 @@ const closeVolumeCard = () => {
     }, 1200);
 }
 
+const closePlaylistCard = () => {
+    playlistCard.classList.add("up");
+    playlistCard.classList.add("anti");
+    setTimeout(() => {
+        playlistCard.classList.add("hide");
+    }, 700);
+    setTimeout(() => {
+        playlistBg.classList.add("hide");
+        playlistCard.classList.remove("anti");
+        playlistCard.classList.add("hide");
+    }, 1000);
+    setTimeout(() => {
+        playlistCard.classList.add("down");
+        playlistCard.classList.remove("up");
+        playlistCard.classList.remove("ani");
+    }, 1200);
+}
+
 const closeLyricsCard = () => {
     lyricsCard.classList.add("up");
     lyricsCard.classList.add("anti");
@@ -229,8 +265,8 @@ const closeStreamCard = () => {
 }
 
 
-volumeBtn.addEventListener("click", (e) => {
-    return openVolumeCard();
+playlistBtn.addEventListener("click", (e) => {
+    return openPlaylistCard();
 })
 openVolCardBtn.addEventListener("click", (e) => {
     return openVolumeCard();
@@ -285,4 +321,12 @@ openLyricsCardBtn.addEventListener("click", (e) => {
 
 lyricsBtn.addEventListener("click", (e) => {
     return openLyricsCard();
+})
+
+closePlaylistCardBtn.addEventListener("click", (e) => {
+    return closePlaylistCard();
+})
+
+playlistSettingBtn.addEventListener("click", (e) => {
+    return openPlaylistCard();
 })

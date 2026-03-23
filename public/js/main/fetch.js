@@ -31,6 +31,26 @@ let imgLink = null;
 
 let myURL = null;
 
+const mySongObject = {
+    artist: 'Unknown Artist',
+    img: null,
+    title: 'Unknown Title',
+    album: 'Unknown Album',
+}
+
+function resetPlaylist () {
+    try {
+        const divElement = document.createElement("div");
+        divElement.innerText = `Streaming from radio!`;
+        divElement.className = `nothing`;
+
+        playlistUlElement.innerHTML = '';
+        playlistUlElement.appendChild(divElement);
+    } catch (error) {
+        console.error(error);
+    }
+} 
+
 /*
 const imgArray = [
     {
@@ -298,8 +318,29 @@ const streamAudioFile = async (url) => {
         appHead.style.backgroundImage = `url("${myURi || myURL || imgArray[4].src}")`;
         appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${myURi || myURL || imgArray[4].src}")`;
         appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${myURi || myURL || imgArray[4].src}")`;
+
+        // Set MediaSession metadata and OS handlers BEFORE audio.play().
+        // Chrome only registers the OS media controls (thumbnail toolbar, lock screen)
+        // when it sees metadata + handlers already in place at the moment the play
+        // event fires. If we set them after play(), Chrome misses that signal entirely.
+        if (data && data.url) {
+            setMediaSessionApi(
+                audio,
+                data.name || "Streaming Track",
+                artistGiven || "Unknown Artist",
+                "Blaze Audio Player's 24/7 Radio Station",
+                imgLink,
+                'image/jpeg',
+                false // local = false enables Next/Prev buttons
+            );
+        }
+
         audio.src = streamURL;
-        await audio.load();
+        audio.load();
+        // DO NOT call audio.load() — it resets Chrome's autoplay permission state,
+        // killing the gesture token from the click handler. Setting .src already
+        // triggers the internal load. Call .play() directly to honour the gesture.
+        audio.play()
         streaming = true;
         artistName.innerText = 'Connected to Radio Stream!';
         streamResult.classList.remove("normal");
@@ -317,24 +358,6 @@ const streamAudioFile = async (url) => {
             }, 300);
         }
         isLoaderShown = false;
-        //resetBackgroundToInitial();
-        //updateStreamMediaSession(name, artistGiven);
-        if (data && data.url) {
-            // 1. Set the audio source and play
-            // audio.src = data.url; 
-            // audio.play();
-
-            // 2. Update Media Session
-            setMediaSessionApi(
-                audio,
-                data.name || "Streaming Track", // Use song name from response
-                artistGiven || "Unknown Artist", // Use artist from response
-                "Blaze Audio Player's 24/7 Radio Station",
-                imgLink, // Passing img
-                'image/jpeg',
-                false // local = false enables Next/Prev buttons
-            );
-        }
         const cleanName = name
             .replace(/\.[^/.]+$/, "")
             .replace(/^\d+[\s.-]+/, "")
@@ -349,6 +372,8 @@ const streamAudioFile = async (url) => {
             //fetchLyrics(lyricsQuery);
             fetchLyrics(myText);
         }
+        resetPlaylist();
+        //playlistUlElement.innerHTML = '';
     } catch (error) {
         streamResult.classList.remove("normal");
         streamResult.classList.add("err");
@@ -387,6 +412,17 @@ streamBtn.addEventListener("click", async (e) => {
     streamResult.classList.remove("ok");
     streamResult.innerText = `Connecting to stream...`;
     isNormalStream = true;
+
+    // Reset broadcast so announcement plays on each fresh connect
+    broadCastEnd = false;
+    broadCastTriggered = false;
+
+    // Unlock AudioContext + gesture token before any awaits
+    if (typeof context !== 'undefined' && context && context.state === 'suspended') {
+        context.resume();
+    }
+    audio.play().catch(() => {});
+
     try {
         const url = buildRadioURL();
         await streamAudioFile(url);
@@ -403,6 +439,13 @@ streamNextAudioFile.addEventListener("click", async (e) => {
     streamResult.innerText = `Changing to next track...`;
     artistName.innerText = `Switching to next track...`;
     isNormalStream = false;
+
+    // Unlock AudioContext + gesture token before any awaits
+    if (typeof context !== 'undefined' && context && context.state === 'suspended') {
+        context.resume();
+    }
+    audio.play().catch(() => {});
+
     try {
         const url = buildRadioURL();
         await streamAudioFile(url);

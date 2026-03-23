@@ -44,7 +44,7 @@
 <body>
     <!-- Last updated date will be shown here -->
     <!--<p id="dt">Last updated: <time datetime="2025-01-23T17:05:00+05:30">January 23, 2025, 05:05 PM IST</time></p>-->
-    <input type="file" name="audio" id="file" class="file" accept="audio/*" />
+    <input type="file" name="audio" id="file" class="file" accept="audio/*" multiple />
     <audio hidden src="" id="audio" class="audio-el" crossorigin="anonymous"></audio>
     <!--Designing the loader here-->
     <div class="loader-bg">
@@ -87,9 +87,9 @@
                         </div>
                     </div>
                     <div class="audio-details">
-                        <marquee>
+                        <marquee class="trck-mq">
                             <p class="track-name" title="Name of the song">
-                                No audio track selected
+                                Nothing is playing
                             </p>
                         </marquee>
                         <p title="The artist of the song" class="artist">
@@ -114,7 +114,7 @@
                 </div>
                 <div class="controls">
                     <button class="backward" title="Backward (Shift + &larr;)">
-                        <i class="fa fa-backward"></i>
+                        <i class="fa-solid fa-backward-step"></i>
                     </button>
                     <div class="playpause-bg" title="Play (Ctrl + Alt + P)">
                         <div class="playpause">
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                     <button class="forward" title="Forward (Shift + &rarr;)">
-                        <i class="fa fa-forward"></i>
+                        <i class="fa-solid fa-forward-step"></i>
                     </button>
                 </div>
                 <div class="options">
@@ -132,9 +132,9 @@
                             settings
                         </span>
                     </li>
-                    <li id="vol-btn" title="Volume controls">
+                    <li id="playlist-btn" title="Playlist button">
                         <span class="material-symbols-outlined">
-                            volume_up
+                            playlist_play
                         </span>
                     </li>
                     <li id="change" title="Change audio file">
@@ -158,17 +158,21 @@
             <div class="vol-bg hide">
                 <div class="vol-card hide down">
                     <div class="vol-head">
-                        <p data-text="Volume Settings">
-                            Volume Settings
+                        <p data-text="Volume">
+                            Volume
                         </p>
                         <span class="vol-close">
                             <i class="fa fa-times"></i>
                         </span>
                     </div>
                     <div class="vol">
-                        <i class="fa fa-volume-mute"></i>
+                        <span class="material-symbols-outlined">
+                            volume_off
+                        </span>
                         <input title="Adjust volume using this slider" type="range" name="volume" id="vol-slider">
-                        <i class="fa fa-volume-high"></i>
+                        <span class="material-symbols-outlined">
+                            volume_up
+                        </span>
                     </div>
                     <div class="vol-info">
                         <p title="Volume level" class="vol-info-text"></p>
@@ -202,15 +206,20 @@
                     </div>
                     <div class="set-main">
                         <ul>
-                            <li class="ch-stream" title="Live 24/7 radio stream">
+                            <li class="ch-playlist" title="Your playlist of local selected audio files">
+                                <span class="material-symbols-outlined">
+                                    playlist_play
+                                </span> My playlist
+                            </li>
+                            <li class="ch-stream" title="Live 24/7 radio station">
                                 <span class="material-symbols-outlined">
                                     cell_tower
-                                </span> 24/7 Radio stream
+                                </span> 24/7 Radio station
                             </li>
-                            <li class="ch-set" title="Change audio file">
+                            <li class="ch-set" title="Change audio files">
                                 <span class="material-symbols-outlined">
                                     cloud_upload
-                                </span> Change audio file
+                                </span> Change audio files
                             </li>
                             <li class="set-vol" title="Volume controls">
                                 <span class="material-symbols-outlined">
@@ -293,7 +302,7 @@
                         <span class="bar"></span>
                     </div>
                     <div class="or-txt" id="li-or" title="Blaze Audio Player issue tracker">
-                        <a href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any issues/bugs?
+                        <a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any issues/bugs?
                             Report it here</a>
                     </div>
                 </div>
@@ -304,8 +313,8 @@
             <!--Stream Card-->
             <div class="stream-card hide down none">
                 <div class="stream-head">
-                    <p data-text="24/7 Live Radio Stream">
-                        24/7 Live Radio Stream
+                    <p data-text="24/7 Radio Station">
+                        24/7 Radio Station
                     </p>
                     <span class="stream-close">
                         <i class="fa fa-times"></i>
@@ -313,7 +322,7 @@
                 </div>
                 <div class="stream-main">
                     <p class="stream-info">
-                        Enjoy a 24/7 live radio stream of music. Click the play
+                        Enjoy a 24/7 live radio station. Click the play
                         button to start listening!
                     </p>
                     <div class="stream-genre">
@@ -352,6 +361,20 @@
                         </span> Next Track
                     </button>
                 </div>
+                <div class="help">
+                    <div class="or">
+                        <span class="bar"></span>
+                        <p>
+                            Or
+                        </p>
+                        <span class="bar"></span>
+                    </div>
+                    <div class="or-txt" id="li-or" title="Blaze Audio Player issue tracker">
+                        <a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any
+                            issues/bugs?
+                            Report it here</a>
+                    </div>
+                </div>
             </div>
         </div>
         <!--Lyrics card-->
@@ -376,12 +399,51 @@
                 </div>
             </div>
         </div>
+        <!--Playlist-->
+        <div class="playlist-bg hide">
+            <div class="playlist-card hide down none">
+                <div class="playlist-head">
+                    <p data-text="Playlist">
+                        Playlist
+                    </p>
+                    <span class="playlist-close">
+                        <i class="fa fa-times"></i>
+                    </span>
+                </div>
+                <div class="playlist-main">
+                    <div class="playlist-main" title="Playlist of songs">
+                        <div class="playlist">
+                            <ul id="playlist-ul">
+                                <div class="nothing">
+                                    <p>
+                                        No playlist available!
+                                    </p>
+                                </div>
+                                <!--<li class="current">
+                                    hello.mp3
+                                </li>
+                                <li>
+                                    audio.mp3
+                                </li>-->
+                                <!--<li class="current">Hi</li>
+                                <li>Ok</li>
+                                <li>No</li>
+                                <li>Yes</li>
+                                <li>Bruh</li>
+                                <li>Nope</li>
+                                <li>okay</li>-->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--Welcome card-->
         <div class="wel-bg hide">
             <div class="wel-card hide down none">
                 <div class="wel-head">
-                    <p data-text="Welcome">
-                        Welcome!
+                    <p data-text="Greetings!">
+                        Greetings!
                     </p>
                     <span class="wel-close">
                         <i class="fa fa-times"></i>
@@ -389,7 +451,7 @@
                 </div>
                 <div class="wel-main">
                     <p class="fetch-info">
-                        Welcome! Blaze Audio Player is a free and open source browser based custom audio player for your
+                        Blaze Audio Player is a free and open source browser based custom audio player for your
                         favourite audio tracks.
 
                         Stream live 24/7 radio or play your local audio files with ease!
@@ -410,6 +472,20 @@
                         </span>
                         <p class="wel-p">24/7 Radio Stream</p>
                     </button>
+                </div>
+                <div class="help">
+                    <div class="or">
+                        <span class="bar"></span>
+                        <p>
+                            Or
+                        </p>
+                        <span class="bar"></span>
+                    </div>
+                    <div class="or-txt" id="li-or" title="Blaze Audio Player issue tracker">
+                        <a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player/issues">Facing any
+                            issues/bugs?
+                            Report it here</a>
+                    </div>
                 </div>
             </div>
         </div>

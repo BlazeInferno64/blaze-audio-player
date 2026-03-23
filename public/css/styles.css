@@ -3,8 +3,19 @@
 */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+@font-face {
+    font-family: "CartographItalic";
+    /* any name you choose */
+    src: url("./cartograph-regular-italic.woff2") format("woff2");
+    font-weight: normal;
+    /* adjust if you have multiple weights */
+    font-style: italic;
+    /* this matches your font style */
+}
+
 :root {
     --ff: "Montserrat", sans-serif;
+    --ff2: "CartographItalic", "Monsterrat", sans-serif;
     --gradient: repeating-linear-gradient(90deg, rgb(5, 215, 138), 74%, rgb(0, 213, 255));
     --second-gradient: linear-gradient(90deg, #ff1b6b, 74%, #45caff);
     --third-gradient: linear-gradient(135deg, #6a5acd, #00bfff);
@@ -83,6 +94,7 @@ audio {
     /*animation: pop 1s ease-in-out;*/
 }
 
+
 .app .bg {
     display: flex;
     align-items: center;
@@ -139,6 +151,7 @@ audio {
     position: relative;
     font-size: 1.3rem;
     font-weight: 600;
+    font-family: var(--ff2);
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
@@ -279,15 +292,34 @@ audio {
     margin-left: .5rem;
 }
 
+.trck-mq {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
 .app .main .info .audio-details .track-name {
     color: #dedede;
     font-size: 1.3rem;
     font-weight: 600;
+
+    animation: marquee-scroll 8s linear infinite;
 }
 
 .app .main .info .audio-details .artist {
     color: #4b494d;
     font-weight: 600;
+}
+
+@keyframes marquee-scroll {
+    0% {
+        /* Start fully to the right of the container */
+        transform: translateX(100%);
+    }
+
+    100% {
+        /* Move fully to the left until the text itself is off-screen */
+        transform: translateX(-100%);
+    }
 }
 
 .app .main .audio-progress {
@@ -547,6 +579,7 @@ audio {
     position: relative;
     font-size: 1.3rem;
     font-weight: 600;
+    font-family: var(--ff2);
     background: var(--second-gradient);
     color: transparent;
     -webkit-background-clip: text;
@@ -728,6 +761,7 @@ audio {
     position: relative;
     font-size: 1.3rem;
     font-weight: 600;
+    font-family: var(--ff2);
     background: var(--second-gradient);
     color: transparent;
     -webkit-background-clip: text;
@@ -866,7 +900,8 @@ audio {
 
 .link-bg,
 .stream-bg,
-.lyrics-bg {
+.lyrics-bg,
+.playlist-bg {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -880,7 +915,9 @@ audio {
 
 .fetch-card,
 .wel-card,
-.stream-card,.lyrics-card {
+.stream-card,
+.lyrics-card,
+.playlist-card {
     width: 300px;
     background: #2a2d2e;
     transition: all .5s ease-in-out;
@@ -893,7 +930,8 @@ audio {
 .fetch-head,
 .wel-head,
 .stream-head,
-.lyrics-head {
+.lyrics-head,
+.playlist-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -905,6 +943,7 @@ audio {
     position: relative;
     font-size: 1.3rem;
     font-weight: 600;
+    font-family: var(--ff2);
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
@@ -933,6 +972,7 @@ audio {
     position: relative;
     font-size: 1.3rem;
     font-weight: 600;
+    font-family: var(--ff2);
     background: var(--gradient);
     color: transparent;
     -webkit-background-clip: text;
@@ -963,6 +1003,7 @@ audio {
     font-weight: 600;
     background: var(--gradient);
     color: transparent;
+    font-family: var(--ff2);
     -webkit-background-clip: text;
     background-clip: text;
     animation: animate 10s ease-in-out infinite;
@@ -985,11 +1026,41 @@ audio {
     animation: animate 10s ease-in-out infinite;
 }
 
+.playlist-head p {
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: var(--gradient);
+    font-family: var(--ff2);
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: animate 10s ease-in-out infinite;
+}
+
+.playlist-head p::after {
+    position: absolute;
+    content: attr(data-text);
+    top: 0;
+    left: 0;
+    right: 0;
+    font-weight: 600;
+    background: var(--gradient);
+    background-size: 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    /* Fallback for older WebKit */
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.25);
+    animation: animate 10s ease-in-out infinite;
+}
+
 .lyrics-head p {
     position: relative;
     font-size: 1.2rem;
     font-weight: 600;
     background: var(--gradient);
+    font-family: var(--ff2);
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
@@ -1016,7 +1087,8 @@ audio {
 .fetch-head .close-fetch,
 .wel-head .wel-close,
 .stream-head .stream-close,
-.lyrics-head .lyrics-close {
+.lyrics-head .lyrics-close,
+.playlist-head .playlist-close {
     width: 40px;
     transition: all .1s ease-in-out;
     height: 100%;
@@ -1034,21 +1106,24 @@ audio {
 .close-fetch:hover,
 .wel-close:hover,
 .stream-close:hover,
-.lyrics-close:hover {
+.lyrics-close:hover,
+.playlist-close:hover {
     background: #4b494d;
 }
 
 .fetch-main,
 .wel-main,
 .stream-main,
-.lyrics-main {
+.lyrics-main,
+.playlist-main {
     width: 100%;
     padding: .3rem .5rem;
 }
 
 .fetch-info,
 .stream-info,
-.lyrics-info {
+.lyrics-info,
+.playlist-info {
     width: 100%;
     font-size: .98rem;
     border: 2px dashed rgb(0, 255, 110);
@@ -1092,7 +1167,6 @@ audio {
 }
 
 
-/* Lyrics Container Styling */
 #lyrics-window {
     display: flex;
     align-items: center;
@@ -1102,12 +1176,11 @@ audio {
     flex-grow: 1;
     width: 100%;
     max-width: 800px;
-    height: 300px; /* Adjust based on your app's layout */
+    height: 300px;
     overflow-y: auto;
-    padding: 200px 0; /* Creates space for masking effect */
-    padding: .3rem .5rem; /* Creates the "middle-focus" scroll area */
+    padding: 200px 0;
+    padding: 130px 0;
     scrollbar-width: none;
-    /* Soft fade effect at top and bottom */
     mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
 }
@@ -1116,25 +1189,171 @@ audio {
     display: none;
 }
 
-/* Individual Lyric Lines */
 .lyric-line {
     padding: 15px 20px;
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1.3;
-    color: #444; /* Dimmed color for inactive lines */
+    color: #444;
     transition: all 0.25s ease-out;
     text-align: center;
     transform: scale(0.9);
     filter: blur(1px);
 }
 
-/* Active Lyric Highlight */
+.lyric-line:hover {
+    color: hsl(0, 0%, 47%);
+}
+
 .lyric-line.active {
     font-size: 1.5rem;
-    color: #fff; /* Bright white for active line */
-    transform: scale(1.1); /* Slightly larger */
+    color: #fff;
+    transform: scale(1.1);
     filter: blur(0);
+}
+
+.lyric-line.active:hover {
+    color: hsl(0, 0%, 80%);
+}
+
+.playlist-main {
+    padding: none;
+}
+
+.playlist {
+    width: 100%;
+    background: #292c2d;
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    border-radius: .3rem;
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 1px solid #4b494d;
+    padding: 1px;
+}
+
+.playlist ul {
+    width: 100%;
+    padding: .3rem .5rem;
+    display: flex;
+    align-items: start;
+    gap: 5px;
+    flex-direction: column;
+}
+
+.playlist ul li {
+    padding: .5rem 1rem;
+    width: 100%;
+    background: transparent;
+    border-radius: .3rem;
+    border: 2px solid #4b494d;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Bouncy transition */
+    position: relative;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+.playlist ul li:hover {
+    background: #4b494d;
+    transform: translateY(5px) scale(1.02);
+    margin-bottom: 3px;
+}
+
+.playlist ul li:active {
+    background: hsl(270, 3%, 39%);
+    margin-bottom: 8px;
+}
+
+.playlist ul li.current {
+    background: #4b494d;
+    color: #00ff7f;
+    padding-left: 20px;
+    border: 2px solid transparent;
+}
+
+.playlist ul li.current:hover {
+    background: hsl(270, 3%, 39%);
+}
+
+.playlist ul li.current:active {
+    background: hsl(270, 3%, 49%);
+}
+
+.playlist ul li.current::before {
+    /*content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: #00ff7f;
+    height: 100%;
+    border-top-left-radius: .2rem;
+    border-bottom-left-radius: .2rem;
+    width: 10px;*/
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    background: #00ff7f;
+    border-radius: 2px;
+    box-shadow: 0 0 12px #00ff7f;
+    animation: bounce-bar 0.6s ease-in-out infinite alternate;
+}
+
+.playlist ul .nothing {
+    width: 100%;
+    border: 2px dashed #4b494d;
+    padding: .3rem .5rem;
+    height: 200px;
+    border-radius: .3rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.13rem;
+}
+
+@keyframes bounce-bar {
+    0% {
+        height: 6px;
+    }
+
+    100% {
+        height: 20px;
+    }
+}
+
+.playlist::-webkit-scrollbar {
+    width: 5px;
+}
+
+.playlist::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, transparent, #4b494d, transparent);
+    border-radius: 10px;
+}
+
+.playlist::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, transparent, hsl(270, 3%, 39%), transparent);
+    border-radius: 10px;
+}
+
+.playlist::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(to bottom, transparent, hsl(270, 3%, 49%), transparent);
+    border-radius: 10px;
 }
 
 .result,
@@ -1272,10 +1491,10 @@ audio {
     width: 100%;
     display: flex;
     align-items: center;
+    flex-direction: column;
     justify-content: space-between;
-    gap: 5px;
     padding: .3rem .5rem;
-    margin-bottom: .5rem;
+    gap: 5px;
 }
 
 .btn-bg .fetch-btn,
@@ -1296,21 +1515,15 @@ audio {
 
 .stream-btns .stream,
 .stream-btns .next {
-    margin-top: .5rem;
+    width: 100%;
+    font-weight: 600;
+    font-size: 1.3rem;
     border: none;
     padding: .3rem .5rem;
-    font-size: .95rem;
+    font-size: 1rem;
     border-radius: .3rem;
     cursor: pointer;
     background: var(--gradient);
-}
-
-.stream-btns .stream {
-    width: 64%;
-}
-
-.stream-btns .next {
-    width: 50%;
 }
 
 .fetch-btn:active,
@@ -1332,7 +1545,7 @@ audio {
     font-weight: 550;
     display: flex;
     align-items: center;
-    
+
 }
 
 .or {
@@ -1375,30 +1588,40 @@ audio {
 .popup-bg {
     width: 100%;
     position: fixed;
-    z-index: 100; /* Increased to stay above visualizer */
+    z-index: 100;
+    /* Increased to stay above visualizer */
     bottom: 5%;
     left: 0;
     display: flex;
     justify-content: center;
-    pointer-events: none; /* Prevents blocking clicks behind the popup */
+    pointer-events: none;
+    /* Prevents blocking clicks behind the popup */
     user-select: none;
 }
 
 .popup-bg .popup {
-    width: 90%; /* Responsive */
-    max-width: 500px; 
-    height: 55px; /* Slightly taller for breathing room */
-    background: rgba(25, 25, 25, 0.85); /* Slightly transparent */
-    backdrop-filter: blur(10px); /* Modern glass effect */
+    width: 90%;
+    /* Responsive */
+    max-width: 500px;
+    height: 55px;
+    /* Slightly taller for breathing room */
+    background: rgba(25, 25, 25, 0.85);
+    /* Slightly transparent */
+    backdrop-filter: blur(10px);
+    /* Modern glass effect */
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem;
-    border-radius: 12px; /* Smoother corners */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle edge glow */
+    border-radius: 12px;
+    /* Smoother corners */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Subtle edge glow */
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Snappy bounce */
-    pointer-events: auto; /* Re-enable clicks for the popup itself */
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Snappy bounce */
+    pointer-events: auto;
+    /* Re-enable clicks for the popup itself */
 }
 
 .popup-bg .popup p {
@@ -1410,7 +1633,7 @@ audio {
 
 /* Make the icon pop with your theme color */
 .popup-bg .popup p i {
-    color: #45caff; 
+    color: #45caff;
     margin: 0 5px;
 }
 
@@ -1656,6 +1879,12 @@ audio {
     }
 }
 
+@media (max-width: 400px) {
+    .app .head .head-div p {
+        font-size: 1.13rem;
+    }
+}
+
 
 @media (max-width: 450px) {
     .app {
@@ -1673,15 +1902,16 @@ audio {
     .nxt-trck+label {
         font-size: .8rem;
     }
+
     .lyric-line {
         padding: 10px 15px;
         line-height: 1.2;
     }
-    
-    #lyrics-window {
+
+    /*#lyrics-window {
         /* Reduce padding slightly on mobile so more lines are visible */
-        padding: 150px 0; 
-    }
+    /*  padding: 150px 0;
+    }*/
 }
 
 @media (max-width: 500px) {

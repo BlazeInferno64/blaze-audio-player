@@ -45,6 +45,9 @@ const welcomeStreamBtnText = document.querySelector(".wel-p");
 
 const playerIcon = document.querySelector(".header-img");
 
+const playlistWindow = document.querySelector(".playlist");
+const playlistUlElement = document.querySelector("#playlist-ul");
+
 const downloadAppBtn = document.querySelector(".down-set");
 const lastUpdate = document.querySelector(".last-update");
 
@@ -66,17 +69,21 @@ let audioLoadPhase = "idle";
 let uiIntent = "none";
 // "none" | "userOpenedWelcome" | "userOpenedStream"
 
+let trackQueue = [];
+let currentTrackIndex = 0;
+
+let firstTimeShown = false;
+
 const trimLastPart = (value) => {
     const trimmedValue = value.substring(value.lastIndexOf("/") + 1);
     return trimmedValue;
 }
 
 const updateTiming = () => {
+    if (!isFinite(audio.duration) || isNaN(audio.duration)) return; // GUARD
     var min = Math.floor(audio.duration / 60);
     var sec = Math.floor(audio.duration % 60);
-    if (sec < 10) {
-        sec = '0' + String(sec);
-    }
+    if (sec < 10) sec = '0' + String(sec);
     return maxTimer.innerText = `${min}:${sec}`;
 }
 
@@ -456,12 +463,14 @@ audio.addEventListener("error", () => {
 
 
 // You can also call this function when the audio is loaded
-audio.addEventListener("canplaythrough", async () => {
-    // gnore if this is not a real new load
+audio.addEventListener("canplaythrough", (e) => {
+    // Ignore if this is not a real new load
     if (!audio.src) return;
 
-
     audioLoadPhase = "ready";
+
+    // Stop any previous updateUI rAF loop before starting fresh
+    isUpdating = false;
 
     // Only auto-close if user didn't open anything
     if (uiIntent === "none") {
@@ -479,16 +488,14 @@ audio.addEventListener("canplaythrough", async () => {
         isLoaderShown = false;
     }
 
-    welcomeStreamBtnText.innerText = streaming ? `Streaming Live Radio` : `24/7 Radio Station`;
-    //if (!streaming) setupMediaSessionActions();
-    await audio.play();
-    visualize();
+    // audio.play() was already called synchronously in the click handler to hold the
+    // gesture token. By the time canplaythrough fires, the src is ready and this
+    // will simply resume / confirm playback without needing a new gesture.
+    audio.play().catch(err => console.warn("canplaythrough play() failed:", err));
 
-    updateTiming();
-    updateBufferedBar();
+    //updateTiming();
+    //updateBufferedBar();
 
-    const defaultTitle = titleName.innerText.split("|")[1].trim();
-    titleName.innerText = `${audioTrackName.innerText} | Now playing in ${appName} | ${defaultTitle}`;
 });
 
 
@@ -505,26 +512,68 @@ audio.addEventListener("progress", (e) => {
     }
 })
 
-audio.addEventListener("timeupdate", showCurrentTiming);
+audio.addEventListener("timeupdate", (e) => {
+    showCurrentTiming();
+    // If we are currently clicking a lyric, don't let the auto-scroll interfere
+    if (isSeeking) return;
+
+    const currentTime = audio.currentTime;
+    let activeIndex = -1;
+
+    for (let i = 0; i < lyricsArray.length; i++) {
+        if (currentTime >= lyricsArray[i].time) {
+            activeIndex = i;
+        } else {
+            break;
+        }
+    }
+
+    if (activeIndex !== -1) {
+        lyricsArray.forEach((item, index) => {
+            if (index === activeIndex) {
+                if (!item.element.classList.contains('active')) {
+                    item.element.classList.add('active');
+                    item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                item.element.classList.remove('active');
+            }
+        });
+    }
+});
 
 audio.addEventListener("progress", updateBufferedBar);
-audio.addEventListener("loadedmetadata", updateBufferedBar);
-audio.addEventListener("playing", updateBufferedBar);
+audio.addEventListener("loadedmetadata", (e) => {
+    closeWelcomeCard();
+    updateBufferedBar();
+    updateTiming();
+});
+audio.addEventListener("playing", (e) => {
+    updateBufferedBar();
+});
 
 audio.addEventListener("play", (e) => {
     isPlaying = true;
-    if (!broadCastEnd && streaming) {
-        if (hostPlayer.src) {
-            //return;
-            hostPlayer.play();
-        }
+
+    // SYNC: If we are streaming and a broadcast is active, resume the hostPlayer
+    if (streaming && broadCastPlaying && hostPlayer.src) {
+        hostPlayer.play().catch(err => console.warn(err));
     }
+    if (!firstTimeShown) {
+        openWelcomePopup();
+        firstTimeShown = true;
+    }
+
+    welcomeStreamBtnText.innerText = streaming ? `Streaming Live Radio` : `24/7 Radio Station`;
+
+    const defaultTitle = titleName.innerText.split("|")[1]?.trim() ?? appName;
+    titleName.innerText = `${audioTrackName.innerText} | Now playing in ${appName} | ${defaultTitle}`;
+    visualize();
     console.log('Audio is playing!');
     playPauseCheckBox.checked = false;
-    isUpdating = true; // Set the flag to true
-    updateUI(); // Start the update loop
-
-})
+    isUpdating = true;
+    updateUI();
+});
 
 audio.addEventListener("pause", (e) => {
     isPlaying = false;
@@ -539,7 +588,17 @@ audio.addEventListener("pause", (e) => {
 // Ensure to stop the update loop when the audio ends
 audio.addEventListener("ended", (e) => {
     isUpdating = false; // Stop updating when audio ends
-    return audio.pause();
+    if (streaming) return;
+    //return audio.pause();
+    if (currentTrackIndex < trackQueue.length - 1) {
+        currentTrackIndex++;
+        console.log(`Advancing to track ${currentTrackIndex + 1}`);
+        return loadTrackFromQueue(currentTrackIndex);
+    } else {
+        console.log("End of playlist reached.");
+        return audio.pause();
+        alert("Playlist finished!");
+    }
 })
 
 playPauseBtnText.addEventListener("click", (e) => {
@@ -584,23 +643,73 @@ pauseBtn.addEventListener("click", (e) => {
     return audio.pause();
 })*/
 
+function highlightCurrentTrack(index) {
+    const allItems = document.querySelectorAll(".playlist-item");
+
+    allItems.forEach(item => {
+        if (parseInt(item.getAttribute("data-index")) === index) {
+            item.classList.add("current");
+            // Optional: Scroll the element into view if the list is long
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            item.classList.remove("current");
+        }
+    });
+}
+
+function updatePlaylist(files) {
+    if (!files || files.length === 0) return;
+
+    playlistUlElement.innerHTML = '';
+
+    Array.from(files).forEach((item, index) => {
+        const liElement = document.createElement("li");
+
+        // Add a class for styling and a data attribute to track the index
+        liElement.classList.add("playlist-item");
+        liElement.setAttribute("data-index", index);
+
+        const displayName = item.name ? trimFileName(item.name) : `Track ${index + 1}`;
+        liElement.textContent = `${index + 1}. ${displayName}`;
+
+        liElement.onclick = () => {
+            currentTrackIndex = index;
+            loadTrackFromQueue(index);
+        };
+
+        playlistUlElement.appendChild(liElement);
+    });
+
+    // Highlight the first track immediately if it's starting
+    highlightCurrentTrack(currentTrackIndex);
+}
+
 fileInput.onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const isAudio = file.type.startsWith('audio/');
-    if (!isAudio) {
-        alert(`Please select a proper audio file!`);
+    //const file = e.target.files[0];
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    //if (!file) return;
+    //const isAudio = files.type.startsWith('audio/');
+    const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+    if (audioFiles.length === 0) {
+        alert(`Please select proper audio files!`);
         fileInput.value = ''; // Clear the file input
         return;
     } else {
+        console.log(`${audioFiles.length} tracks have been selected!`);
+        // Reset and Load Queue
+        trackQueue = audioFiles;
+        currentTrackIndex = 0;
+
         isLoaderShown = false;
         streaming = false;  // <-- Disconnect streaming when dropping a local file
         audioFileSelected = true;
-        const blobURL = URL.createObjectURL(file); // Create a new blob URL
+        //const blobURL = URL.createObjectURL(file); // Create a new blob URL
         streamResult.classList.remove('normal');
         streamResult.classList.remove('err');
         streamResult.classList.remove('ok');
         streamResult.innerText = 'Not Streaming currently';
+
 
         // Revoke the previous URL if it exists
         if (previousURL) {
@@ -609,7 +718,7 @@ fileInput.onchange = async (e) => {
         }
 
         // Set the previousURL to the new blob URL
-        previousURL = blobURL;
+        //previousURL = blobURL;
 
         if (!isLoaderShown) {
             loaderBg.classList.remove("hide");
@@ -618,11 +727,34 @@ fileInput.onchange = async (e) => {
             isLoaderShown = true;
         }
 
-        await getAudioFile(file, blobURL); // Load the new audio file
+        updatePlaylist(files);
+        await loadTrackFromQueue(currentTrackIndex);
+        //await getAudioFile(file, blobURL); // Load the new audio file
     }
 }
 
+async function loadTrackFromQueue(index) {
+    isUpdating = false;
+    if (index >= trackQueue.length) return;
 
+    highlightCurrentTrack(index);
+
+    const file = trackQueue[index];
+    const blobURL = URL.createObjectURL(file);
+
+    if (previousURL) {
+        console.log(`Cleared previous object url!`);
+        URL.revokeObjectURL(previousURL);
+    }
+    previousURL = blobURL;
+
+    loaderBg.classList.remove("hide");
+    loaderBg.style.opacity = '.85';
+    loadingText.innerText = `Loading Track ${index + 1}...`;
+    isLoaderShown = true;
+
+    await getAudioFile(file, blobURL); // Load the new audio file
+}
 
 changeTrackBtn.addEventListener("click", async (e) => {
     return await fileInput.click();
@@ -632,16 +764,32 @@ changeTrackSettingsBtn.addEventListener("click", async (e) => {
     return await fileInput.click();
 })
 
-forwardBtn.addEventListener("click", (e) => {
+forwardBtn.addEventListener("click", async (e) => {
     if (!audioFileSelected) return;
-    if (streaming) return streamNextAudioFile.click();
-    audio.currentTime += 5;
+    if (streaming) return streamNextAudioFile.click(); //<--- This causes bugs & issues!
+    //audio.currentTime += 5;
+    if (trackQueue.length > 1 && currentTrackIndex < trackQueue.length - 1) {
+        currentTrackIndex++;
+        await loadTrackFromQueue(currentTrackIndex);
+    } else {
+        // Fallback to your original 5-second skip
+        audio.currentTime += 5;
+    }
 })
 
-backwardBtn.addEventListener("click", (e) => {
+backwardBtn.addEventListener("click", async (e) => {
     if (!audioFileSelected) return;
-    if (streaming) return streamNextAudioFile.click();
-    audio.currentTime -= 5;
+    if (streaming) return streamNextAudioFile.click(); //<--- This causes bugs & issues!
+    //audio.currentTime -= 5;
+    if (audio.currentTime > 3) {
+        audio.currentTime -= 5;
+    } else if (trackQueue.length > 1 && currentTrackIndex > 0) {
+        currentTrackIndex--;
+        await loadTrackFromQueue(currentTrackIndex);
+    } else {
+        // Fallback: If it's the first song and at the start, just subtract -5
+        audio.currentTime -= 5;
+    }
 })
 
 volumeSlider.addEventListener("input", (e) => {
@@ -654,8 +802,8 @@ selectBtn.addEventListener("click", async (e) => {
 })
 
 window.addEventListener("DOMContentLoaded", async (e) => {
-    const repo = await client.getSpecificRepo("blazeinferno64", "blaze-audio-player");
-    lastUpdate.innerHTML = `<span class="material-symbols-outlined">calendar_clock</span> Last Updated: ${lastUpdated(repo.updated_at)}`;
+    //const repo = await client.getSpecificRepo("blazeinferno64", "blaze-audio-player");
+    //lastUpdate.innerHTML = `<span class="material-symbols-outlined">calendar_clock</span> Last Updated: ${lastUpdated(repo.updated_at)}`;
     volumeSlider.value = audio.volume * 100;
     volumeSliderText.innerText = `${volumeSlider.value}%`;
     initPresenceSocket();
@@ -709,12 +857,12 @@ window.addEventListener("load", (e) => {
 const audioCurrentName = audioTrackName.innerText;
 
 window.addEventListener("dragover", (e) => {
-    audioTrackName.innerText = "Release your audio file here to start playing!";
+    audioTrackName.innerText = "Release your audio files here to start playing!";
     if (appReady) return e.preventDefault();
 })
 
 window.addEventListener("dragleave", (e) => {
-    audioTrackName.innerText = audioTrackName.dataset.original || "No track playing";
+    audioTrackName.innerText = audioTrackName.dataset.original || "Nothing is playing";
     if (appReady) return e.preventDefault();
 })
 
@@ -726,14 +874,24 @@ const handleDrop = async (event) => {
     try {
         isLoaderShown = false;
         event.preventDefault();
-        const droppedFile = event.dataTransfer.files[0];
+        const files = Array.from(event.dataTransfer.files);
+        if (files.length === 0) return;
 
-        if (!droppedFile.type.startsWith("audio/")) {
-            return alert(`That file isn’t a valid audio format! Please drop an MP3, WAV, or similar file!`);
+        const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+
+        if (audioFiles.length === 0) {
+            alert("Please drop valid audio files!");
+            return;
         }
-        if (droppedFile) {
+
+        /*if (!droppedFile.type.startsWith("audio/")) {
+            return alert(`That file isn’t a valid audio format! Please drop an MP3, WAV, or similar file!`);
+        }*/
+        if (audioFiles) {
+            trackQueue = audioFiles;
+            currentTrackIndex = 0;
             streaming = false;  // <-- Disconnect streaming when dropping a local file
-            const blobURL = URL.createObjectURL(droppedFile); // Use droppedFile here
+            //const blobURL = URL.createObjectURL(droppedFile); // Use droppedFile here
             audioFileSelected = true;
             if (!isLoaderShown) {
                 loaderBg.classList.remove("hide");
@@ -741,12 +899,14 @@ const handleDrop = async (event) => {
                 loadingText.innerText = 'Loading audio...';
                 isLoaderShown = true;
             }
-            await getAudioFile(droppedFile, blobURL); // Pass droppedFile instead of file
+            console.log(`Dropped ${audioFiles.length} tracks into the queue.`);
+            await loadTrackFromQueue(currentTrackIndex);
+            /*await getAudioFile(droppedFile, blobURL); // Pass droppedFile instead of file
             if (previousURL) {
                 console.log(`Cleared previous object url!`);
                 return URL.revokeObjectURL(previousURL);
-            }
-            previousURL = blobURL; // Store the current blob URL for future revocation
+            }*/
+            //previousURL = blobURL; // Store the current blob URL for future revocation
         }
     } catch (error) {
         console.error(error);

@@ -10,19 +10,21 @@ const itunes = new ITunesClient();
 
 let lyricsArray = []; // Stores time-stamped lyric objects
 
+// Add this variable at the top of lyrics.js
+let isSeeking = false;
+
+
 function parseLRC(lrc) {
-    const lyricsWindow = document.getElementById('lyrics-window'); // Ensure this ID exists in index.html
+    const lyricsWindow = document.getElementById('lyrics-window');
     lyricsArray = [];
     lyricsWindow.innerHTML = "";
 
     const lines = lrc.split('\n');
-    // Regex to match [mm:ss.xx] or [mm:ss.xxx]
     const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
 
     lines.forEach((line) => {
         const match = timeRegex.exec(line);
         if (match) {
-            // Convert timestamp to total seconds
             const time = parseInt(match[1]) * 60 + parseInt(match[2]) + parseInt(match[3]) / (match[3].length === 3 ? 1000 : 100);
             const text = line.replace(timeRegex, '').trim();
 
@@ -30,12 +32,36 @@ function parseLRC(lrc) {
                 const div = document.createElement('div');
                 div.className = 'lyric-line';
                 div.innerText = text;
+                div.style.cursor = "pointer";
+
+                div.addEventListener('click', () => {
+                    if (audio) {
+                        // 1. Set seeking flag to stop timeupdate from fighting us
+                        isSeeking = true;
+                        
+                        // 2. Remove 'active' class from all lines immediately for instant feedback
+                        document.querySelectorAll('.lyric-line').forEach(l => l.classList.remove('active'));
+                        div.classList.add('active');
+
+                        // 3. Update audio position
+                        audio.currentTime = time;
+
+                        // 4. If it was paused, play it
+                        if (audio.paused) audio.play();
+
+                        // 5. Release the lock after a short delay to allow the browser to finish seeking
+                        setTimeout(() => { isSeeking = false; }, 500);
+                    }
+                });
+
                 lyricsWindow.appendChild(div);
                 lyricsArray.push({ time, element: div });
             }
         }
     });
 }
+
+
 
 async function fetchLyrics(songName) {
     const lyricsWindow = document.getElementById('lyrics-window');
