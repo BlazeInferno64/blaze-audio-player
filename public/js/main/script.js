@@ -802,8 +802,8 @@ selectBtn.addEventListener("click", async (e) => {
 })
 
 window.addEventListener("DOMContentLoaded", async (e) => {
-    //const repo = await client.getSpecificRepo("blazeinferno64", "blaze-audio-player");
-    //lastUpdate.innerHTML = `<span class="material-symbols-outlined">calendar_clock</span> Last Updated: ${lastUpdated(repo.updated_at)}`;
+    const repo = await client.getSpecificRepo("blazeinferno64", "blaze-audio-player");
+    lastUpdate.innerHTML = `<span class="material-symbols-outlined">calendar_clock</span> Last Updated: ${lastUpdated(repo.updated_at)}`;
     volumeSlider.value = audio.volume * 100;
     volumeSliderText.innerText = `${volumeSlider.value}%`;
     initPresenceSocket();
