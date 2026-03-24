@@ -2,14 +2,17 @@
 ![Uptime Monitor Badge](https://badgen.net/uptime-robot/week/m802259942-ec02ac5b182eddf9d75ff547)
 -->
 <p align="center">
-  <a href="https://stats.uptimerobot.com/UguRD4nMGH"><img alt="Blaze Audio Player Uptime" src="https://badgen.net/uptime-robot/week/m802259942-ec02ac5b182eddf9d75ff547"></a>
 
-  </p>
+  <a href="https://blaze-audio-player.vercel.app"><img alt="Blaze Audio Player" src="https://img.shields.io/badge/Blaze%20Audio%20Player-grey?style=for-the-badge&logo=javascript"></a>
+  
+  <a href="https://stats.uptimerobot.com/UguRD4nMGH"><img alt="Blaze Audio Player Uptime" src="https://badgen.net/uptime-robot/week/m802259942-ec02ac5b182eddf9d75ff547"></a>
+  
+ </p>
   
 # Blaze-Audio-Player
-
+<!--
 ![Logo](https://img.shields.io/badge/Blaze%20Audio%20Player-grey?style=for-the-badge&logo=javascript)
-
+-->
 <div align="center">
   <img src="https://github.com/BlazeInferno64/blaze-audio-player/releases/download/Logo/c6fbd3aa-e562-4316-b2e4-150bfa5e3560.png" />
 </div>
