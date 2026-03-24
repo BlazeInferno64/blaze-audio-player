@@ -1,5 +1,11 @@
+<!--
 ![Uptime Monitor Badge](https://badgen.net/uptime-robot/week/m802259942-ec02ac5b182eddf9d75ff547)
+-->
+<p align="center">
+  <a href="https://stats.uptimerobot.com/UguRD4nMGH"><img alt="Blaze Audio Player Uptime" src="https://badgen.net/uptime-robot/week/m802259942-ec02ac5b182eddf9d75ff547"></a>
 
+  </p>
+  
 # Blaze-Audio-Player
 
 ![Logo](https://img.shields.io/badge/Blaze%20Audio%20Player-grey?style=for-the-badge&logo=javascript)
