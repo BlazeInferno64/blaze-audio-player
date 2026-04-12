@@ -94,12 +94,12 @@ function adjustMarqueeSpeed() {
 
 
     // If text fits, no marquee needed
-    if (textWidth <= containerWidth) {
+    /*if (textWidth <= containerWidth) {
         trackName.style.animationPlayState = 'paused';
         trackName.style.setProperty('--mq-start', '0px');
         trackName.style.setProperty('--mq-end', '0px');
         return;
-    }
+    }*/
 
     trackName.style.setProperty('--mq-start', `${containerWidth}px`);
     trackName.style.setProperty('--mq-end', `-${textWidth}px`);
