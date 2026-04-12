@@ -74,6 +74,67 @@ let currentTrackIndex = 0;
 
 let firstTimeShown = false;
 
+function adjustMarqueeSpeed() {
+    const trackName = document.querySelector('.track-name');
+    const container = document.querySelector('.audio-details');
+
+    // Kill any pending pause-resume timeout from a previous iteration/track
+    if (trackName._marqueeTimeout) {
+        clearTimeout(trackName._marqueeTimeout);
+        trackName._marqueeTimeout = null;
+    }
+
+    // Hard-reset the animation so it restarts cleanly from scratch
+    trackName.style.animation = 'none';
+    void trackName.offsetWidth; // Force reflow to flush the removal
+    trackName.style.animation = '';
+
+    const textWidth = trackName.scrollWidth;
+    const containerWidth = container.offsetWidth;
+
+
+    // If text fits, no marquee needed
+    if (textWidth <= containerWidth) {
+        trackName.style.animationPlayState = 'paused';
+        trackName.style.setProperty('--mq-start', '0px');
+        trackName.style.setProperty('--mq-end', '0px');
+        return;
+    }
+
+    trackName.style.setProperty('--mq-start', `${containerWidth}px`);
+    trackName.style.setProperty('--mq-end', `-${textWidth}px`);
+
+    const pixelsPerSecond = 60;
+    const distance = textWidth + containerWidth;
+    const duration = Math.max(distance / pixelsPerSecond, 5);
+
+    trackName.style.animationDuration = `${duration}s`;
+    trackName.style.animationPlayState = 'running';
+
+    // Attach pause-between-loops listener only once ever
+    if (!trackName._marqueeListenerAttached) {
+        trackName._marqueeListenerAttached = true;
+        trackName.addEventListener('animationiteration', () => {
+            trackName.style.animationPlayState = 'paused';
+            trackName._marqueeTimeout = setTimeout(() => {
+                trackName._marqueeTimeout = null;
+                trackName.style.animationPlayState = 'running';
+            }, 1500);
+        });
+    }
+}
+
+/*
+// Trigger adjustMarqueeSpeed ONLY when the track name text actually changes.
+// Avoids calling it on progress/timeupdate which fires constantly during streams.
+(function watchTrackName() {
+    const trackName = document.querySelector('.track-name');
+    if (!trackName) return;
+    new MutationObserver(() => {
+        requestAnimationFrame(() => adjustMarqueeSpeed());
+    }).observe(trackName, { childList: true, characterData: true, subtree: true });
+})();*/
+
 const trimLastPart = (value) => {
     const trimmedValue = value.substring(value.lastIndexOf("/") + 1);
     return trimmedValue;
@@ -330,11 +391,22 @@ const displayMetaData = (tag, file) => {
         imgURL = `data:${picture.format};base64,${window.btoa(base64String)}`;
         mimeType = picture.format;
 
+        getDynamicColors(imgURL).then(colors => {
+            currentPalette = colors;
+            // If visualize is already running, the bars will pick up the new colors next frame
+        });
+
         appHead.style.backgroundImage = `url("${imgURL}")`;
         appBannerBg.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
         appBanner.style.backgroundImage = `linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.2)), url("${imgURL}")`;
+        if (!isPlaying) drawCaps(imgURL);
     } else {
+        const myPathIMG = `./public/img/bg2.jpg`;
+        getDynamicColors(myPathIMG).then(colors => {
+            currentPalette = colors;
+        })
         resetBackgroundToInitial();
+        if (!isPlaying) drawCaps();
     }
 
     // 3. Set Player UI Text
@@ -392,9 +464,26 @@ const readMediaData = (file) => {
         },
         onError: (error) => {
             console.error(error);
-            const fallbackQuery = file.name.replace(/\.[^/.]+$/, "").trim();
+            const fallbackQuery = file.name;
             fetchLyrics(fallbackQuery);
-            alert(`There was an error while reading metadata of the selected audio file!\nIt might be due to the file being corrupted/damaged\nPlease try again with a fresh uncorrupted copy of the audio file\nIf you believe this is an bug/issue please report it!`);
+            /*resetPopupMsg();
+            changePopupMsg(`There was an error while playing the audio!<br><br>Details: <b>${details}</b><br><br>Message: ${error ? `'<b>${error.message}</b>'` : "'<b>No error message available</b>'"}<br><br>Check your browser console for more info!<br><br>If you were streaming from the radio, please skip to another station or try again later.<br>If you believe this is an bug/issue please report it <a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player/issues/">here</a>!`, true);
+            openPopup();*/
+            loaderBg.classList.add("hide");
+            const details = "Metadata Read Failure"; // Context for the user
+
+            resetPopupMsg();
+            changePopupMsg(
+                `There was an error while playing the audio!<br><br>` +
+                `Details: <b>${details}</b><br><br>` +
+                `Message: ${error.message ? `'<b>${error.message}</b>'` : "'<b>No error message available</b>'"}<br><br>` +
+                `Check your browser console for more info!<br><br>` +
+                `If you believe this is a bug/issue please report it ` +
+                `<a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player/issues/">here</a>!`,
+                true
+            );
+            openPopup();
+            //alert(`There was an error while reading metadata of the selected audio file!\nIt might be due to the file being corrupted/damaged\nPlease try again with a fresh uncorrupted copy of the audio file\nIf you believe this is an bug/issue please report it!`);
         }
     });
 }
@@ -444,9 +533,12 @@ audio.addEventListener("error", () => {
         }
     }
 
-    streaming ? alert(`There was an error while playing the audio!\nDetails: ${details}\n\nMessage: ${error ? `'${error.message}'` : "'No error message available'"}\n\nCheck your browser console for more info!\n\nIf you were streaming from the radio, please skip to another station or try again later.\nIf you believe this is an bug/issue please report it!`) : alert(`There was an error while playing the audio!\nDetails: ${details}\n\nMessage: ${error ? `'${error.message}'` : "'No error message available'"}\n\nCheck your browser console for more info!\nIf you believe this is an bug/issue please report it!`);
+    //streaming ? alert(`There was an error while playing the audio!\nDetails: ${details}\n\nMessage: ${error ? `'${error.message}'` : "'No error message available'"}\n\nCheck your browser console for more info!\n\nIf you were streaming from the radio, please skip to another station or try again later.\nIf you believe this is an bug/issue please report it!`) : alert(`There was an error while playing the audio!\nDetails: ${details}\n\nMessage: ${error ? `'${error.message}'` : "'No error message available'"}\n\nCheck your browser console for more info!\nIf you believe this is an bug/issue please report it!`);
 
     if (streaming) {
+        resetPopupMsg();
+        changePopupMsg(`There was an error while playing the audio!<br><br>Details: <b>${details}</b><br><br>Message: ${error ? `'<b>${error.message}</b>'` : "'<b>No error message available</b>'"}<br><br>Check your browser console for more info!<br><br>If you were streaming from the radio, please skip to another station or try again later.<br>If you believe this is a bug/issue please report it <a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player/issues/">here</a>!`, true);
+        openPopup();
         welcomeStreamBtnText.innerText = `Error loading audio!`;
         streamResult.classList.remove('normal');
         streamResult.classList.remove('ok');
@@ -542,11 +634,14 @@ audio.addEventListener("timeupdate", (e) => {
     }
 });
 
-audio.addEventListener("progress", updateBufferedBar);
+audio.addEventListener("progress", (e) => {
+    updateBufferedBar();
+});
 audio.addEventListener("loadedmetadata", (e) => {
     closeWelcomeCard();
     updateBufferedBar();
     updateTiming();
+    adjustMarqueeSpeed();
 });
 audio.addEventListener("playing", (e) => {
     updateBufferedBar();
@@ -559,8 +654,8 @@ audio.addEventListener("play", (e) => {
     if (streaming && broadCastPlaying && hostPlayer.src) {
         hostPlayer.play().catch(err => console.warn(err));
     }
-    if (!firstTimeShown) {
-        openWelcomePopup();
+    if (!firstTimeShown && !streaming) {
+        openPopup();
         firstTimeShown = true;
     }
 
@@ -690,9 +785,11 @@ fileInput.onchange = async (e) => {
     if (files.length === 0) return;
     //if (!file) return;
     //const isAudio = files.type.startsWith('audio/');
-    const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+    const audioFiles = files.filter(file =>
+        file.type.startsWith('audio/') || file.type.startsWith('video/')
+    );
     if (audioFiles.length === 0) {
-        alert(`Please select proper audio files!`);
+        alert(`Please select proper media files!`);
         fileInput.value = ''; // Clear the file input
         return;
     } else {
@@ -708,7 +805,7 @@ fileInput.onchange = async (e) => {
         streamResult.classList.remove('normal');
         streamResult.classList.remove('err');
         streamResult.classList.remove('ok');
-        streamResult.innerText = 'Not Streaming currently';
+        streamResult.innerText = 'Not streaming currently';
 
 
         // Revoke the previous URL if it exists
@@ -877,10 +974,12 @@ const handleDrop = async (event) => {
         const files = Array.from(event.dataTransfer.files);
         if (files.length === 0) return;
 
-        const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+        const audioFiles = files.filter(file =>
+            file.type.startsWith('audio/') || file.type.startsWith('video/')
+        );;
 
         if (audioFiles.length === 0) {
-            alert("Please drop valid audio files!");
+            alert("Please drop valid media files!");
             return;
         }
 
@@ -1078,7 +1177,10 @@ downloadAppBtn.addEventListener("click", async (e) => {
             // Reset button text after 3 seconds
             setTimeout(() => {
                 downloadAppBtn.innerHTML = originalText;
-                return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
+                resetPopupMsg();
+                changePopupMsg(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
+                openPopup();
+                //return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
             }, 3000);
         } else {
             console.warn("Service Worker not available for update check");
@@ -1110,7 +1212,10 @@ window.addEventListener("appinstalled", (e) => {
     //downloadAppBtn.style.display = 'none'; // Hide download button after installation
     localStorage.setItem("isAppInstalled", "true"); // Persist to localStorage
     console.info("✓ Blaze Audio Player has been installed successfully on your device as a standalone app!\nLaunch it from your operating system's app menu!");
-    alert(`Thank you for installing Blaze Audio Player!\nYou can now launch it from your device's app menu.\nEnjoy your music experience for free!`);
+    //alert(`Thank you for installing Blaze Audio Player!\nYou can now launch it from your device's app menu.\nEnjoy your music experience for free!`);
+    resetPopupMsg();
+    changePopupMsg(`Thank you for installing Blaze Audio Player!<br>You can now launch it from your device's app menu.<br>Enjoy your premium music experience for free!<br>Please consider giving a ⭐ on <a target="_blank" href="https://github.com/blazeinferno64/blaze-audio-player">Github</a> if you like the app experience :D`, true);
+    openPopup();
     deferredPrompt = null;
 })
 
@@ -1258,7 +1363,10 @@ if ('serviceWorker' in navigator) {
                     downloadAppBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking for updates...';
                     setTimeout(() => {
                         downloadAppBtn.innerHTML = originalText;
-                        return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
+                        resetPopupMsg();
+                        changePopupMsg(`No updates found!<br>You're already on the latest version of Blaze Audio Player!`, true);
+                        openPopup();
+                        //return alert(`No updates found!\nYou're already on the latest version of Blaze Audio Player!`);
                     }, 3000);
                 }
                 console.log('[App] No update found - app is on the latest version');

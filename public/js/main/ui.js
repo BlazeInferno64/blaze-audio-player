@@ -35,6 +35,7 @@ const closeStreamCardBtn = document.querySelector(".stream-close")
 const popupBg = document.querySelector(".popup-bg");
 const popup = document.querySelector(".popup")
 const closePopupBtn = document.querySelector(".popup-close");
+const popupMsg = document.querySelector(".popup-msg");
 
 const lyricsBg = document.querySelector(".lyrics-bg");
 const lyricsBtn = document.querySelector(".lyrics-set");
@@ -50,6 +51,10 @@ const closePlaylistCardBtn = document.querySelector(".playlist-close");
 const playlistBtn = document.querySelector("#playlist-btn");
 
 const playlistSettingBtn = document.querySelector(".ch-playlist");
+
+let defaultText = null;
+
+defaultText = popupMsg.innerHTML;
 
 const openVolumeCard = () => {
     volumeBg.classList.remove("hide");
@@ -123,7 +128,7 @@ const openSetCard = () => {
     }, 300);
 }
 
-const openWelcomePopup = () => {
+const openPopup = () => {
     popupBg.classList.remove("hide");
     setTimeout(() => {
         popup.classList.remove("go-down");
@@ -265,6 +270,18 @@ const closeStreamCard = () => {
 }
 
 
+const changePopupMsg = (msg, html = false) => {
+    if (html) {
+        popupMsg.innerHTML = msg;
+    } else {
+        popupMsg.innerText = msg;
+    }
+}
+
+const resetPopupMsg = () => {
+    return popupMsg.innerHTML = defaultText;
+}
+
 playlistBtn.addEventListener("click", (e) => {
     return openPlaylistCard();
 })
@@ -304,7 +321,7 @@ closeStreamCardBtn.addEventListener("click", (e) => {
 
 closeWelcomeCardBtn.addEventListener("click", (e) => {
     closeWelcomeCard();
-    return openWelcomePopup();
+    return openPopup();
 })
 
 closePopupBtn.addEventListener("click", (e) => {

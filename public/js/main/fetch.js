@@ -38,7 +38,7 @@ const mySongObject = {
     album: 'Unknown Album',
 }
 
-function resetPlaylist () {
+function resetPlaylist() {
     try {
         const divElement = document.createElement("div");
         divElement.innerText = `Streaming from radio!`;
@@ -49,7 +49,7 @@ function resetPlaylist () {
     } catch (error) {
         console.error(error);
     }
-} 
+}
 
 /*
 const imgArray = [
@@ -79,6 +79,54 @@ const imgArray = [
         type: 'image/jpeg'
     }
 ]*/
+
+const streamingPhrases = [
+    "You're locked into Blaze Audio Player's radio station — keeping the rhythm alive 24/7!",
+    "Streaming live grooves directly to your ears. Don't touch that dial!",
+    "Enjoying the mix? Stay tuned for more non-stop hits on the Blaze Radio Station!",
+    "Fueling your day with the best tracks. You're listening to the Blaze Inferno mix!",
+    "From Underground House to Global Hits, we’ve got your soundtrack covered!"
+];
+
+let phraseInterval = null;
+let phraseIndex = 0;
+
+function updateStreamStatus() {
+    //if (!streamResult) return;
+
+    // Display the current phrase
+    //streamResult.innerText = streamingPhrases[phraseIndex];
+    resetPopupMsg();
+    changePopupMsg(streamingPhrases[phraseIndex]);
+    openPopup();
+    // Increment index for the next interval
+    phraseIndex = (phraseIndex + 1) % streamingPhrases.length;
+
+    // Optional: Revert to the default "Streaming" text after 10 seconds 
+    // so the user knows the connection is still active
+    setTimeout(() => {
+        if (streaming) {
+            streamResult.innerText = `Streaming from radio!`;
+        }
+    }, 10000);
+}
+
+function showRandomStreamMsg() {
+    if (streaming) {
+        // 1. Run immediately for the first time
+        updateStreamStatus();
+
+        // 2. Set the interval to run every 20 minutes thereafter
+        if (!phraseInterval) {
+            phraseInterval = setInterval(updateStreamStatus, 20 * 60 * 1000);
+        }
+    } else {
+        // Clean up if the user stops the stream
+        clearInterval(phraseInterval);
+        phraseInterval = null;
+        if (streamResult) streamResult.innerText = "";
+    }
+}
 
 //const radioURL = `http://127.0.0.1:3000/api/`;
 
@@ -135,6 +183,7 @@ const fetchAudioFile = async (url) => {
         const lastExtension = trimLastPart(url);
         if (lastExtension) {
             audioTrackName.innerText = trimFileName(lastExtension);
+            //requestAnimationFrame(() => adjustMarqueeSpeed());
             //audioTrackName.innerText = 'Unknown Audio File';
             fetchResult.classList.remove("normal");
             fetchResult.classList.remove("err");
@@ -145,6 +194,7 @@ const fetchAudioFile = async (url) => {
         }
         else {
             audioTrackName.innerText = 'Unknown Audio File';
+            //requestAnimationFrame(() => adjustMarqueeSpeed());
             fetchResult.classList.remove("normal");
             fetchResult.classList.remove("err");
             fetchResult.classList.add("ok");
@@ -153,6 +203,14 @@ const fetchAudioFile = async (url) => {
             return readMediaData(audioBlob);
         }
     } catch (error) {
+        if (!navigator.onLine) {
+            resetPopupMsg();
+            changePopupMsg(`[Fetch_Engine]\nWell it seems like you're currently offline!\nPlease try again after coming online!`);
+            openPopup();
+        }
+        resetPopupMsg();
+        changePopupMsg(`[Fetch_Engine]\nBlaze Audio Player encountered an error while trying to fetch the audio file!`);
+        openPopup();
         fetchResult.classList.remove("normal");
         fetchResult.classList.add("err");
         fetchResult.classList.remove("ok");
@@ -249,6 +307,36 @@ const streamAudioFile = async (url) => {
         const response = await fetch(url, {
             method: "GET"
         });
+        if (response.status === 500) {
+            resetPopupMsg();
+            changePopupMsg(
+                `<b>Whozah!</b> Calm down with those requests!<br><br>` +
+                `Servers are experiencing an internal error (500)<br><br>` +
+                `Please take a short breather and try again in a little bit!`,
+                true
+            );
+            openPopup();
+        }
+        if (response.status === 503) {
+            resetPopupMsg();
+            changePopupMsg(
+                `<b>Whozah!</b> Calm down with those requests!<br><br>` +
+                `Servers are temporarily overloaded or down (503)<br><br>` +
+                `Please take a short breather and try again in a little bit!`,
+                true
+            );
+            openPopup();
+        }
+        if (response.status === 429) {
+            resetPopupMsg();
+            changePopupMsg(
+                `<b>Whozah!</b> Calm down with those requests!<br><br>` +
+                `You've been <b>rate limited</b> to keep things running smoothly.<br><br>` +
+                `Please take a short breather and try again in a little bit!`,
+                true
+            );
+            openPopup();
+        }
         const data = await response.json();
         const streamURL = data.url;
         const name = data.name;
@@ -342,12 +430,16 @@ const streamAudioFile = async (url) => {
         // triggers the internal load. Call .play() directly to honour the gesture.
         audio.play()
         streaming = true;
-        artistName.innerText = 'Connected to Radio Stream!';
+        showRandomStreamMsg();
+        artistName.innerText = artistGiven;
+        //artistName.innerText = 'Connected to Radio Stream!';
         streamResult.classList.remove("normal");
         streamResult.classList.remove("err");
         streamResult.classList.add("ok");
         streamResult.innerText = 'Connected to Radio Stream!';
         audioTrackName.innerText = name || trimLastPart(url) || 'Unknown Audio File';
+        // Re-calculate marquee speed/distance now that the text has changed
+        //requestAnimationFrame(() => adjustMarqueeSpeed());
         // Construct query: "Artist - Title"
         audioFileSelected = true;
         if (!isLoaderShown) {
@@ -373,6 +465,14 @@ const streamAudioFile = async (url) => {
             fetchLyrics(myText);
         }
         resetPlaylist();
+        // Inside streamAudioFile...
+        const coverSrc = myURi || myURL || imgArray[4].src;
+        appHead.style.backgroundImage = `url("${coverSrc}")`;
+
+        getDynamicColors(coverSrc).then(colors => {
+            currentPalette = colors;
+            // If visualize is already running, the bars will pick up the new colors next frame
+        });
         //playlistUlElement.innerHTML = '';
     } catch (error) {
         streamResult.classList.remove("normal");
@@ -382,7 +482,15 @@ const streamAudioFile = async (url) => {
         artistName.innerText = `Failed to connect to the radio stream!`;
         streamResult.innerText = `Radio station is currently unavailable!`;
         artistName.innerText = `Radio Station is down!`;
-        alert(`Failed to connect to the radio stream!`);
+        //alert(`Failed to connect to the radio stream!`);
+        if (!navigator.onLine) {
+            resetPopupMsg();
+            changePopupMsg(`[Radio_Station]\nWell it seems like you're currently offline!\nPlease try again after coming online!`);
+            openPopup();
+        }
+        resetPopupMsg();
+        changePopupMsg(`[Radio_Station]\nSeems like Radio Station servers are currently down!\nPlease try again after sometime!`);
+        openPopup();
         return console.error(error);
     }
 }
@@ -421,7 +529,7 @@ streamBtn.addEventListener("click", async (e) => {
     if (typeof context !== 'undefined' && context && context.state === 'suspended') {
         context.resume();
     }
-    audio.play().catch(() => {});
+    audio.play().catch(() => { });
 
     try {
         const url = buildRadioURL();
@@ -431,6 +539,7 @@ streamBtn.addEventListener("click", async (e) => {
         return console.error(error);
     }
 })
+
 
 streamNextAudioFile.addEventListener("click", async (e) => {
     streamResult.classList.remove("normal");
@@ -444,7 +553,7 @@ streamNextAudioFile.addEventListener("click", async (e) => {
     if (typeof context !== 'undefined' && context && context.state === 'suspended') {
         context.resume();
     }
-    audio.play().catch(() => {});
+    audio.play().catch(() => { });
 
     try {
         const url = buildRadioURL();
@@ -510,16 +619,17 @@ if (typeof audio !== 'undefined' && audio) {
     document.addEventListener('DOMContentLoaded', () => {
         if (audioGenre) {
             const genres = [
-                { value: "house", label: "House" },
-                { value: "trap", label: "Trap" },
-                { value: "dnb", label: "Drum & Bass" },
-                { value: "dubstep", label: "Dubstep" },
-                { value: "fhouse", label: "Future House" },
-                { value: "dhouse", label: "Deep House" },
-                { value: "uhouse", label: "Underground House" },
-                { value: "techno", label: "Techno" },
-                { value: "chill", label: "Chill Station" },
-                { value: "global", label: "Global Station" }
+                { value: "house", label: "House", desc: "Non-stop Disco & Dance beats" },
+                { value: "trap", label: "Trap", desc: "Heavy bass and high-energy hip-hop" },
+                { value: "dnb", label: "Drum & Bass", desc: "High-tempo breaks and heavy low-end" },
+                { value: "dubstep", label: "Dubstep", desc: "Wobble bass and heavy drops" },
+                { value: "fhouse", label: "Future House", desc: "Modern, bouncy club music" },
+                { value: "dhouse", label: "Deep House", desc: "Smooth, melodic and atmospheric" },
+                { value: "shouse", label: "Shopping House", desc: "Light, catchy commercial vibes" },
+                { value: "uhouse", label: "Underground House", desc: "Raw, club-focused grooves" },
+                { value: "techno", label: "Techno", desc: "Industrial and hypnotic rhythms" },
+                { value: "chill", label: "Chill Station", desc: "Lofi, ambient and relaxation" },
+                { value: "global", label: "Global Station", desc: "Top hits from around the world" }
             ];
 
             genres.sort((a, b) => a.label.localeCompare(b.label));
@@ -529,6 +639,10 @@ if (typeof audio !== 'undefined' && audio) {
                 const opt = document.createElement('option');
                 opt.value = g.value;
                 opt.textContent = g.label;
+
+                // Add the description as a hover title
+                opt.title = g.desc;
+
                 audioGenre.appendChild(opt);
             });
 

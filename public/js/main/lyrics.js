@@ -38,7 +38,7 @@ function parseLRC(lrc) {
                     if (audio) {
                         // 1. Set seeking flag to stop timeupdate from fighting us
                         isSeeking = true;
-                        
+
                         // 2. Remove 'active' class from all lines immediately for instant feedback
                         document.querySelectorAll('.lyric-line').forEach(l => l.classList.remove('active'));
                         div.classList.add('active');
@@ -107,7 +107,7 @@ async function fetchLyrics(songName) {
             const getParams = new URLSearchParams();
             getParams.append("artist_name", artist);
             getParams.append("track_name", cleanTitle);
-            
+
             // LRCLib /get is very picky about duration. 
             // If the duration is off by even 2 seconds, it might fail.
             // We'll only include it if it's within a valid range.
@@ -122,17 +122,17 @@ async function fetchLyrics(songName) {
         // 3. The "Broad Search" Fallback (Runs if /get fails or metadata was missing)
         if (!data) {
             console.log("Precise match failed. Trying search fallback...");
-            
+
             // Try searching with "Artist - Title" or just the raw songName
-            const searchQuery = (artist && cleanTitle) 
-                ? `${artist} ${cleanTitle}` 
+            const searchQuery = (artist && cleanTitle)
+                ? `${artist} ${cleanTitle}`
                 : (songName || audioTrackName?.innerText);
 
             const searchResponse = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(searchQuery)}`);
-            
+
             if (searchResponse.ok) {
                 const searchResults = await searchResponse.json();
-                
+
                 // Find the best candidate: one that has synced lyrics, or at least plain ones
                 data = searchResults.find(s => s.syncedLyrics) || searchResults[0];
             }
@@ -152,6 +152,8 @@ async function fetchLyrics(songName) {
 
     } catch (err) {
         console.error("Lyrics Engine Error:", err);
+        changePopupMsg(`[Lyrics Engine Error]\n${err}`);
+        openPopup();
         lyricsWindow.innerHTML = "<div class='lyric-line active'>Error loading lyrics</div>";
     }
 }

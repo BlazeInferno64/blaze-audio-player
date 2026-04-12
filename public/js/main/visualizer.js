@@ -88,6 +88,8 @@ const triggerBroadcast = (audioCtx, url) => {
     });
 };
 
+let currentPalette = { start: [255, 27, 107], mid: [69, 202, 255], end: [255, 255, 255] };
+
 const visualize = () => {
     if (animationId) cancelAnimationFrame(animationId);
 
@@ -159,6 +161,7 @@ const visualize = () => {
     const MAX_BAR_HEIGHT = HEIGHT * 0.92;
 
     // Pre-calculate colors
+    /*
     const barColors = [];
     const colors = { start: [255, 27, 107], mid: [69, 202, 255], end: [255, 255, 255] };
     for (let i = 0; i < bufferLength; i++) {
@@ -166,12 +169,36 @@ const visualize = () => {
         let c1 = (i < bufferLength / 2) ? colors.start : colors.mid;
         let c2 = (i < bufferLength / 2) ? colors.mid : colors.end;
         barColors.push(`rgb(${Math.floor(c1[0] + (c2[0] - c1[0]) * factor)},${Math.floor(c1[1] + (c2[1] - c1[1]) * factor)},${Math.floor(c1[2] + (c2[2] - c1[2]) * factor)})`);
-    }
+    }*/
+
+    const barColors = new Array(bufferLength); // Initialize the array
+
+    const updateBarColors = () => {
+        for (let i = 0; i < bufferLength; i++) {
+            let factor = (i < bufferLength / 2) ? i / (bufferLength / 2) : (i - bufferLength / 2) / (bufferLength / 2);
+            let c1 = (i < bufferLength / 2) ? currentPalette.start : currentPalette.mid;
+            let c2 = (i < bufferLength / 2) ? currentPalette.mid : currentPalette.end;
+
+            barColors[i] = `rgb(${Math.floor(c1[0] + (c2[0] - c1[0]) * factor)},${Math.floor(c1[1] + (c2[1] - c1[1]) * factor)},${Math.floor(c1[2] + (c2[2] - c1[2]) * factor)})`;
+        }
+    };
+
+    // Initial fill
+    updateBarColors();
 
     function renderFrame() {
         animationId = requestAnimationFrame(renderFrame);
         analyser.getByteFrequencyData(dataArray);
         const now = performance.now();
+
+        for (let i = 0; i < bufferLength; i++) {
+            let factor = (i < bufferLength / 2) ? i / (bufferLength / 2) : (i - bufferLength / 2) / (bufferLength / 2);
+            let c1 = (i < bufferLength / 2) ? currentPalette.start : currentPalette.mid;
+            let c2 = (i < bufferLength / 2) ? currentPalette.mid : currentPalette.end;
+
+            // Overwrite the existing color string with the new palette data
+            barColors[i] = `rgb(${Math.floor(c1[0] + (c2[0] - c1[0]) * factor)},${Math.floor(c1[1] + (c2[1] - c1[1]) * factor)},${Math.floor(c1[2] + (c2[2] - c1[2]) * factor)})`;
+        }
 
         // BPM & Fluid Scaling Logic
         let bassAvg = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
@@ -231,7 +258,10 @@ const visualize = () => {
 /**
  * Static initialization for idle state
  */
-const drawCaps = () => {
+const drawCaps = async (imgSrc = '/public/img/bg2.jpg') => {
+    const colors = await getDynamicColors(imgSrc);
+    currentPalette = colors;
+
     const ctx = canvas.getContext('2d');
     const dpr = Math.min(window.devicePixelRatio, 2);
     const rect = canvas.getBoundingClientRect();
@@ -247,13 +277,11 @@ const drawCaps = () => {
 
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    const colors = { start: [255, 27, 107], mid: [69, 202, 255], end: [255, 255, 255] };
-
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
         let factor = (i < bufferLength / 2) ? i / (bufferLength / 2) : (i - bufferLength / 2) / (bufferLength / 2);
-        let c1 = (i < bufferLength / 2) ? colors.start : colors.mid;
-        let c2 = (i < bufferLength / 2) ? colors.mid : colors.end;
+        let c1 = (i < bufferLength / 2) ? currentPalette.start : currentPalette.mid;
+        let c2 = (i < bufferLength / 2) ? currentPalette.mid : currentPalette.end;
 
         let r = Math.floor(c1[0] + (c2[0] - c1[0]) * factor);
         let g = Math.floor(c1[1] + (c2[1] - c1[1]) * factor);
@@ -263,4 +291,74 @@ const drawCaps = () => {
         ctx.fillRect(x, HEIGHT - 4, barWidth, 4);
         x += barWidth + 1;
     }
+}
+
+async function getDynamicColors(imgSrc) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = imgSrc;
+        img.onload = () => {
+            const tempCanvas = document.createElement('canvas');
+            const tCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = 1;
+            tempCanvas.height = 3;
+            tCtx.drawImage(img, 0, 0, 1, 3);
+            const data = tCtx.getImageData(0, 0, 1, 3).data;
+
+            const ensureVibrant = (r, g, b) => {
+                // Calculate perceived luminance
+                const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+
+                // --- DARKNESS GUARD ---
+                if (luminance < 25) {
+                    return [210, 210, 215]; // Force whitish-gray for pure black
+                }
+
+                if (luminance < 60) {
+                    const factor = 3.0;
+                    return [
+                        Math.min(255, r * factor + 50),
+                        Math.min(255, g * factor + 50),
+                        Math.min(255, b * factor + 50)
+                    ];
+                }
+
+                if (luminance < 110) {
+                    return [
+                        Math.min(255, r + 60),
+                        Math.min(255, g + 60),
+                        Math.min(255, b + 60)
+                    ];
+                }
+
+                // --- NEW: BRIGHTNESS CLAMP ---
+                // If luminance is higher than 200 (very bright/white), tone it down
+                if (luminance > 200) {
+                    const dimFactor = 0.75; // Reduce brightness by 25%
+                    return [
+                        Math.floor(r * dimFactor),
+                        Math.floor(g * dimFactor),
+                        Math.floor(b * dimFactor)
+                    ];
+                }
+
+                // Tier 3: Just right
+                return [r, g, b];
+            };
+
+            const c1 = ensureVibrant(data[0], data[1], data[2]);
+            const c2 = ensureVibrant(data[4], data[5], data[6]);
+            const c3 = ensureVibrant(data[8], data[9], data[10]);
+
+            resolve({
+                start: c1,
+                mid: c2,
+                end: c3
+            });
+        };
+        img.onerror = () => {
+            resolve({ start: [255, 27, 107], mid: [69, 202, 255], end: [255, 255, 255] });
+        };
+    });
 }
