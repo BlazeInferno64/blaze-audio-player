@@ -317,9 +317,9 @@ audio {
     will-change: transform;
     /* Performance boost */
 
-    /*
+    
     animation: marquee-scroll 8s linear infinite;
-    animation-duration: 13s;*/
+    animation-duration: 13s;
 }
 
 .app .main .info .audio-details .artist {

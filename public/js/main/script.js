@@ -641,7 +641,9 @@ audio.addEventListener("loadedmetadata", (e) => {
     closeWelcomeCard();
     updateBufferedBar();
     updateTiming();
-    adjustMarqueeSpeed();
+    requestAnimationFrame(() => {
+        adjustMarqueeSpeed();
+    })
 });
 audio.addEventListener("playing", (e) => {
     updateBufferedBar();
