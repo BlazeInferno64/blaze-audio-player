@@ -68,10 +68,19 @@ async function fetchLyrics(songName) {
     const audioTrackName = document.getElementById('audioTrackName');
     if (!lyricsWindow) return;
 
-    if (!isLoaderShown) {
+    // Only take over the loader overlay here if the track itself hasn't
+    // already finished loading (audioLoadPhase becomes "ready" once
+    // canplaythrough fires). Otherwise this races with canplaythrough,
+    // which may have already hidden the loader and reset isLoaderShown
+    // before this async metadata lookup resolves - re-showing it here
+    // would leave it stuck on screen with nothing left to dismiss it.
+    let lyricsLoaderShown = false;
+    if (!isLoaderShown && audioLoadPhase !== "ready") {
         loaderBg.classList.remove("hide");
         loaderBg.style.opacity = '.85';
         loadingText.innerText = isNormalStream === true ? 'Loading stream...' : 'Loading next track...';
+        isLoaderShown = true;
+        lyricsLoaderShown = true;
     }
 
     lyricsArray = [];
@@ -155,5 +164,10 @@ async function fetchLyrics(songName) {
         changePopupMsg(`[Lyrics Engine Error]\n${err}`);
         openPopup();
         lyricsWindow.innerHTML = "<div class='lyric-line active'>Error loading lyrics</div>";
+    } finally {
+        if (lyricsLoaderShown) {
+            loaderBg.classList.add("hide");
+            isLoaderShown = false;
+        }
     }
 }

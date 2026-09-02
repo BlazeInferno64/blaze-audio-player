@@ -347,3 +347,33 @@ closePlaylistCardBtn.addEventListener("click", (e) => {
 playlistSettingBtn.addEventListener("click", (e) => {
     return openPlaylistCard();
 })
+
+
+const bgs = [volumeBg, linkBg, welcomeBg, streamBg, lyricsBg, playlistBg];
+
+bgs.forEach((item) => {
+    item.addEventListener("click", (e) => {
+        if (e.target === item) {
+            if (item === volumeBg) {
+                return closeVolumeCard();
+            }
+            if (item === linkBg) {
+                return closeFetchCard();
+            }
+            if (item === welcomeBg) {
+                closeWelcomeCard();
+                return openPopup();
+            }
+            if (item === streamBg) {
+                return closeStreamCard();
+            }
+            if (item === lyricsBg) {
+                return closeLyricsCard();
+            }
+            if (item === playlistBg) {
+                return closePlaylistCard();
+            }
+            // Add more conditions for other backgrounds if needed
+        }
+    })
+})
